@@ -22,4 +22,8 @@ ls -lAShr
 # List by last modified reversed and human readable.
 
 ls -lAthr
+
 ```
+
+The IP protocol isn't actually the one responsible for routing in the internet.
+There are a handful of routing protocols that provide that capability. 
