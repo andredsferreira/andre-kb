@@ -35,7 +35,6 @@ specific ICMP error message type.
 
 ICMPv4 Error Messages:
 
-
 | Type Value | Message Name            | Description                                                                                                |
 | ---------- | ----------------------- | ---------------------------------------------------------------------------------------------------------- |
 | 3          | Destination Unreachable | Indicates that the datagram could not be delivered to the destination, the code provides more information. |
@@ -44,7 +43,6 @@ ICMPv4 Error Messages:
 | 12         | Parameter Problem       | Miscellaneous problem indicated by the code field.                                                         |
 
 ICMPv4 Informational Messages:
-
 
 | Type Value | Message Name         | Description                                                                    |
 | ---------- | -------------------- | ------------------------------------------------------------------------------ |
@@ -64,16 +62,16 @@ These apply mostly to error class messages since the informational ones are
 already controlled by the device who sends them. This is because error class
 messages are responses to a certain type of situation.
 
-  * ICMP error responses are generated only for the first fragment of an IP
-    datagram (if there was an error with the first fragment there is no point
-    sending multiple ICMP messages for the other fragments).
+* ICMP error responses are generated only for the first fragment of an IP
+  datagram (if there was an error with the first fragment there is no point
+  sending multiple ICMP messages for the other fragments).
 
-  * ICMP error messages cannot be sent in response to other ICMP error messages,
-    this prevents infinite loops.
+* ICMP error messages cannot be sent in response to other ICMP error messages,
+  this prevents infinite loops.
 
-  * ICMP error messages cannot be generated in reponse to a broadcast or
-    multicast address (eg. a broadcast is sent to 2000 hosts, if they were to
-    send an ICMP error message in response it would be catastrofic).
+* ICMP error messages cannot be generated in reponse to a broadcast or multicast
+  address (eg. a broadcast is sent to 2000 hosts, if they were to send an ICMP
+  error message in response it would be catastrofic).
 
 ## ICMP Common Message Format
 
