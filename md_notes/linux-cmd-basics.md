@@ -1,3 +1,7 @@
+# Linux Command Line Basics
+
+Some notes taken from the book The Linux Command Line by William Shotts.
+
 ## The ls command
 
 Lists the contents of a directory. Common options used in the ls command.
@@ -26,4 +30,4 @@ ls -lAthr
 ```
 
 The IP protocol isn't actually the one responsible for routing in the internet.
-There are a handful of routing protocols that provide that capability. 
+There are a handful of routing protocols that provide that capability.

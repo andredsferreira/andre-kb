@@ -17,4 +17,10 @@ different IT topics that im interested in, and currently learning.
 
 [Computer Networking: DHCP](md_notes/cnet-dhcp.md)
 
-[Linux: Command Line](md_notes/linux-cmd.md)
+[Linux: Command Line Basics](md_notes/linux-cmd-basics.md)
+
+[Linux: DNS](md_notes/linux-dns.md)
+
+[Linux: Process Control](md_notes/linux-process-control.md)
+
+[Linux: SSH Key Based Authentication](md_notes/linux-ssh-key-auth.md)
