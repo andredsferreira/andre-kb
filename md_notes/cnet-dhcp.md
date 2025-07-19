@@ -1,4 +1,9 @@
-### **Host Configuration**
+# Computer Networking: Dynamic Host Configuration Protocol (DHCP)
+
+DHCP is the standard protocol in the TCP/IP stack for configuring hosts on a
+network. These are my notes on DHCP.
+
+## **Host Configuration**
 
 Information required by a host in order to be properly configured in a network:
 
@@ -13,7 +18,7 @@ by a protocol (DHCP). When working dynamically usually a host sends a request to
 the server in the LAN that contains the configuration parameters, the network
 administrator configures the server.
 
-### **Dynamic Host Configuration Protocol (DHCP)**
+## **Dynamic Host Configuration Protocol (DHCP)**
 
 DHCP is defined in RFC 2131.
 
@@ -28,7 +33,7 @@ resolvers. It is thus based on a client-server architecture, using UDP (remember
 that DHCP is an application layer protocol and it needs a transport layer one to
 run on).
 
-### **DHCP Address Allocation Mechanisms**
+## **DHCP Address Allocation Mechanisms**
 
 *Dynamic Allocation*: IP addresses are *leased* for a particular amount of time
 dynamically by the server from a *pool* of available addresses. The client asks
