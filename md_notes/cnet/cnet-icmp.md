@@ -1,4 +1,4 @@
-# Internet Message Control Protocol (ICMP)
+# Internet Control Message Protocol (ICMP)
 
 ICMP performs testing, diagnostic and error reporting functions that IP doesn't
 have. It is supposed to be implemented hand in hand with IP. ICMP is very simple

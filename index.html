@@ -1,0 +1,195 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>André's Knowledge Base</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: Arial;
+      box-sizing: border-box;
+      color: rgb(30, 30, 30);
+      line-height: 1.4;
+    }
+
+    body {
+      display: grid;
+      overflow: auto;
+      grid-template-columns: 2fr 4fr;
+      font-size: 17;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      padding-bottom: 10vh;
+      align-self: start;
+      overflow: auto;
+      height: 100vh;
+      border-right: 1px solid black;
+    }
+
+    aside ol {
+      margin: 1vh 1vw 1vh 11vw;
+    }
+
+    aside h2 {
+      padding: 5vh 1vw 10vh 11vw;
+      border-bottom: 1px solid rgb(30, 30, 30);
+    }
+
+    aside h3 {
+      padding: 3vh 1vw 1vh 11vw;
+
+    }
+
+    main {
+      padding: 10vh 15vw 10vh 7vw;
+    }
+
+    ul {
+      list-style-position: inside;
+      padding-left: 1vw;
+    }
+
+    ol {
+      list-style-position: inside;
+      list-style-type: none;
+    }
+
+    main ol {
+      padding-left: 1vw;
+    }
+
+    li {
+      color: rgb(80, 80, 80);
+      padding-top: 0.5vh;
+      padding-bottom: 0.5vh;
+    }
+
+    h1,
+    h2,
+    h3 {
+      padding-top: 2vh;
+      padding-bottom: 2vh;
+    }
+
+
+    p {
+      color: rgb(80, 80, 80);
+      padding-top: 1vh;
+      padding-bottom: 1vh;
+    }
+
+    em {
+      color: rgb(80, 80, 80);
+    }
+
+    table {
+      margin: 1vh 0vh;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    table,
+    th,
+    td {
+      color: rgb(80, 80, 80);
+      border: 1px solid rgb(190, 190, 190);
+      padding: 8px;
+      text-align: left;
+    }
+
+    img {
+      display: block;
+      margin: 1vh auto;
+      height: auto;
+      max-width: 80%;
+    }
+
+    a {
+      padding: 0.8vh;
+      border-radius: 5px;
+      display: block;
+      color: rgb(80, 80, 80);
+      text-decoration: none;
+    }
+
+    a:hover {
+      background-color: rgb(240, 240, 240);
+    }
+  </style>
+</head>
+
+<body>
+  <aside>
+    <h2>André's Knowledge Base</h2>
+    <h3>Computer Networking</h3>
+    <ol>
+      <li><a href="./md_notes/cnet/cnet-overview.md">Computer Networking Overview</a></li>
+      <li><a href="./md_notes/cnet/cnet-ip.md">Internet Protocol (IPv4)</a></li>
+      <li><a href="./md_notes/cnet/cnet-icmp.md">Internet Control Message Protocol (ICMP)</a></li>
+      <li><a href="./md_notes/cnet/cnet-nat.md">Network Address Translation (NAT)</a></li>
+      <li><a href="./md_notes/cnet/cnet-ipsec.md">IP Security Protocols (IPsec)</a></li>
+      <li><a href="./md_notes/cnet/cnet-dhcp.md">Dynamic Host Configuration Protocol (DHCP)</a></li>
+    </ol>
+    <h3>Linux</h3>
+    <ol>
+      <li><a href="./md_notes/linux/linux-cmd-basics.md">Linux Command Line Basics</a></li>
+      <li><a href="./md_notes/linux/linux-process-control.md">Linux Process Control</a></li>
+      <li><a href="./md_notes/linux/linux-dns.md">Linux DNS</a></li>
+      <li><a href="./md_notes/linux/linux-ssh-key-auth.md">Linux SSH Key Based Auth</a></li>
+    </ol>
+  </aside>
+  <main>
+  </main>
+</body>
+
+<script type="module">
+  import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js"
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('aside a')
+    const main = document.querySelector('main')
+    const heading = document.querySelector('aside h2')
+
+    async function loadMarkdown(url) {
+      const basePath = url.substring(0, url.lastIndexOf('/') + 1)
+
+      try {
+        const response = await fetch(url)
+        if (!response.ok) throw new Error(`Failed to load ${url}`)
+
+        let mdText = await response.text()
+
+        mdText = mdText.replace(/!\[(.*?)\]\((?!https?:\/\/)(.*?)\)/g, (match, alt, src) => {
+          if (src.startsWith('/')) return match
+          return `![${alt}](${basePath}${src})`
+        })
+
+        main.innerHTML = marked.parse(mdText)
+      } catch (err) {
+        main.innerHTML = `<p style="color:red;">Error loading Markdown: ${err.message}</p>`
+      }
+    }
+
+    loadMarkdown('README.md')
+
+    links.forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const url = e.target.getAttribute('href')
+        loadMarkdown(url)
+      })
+    })
+
+    heading.style.cursor = 'pointer'
+    heading.addEventListener('click', () => {
+      loadMarkdown('README.md')
+    })
+  })
+</script>
+
+</html>
