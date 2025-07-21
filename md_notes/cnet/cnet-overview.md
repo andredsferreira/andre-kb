@@ -1,3 +1,7 @@
+# Computer Networking Overview
+
+This document gives an overview of important concepts in computer networking.
+
 ## Types of networks
 
 *Circuit switching*: A single dedicated physical path (called a circuit) for

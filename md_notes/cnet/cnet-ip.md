@@ -1,4 +1,4 @@
-# IP (IPv4)
+# Internet Protocol (IPv4)
 
 It's main purpose is to deliver packets between hosts on different networks,
 through the Internet.
