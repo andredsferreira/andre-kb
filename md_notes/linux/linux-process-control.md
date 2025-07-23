@@ -50,16 +50,19 @@ pkill -u andre firefox
 ```
 ## Process monitoring with ps
 
+Common flags used in the ps:
+
+- a: show processes for all users
+- u: display user oriented format
+- x: include processes not attached to the terminal (eg. daemons, GUI apps)
+
 ```bash
-# Common flags used in the ps:
-# a: show processes for all users
-# u: display user oriented format
-# x: include processes not attached to the terminal (eg. daemons, GUI apps)
-
 ps aux
+```
 
-# Frequent pattern to identify a PID
+Frequent pattern to identify a PID:
 
+```bash
 ps aux | grep sshd
 pgrep sshd
 ```

@@ -37,17 +37,15 @@
       padding-right: 1vw;
     }
 
-    aside h3 {
+    aside h2 {
       padding: 4vh 1vw 6vh 1vw;
-      font-weight: normal;
       border-bottom: 1px solid rgb(200, 200, 200);
       transition: background-color 0.5s ease, color 0.5s ease;
-
+      color: hsl(212, 100%, 40%);
     }
 
-    aside h3:hover {
-      background-color: rgb(60, 60, 60);
-      color: white;
+    aside h2:hover {
+      color: hsl(212, 100%, 60%);
     }
 
     aside p {
@@ -56,7 +54,11 @@
     }
 
     main {
-      padding: 10vh 30vw 10vh 8vw;
+      padding: 10vh 25vw 10vh 8vw;
+    }
+
+    main ol {
+      padding-left: 1vw;
     }
 
     ul {
@@ -67,14 +69,10 @@
       list-style-type: none;
     }
 
-    main ol {
-      padding-left: 1vw;
-    }
-
     li {
       padding-top: 0.1vh;
       padding-bottom: 0.1vh;
-      color: rgb(60, 60, 60);
+      color: rgb(25, 25, 25);
     }
 
     h1 {
@@ -87,11 +85,10 @@
 
     h3 {
       font-size: 1.1em;
-      color: rgb(30, 30, 30);
     }
 
     em {
-      color: rgb(60, 60, 60);
+      color: rgb(25, 25, 25);
     }
 
     h1,
@@ -103,7 +100,7 @@
 
 
     p {
-      color: rgb(60, 60, 60);
+      color: rgb(25, 25, 25);
       padding-top: 1vh;
       padding-bottom: 1vh;
     }
@@ -112,13 +109,14 @@
       margin: 1vh 0vh;
       border-collapse: collapse;
       width: 100%;
+      max-width: 100%;
     }
 
     table,
     th,
     td {
       font-size: 1em;
-      color: rgb(60, 60, 60);
+      color: rgb(25, 25, 25);
       border: 1px solid rgb(190, 190, 190);
       padding: 6px;
       text-align: left;
@@ -135,7 +133,7 @@
       padding: 0.6vh;
       border-radius: 5px;
       display: block;
-      color: rgb(60, 60, 60);
+      color: rgb(25, 25, 25);
       text-decoration: none;
     }
 
@@ -144,6 +142,7 @@
     }
 
     pre {
+      max-width: 100%;
       font-size: 1.1em;
       background-color: rgb(240, 240, 240);
       padding: 1em;
@@ -153,6 +152,7 @@
     }
 
     code {
+      max-width: 100%;
       font-family: monospace;
       background-color: rgb(240, 240, 240);
       padding: 0.2em 0.4em;
@@ -161,6 +161,7 @@
     }
 
     pre code {
+      max-width: 100%;
       padding: 0;
       background-color: transparent;
       color: inherit;
@@ -170,7 +171,7 @@
 
 <body>
   <aside>
-    <h3>André's Knowledge Base</h3>
+    <h2>André's Knowledge Base</h2>
     <br>
     <p><b>Computer Networking</b></p>
     <ol>
@@ -199,7 +200,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     const links = document.querySelectorAll('aside a')
     const main = document.querySelector('main')
-    const heading = document.querySelector('aside h3')
+    const heading = document.querySelector('aside h2')
 
     async function loadMarkdown(url) {
       const basePath = url.substring(0, url.lastIndexOf('/') + 1)
@@ -214,6 +215,7 @@
           if (src.startsWith('/')) return match
           return `![${alt}](${basePath}${src})`
         })
+
 
         main.innerHTML = marked.parse(mdText)
         window.scrollTo(0, 0)
