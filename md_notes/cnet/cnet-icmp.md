@@ -1,6 +1,6 @@
 # Internet Control Message Protocol (ICMP)
 
-ICMP performs testing, diagnostic and error reporting functions that IP doesn't
+ICMP (RFC 792) performs testing, diagnostic and error reporting functions that IP doesn't
 have. It is supposed to be implemented hand in hand with IP. ICMP is very simple
 much of it's functionality may be resumed by the sending of specific control
 messages to devices.
@@ -30,7 +30,7 @@ original IP datagram: the IP header + 8 bytes of payload.
 message type.
 
 NOTE: Devices are note mandated to perform any action upon receiving a ICMP
-error message. Although, most protocols perform some actionin response to a
+error message. Although, most protocols perform some action in response to a
 specific ICMP error message type.
 
 ICMPv4 Error Messages:
@@ -44,17 +44,14 @@ ICMPv4 Error Messages:
 
 ICMPv4 Informational Messages:
 
-| Type Value | Message Name         | Description                                                                    |
-| ---------- | -------------------- | ------------------------------------------------------------------------------ |
-| 0          | Echo Reply           | Response to an echo request, used to test connectivity.                        |
-| 8          | Echo (Request)       | Request to test connectivity.                                                  |
-| 9          | Router Advertisement | Sent by routers to nearby hosts to advertise their IP, and their capabilities. |
-| 10         | Router Solicitation  | Used by hosts to prompt listening routers to send a router advertisement.      |
-| 13         | Timestamp (Request)  | Request for information metrics about the network.                             |
-| 14         | Timestamp Reply      | Reply to a timestamp request.                                                  |
-| 17         | Subnet Mask Request  | Request for a host to send their subnet mask.                                  |
-| 18         | Subnet Mask Reply    | Reply to a subnet mask request.                                                |
-| 30         | Traceroute           | Used in the traceroute functionality. It helps enhance it.                     |
+| Type Value | Message Name         | Description                                                                                                      |
+| ---------- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 0          | Echo Reply           | Response to an echo request, used to test connectivity.                                                          |
+| 8          | Echo (Request)       | Request to test connectivity.                                                                                    |
+| 9          | Router Advertisement | Sent by routers to nearby hosts to advertise their IP, and their capabilities. In practice is only used for IPv6 |
+| 10         | Router Solicitation  | Used by hosts to prompt listening routers to send a router advertisement.                                        |
+| 13         | Timestamp (Request)  | Request for information metrics about the network.                                                               |
+| 14         | Timestamp Reply      | Reply to a timestamp request.                                                                                    |
 
 ## Limitations on ICMP Messages
 
