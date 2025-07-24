@@ -173,6 +173,7 @@
   <aside>
     <h2>André's Knowledge Base</h2>
     <br>
+
     <p><b>Computer Networking</b></p>
     <ol>
       <li><a href="./md_notes/cnet/cnet-overview.md">Computer Networking Overview</a></li>
@@ -182,6 +183,7 @@
       <li><a href="./md_notes/cnet/cnet-ipsec.md">IP Security Protocols (IPsec)</a></li>
       <li><a href="./md_notes/cnet/cnet-dhcp.md">Dynamic Host Configuration Protocol (DHCP)</a></li>
     </ol>
+
     <p><b>Linux</b></p>
     <ol>
       <li><a href="./md_notes/linux/linux-cmd-basics.md">Linux Command Line Basics</a></li>
@@ -190,8 +192,9 @@
       <li><a href="./md_notes/linux/linux-ssh-key-auth.md">Linux SSH Key Based Auth</a></li>
     </ol>
   </aside>
-  <main>
-  </main>
+
+  <main></main>
+
 </body>
 
 <script type="module">
@@ -215,7 +218,6 @@
           if (src.startsWith('/')) return match
           return `![${alt}](${basePath}${src})`
         })
-
 
         main.innerHTML = marked.parse(mdText)
         window.scrollTo(0, 0)

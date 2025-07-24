@@ -71,6 +71,15 @@ Only moving files that don't exist in the destination (updating):
 mv -u file dir/
 ```
 
+## The mkdir command
+
+Simple flag option: use -p and it will give no error if the directory already
+exists.
+
+```bash
+mkdir -p dir_name
+```
+
 ## The ln command
 
 Before diving into the ln command here is the definition for hard and symbolic

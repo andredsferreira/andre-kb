@@ -167,9 +167,41 @@ DHCP options).
 | CAddr   | IP Address of the client if it has one, otherwise it is set to 0.                                                                                                             |
 | YIAddr  | IP Address assigned to the client from the server.                                                                                                                            |
 | SAddr   | IP Address of the next server the client should use in the bootstrap process (the server may be different from the one who sent the reply).                                   |
-| GAddr   | IP Address of the default gateway                                                                                                                                             |
+| GAddr   | IP Address of the DHCP relay agent, allows the DHCP server to know where to send replies (used when the client and server are on different networks or subnets).              |
 | SName   | The name of the DHCP server (may be a domain name). Can also be used to extend options.                                                                                       |
 | CHAddr  | The client's hardware address (most of the time it's the MAC address).                                                                                                        |
 | File    | Optionally used by the client to indicate a particular boot file in a DHCPDISCOVER message. Use by the server in a DHCPOFFER message to fully specify the bootstrap filepath. |
-| Options | Obligatory options that contain configuration parameters for the client to properly work in a network.                                                                        |
+| Options | Options that contain configuration parameters for the client to properly work in a network.                                                                                   |
+
+## DHCP Options
+
+As mentioned, DHCP options (RFC 2132)contain configuration parameters, along
+with other data, for the client to properly work in a network. Despite being
+called options most are mandatory in order for the client to be properly
+configured in a network (examples include the option 3 for the default gateway
+address, and option 6 for DNS server addresses). They are only carried as
+options fields to maintain compatibility with BOOTP message format.
+
+![](images/cnet-dhcp-03.png)
+
+| Field | Description                                                        |
+| ----- | ------------------------------------------------------------------ |
+| Code  | An octect that represent the option type.                          |
+| Len   | The length of the option data.                                     |
+| Data  | The data being sent, which is interpreted based on the code field. |
+
+The following table describes the most important and essential DHCP options.
+
+| Code | Name                      | Description                                                            |
+| ---- | ------------------------- | ---------------------------------------------------------------------- |
+| 1    | Subnet Mask               | The subnet mask supplied for the client to use in the current network. |
+| 3    | Router                    | IP addresses for the default gateways of the client's LAN.             |
+| 6    | DNS Name Server           | IP addresses of DNS name servers.                                      |
+| 12   | Host Name                 | The client's hostname.                                                 |
+| 15   | Domain Name               | The client's DNS domain name.                                          |
+| 51   | IP Lease Time             | The duration of the client's DHCP lease.                               |
+| 53   | DHCP Message Type         | The type of DHCP message (DHCPDISCOVER, DHCPOFFER, etc).               |
+| 54   | Server Identifier         | IP address of the DHCP server that sent the reply.                     |
+| 58   | Renewal Time Value (T1)   | The value of the renewal timer.                                        |
+| 59   | Rebinding Time Value (T2) | The value of the rebinding timer.                                      |
 
