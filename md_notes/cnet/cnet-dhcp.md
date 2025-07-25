@@ -35,9 +35,12 @@ Since DHCP runs over UDP, there is no realiable communication. Thus, clients
 usually set retransmission timers for requests if they receive no response from
 the server.
 
-*DHCP Relay Agent*: Responsible for facilitating the communication between the
-clients and servers. Specially used when the DHCP server is located in a
-different network or subnetwork.
+*DHCP Relay Agent*: A DHCP relay agent is reponsible for forwarding DHCP
+requests and replies when the DHCP server is in a different network or
+subnetwork than it's clients. This is needed because by default most requests
+are broadcasts which do not cross routers. DHCP relay agents are usually routers
+or layer 3 switches. When a relay agent receives a DHCP message it adds it's own
+address to the *giaddr* field and forwards as unicast to the DHCP server.
 
 ## DHCP Address Allocation Mechanisms
 
@@ -139,14 +142,14 @@ Here are the types of DHCP messages along with a general description and other i
 
 | Message      | Description                                                                                                           | Type Number | Op  |
 | ------------ | --------------------------------------------------------------------------------------------------------------------- | ----------- | --- |
-| DHCPDISCOVER | Sent by clients as broadcast to find DHCP servers.                                                                    | 1           | 1   |
-| DHCPOFFER    | Sent by servers as unicast or broadcast, includes IP address and configuration parameters.                            | 2           | 2   |
-| DHCPREQUEST  | Sent by clients as broadcast (or unicast if client is in RENEWING state) to inform the accepted lease.                | 3           | 1   |
-| DHCPDECLINE  | Sent by clients as unicast when the IP in the lease is taken and not valid.                                           | 4           | 1   |
-| DHCPACK      | Sent by servers as unicast to confirm the client's lease request.                                                     | 5           | 2   |
-| DHCPNACK     | Sent by servers as broadcast (because IP is no longer valid) to decline the clients lease request (IP already taken). | 6           | 2   |
-| DHCPRELEASE  | Sent by clients as unicast to release the current lease back to the server.                                           | 7           | 1   |
-| DHCPINFORM   | Sent by clients as unicast that already have an IP address and just want the configuration parameters.                | 8           | 1   |
+| DHCPDISCOVER | Sent by clients as *broadcast* to find DHCP servers.                                                                    | 1           | 1   |
+| DHCPOFFER    | Sent by servers as *unicast* or *broadcast*, includes IP address and configuration parameters.                            | 2           | 2   |
+| DHCPREQUEST  | Sent by clients as *broadcast* (or *unicast* if client is in RENEWING state) to inform the accepted lease.                | 3           | 1   |
+| DHCPDECLINE  | Sent by clients as *unicast* when the IP in the lease is taken and not valid.                                           | 4           | 1   |
+| DHCPACK      | Sent by servers as *unicast* to confirm the client's lease request.                                                     | 5           | 2   |
+| DHCPNACK     | Sent by servers as *broadcast* (because IP is no longer valid) to decline the clients lease request (IP already taken). | 6           | 2   |
+| DHCPRELEASE  | Sent by clients as *unicast* to release the current lease back to the server.                                           | 7           | 1   |
+| DHCPINFORM   | Sent by clients as *unicast* that already have an IP address and just want the configuration parameters.                | 8           | 1   |
 
 The DHCP message is built on top of the BOOTP message format, but the fields
 were formalized and given a different meaning (BOOTP vendor extensions became
@@ -156,22 +159,22 @@ DHCP options).
 
 | Field   | Description                                                                                                                                                                   |
 | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Op      | Used to indicate if the DHCP message is a request (Op=1) or a reply (Op=2).                                                                                                   |
-| Htype   | Type of underlying hardware being used in the LAN.                                                                                                                            |
-| Hlen    | The length of the hardware address (for MAC addresses its 6 bytes).                                                                                                           |
-| Hops    | Set to 0 in client requests. It is used by relay agents to control the forwarding of messages.                                                                                |
-| XID     | Transaction identifier for the client's requests and server responses.                                                                                                        |
-| Secs    | Number of seconds elapsed since the client attempted to acquire or renew a lease (can be used by servers to set priorities).                                                  |
-| Htype   | Type of underlying hardware being used.                                                                                                                                       |
-| Flags   | Currently only one bit is set to indicate that a server should reply in broadcast (or not).                                                                                   |
-| CAddr   | IP Address of the client if it has one, otherwise it is set to 0.                                                                                                             |
-| YIAddr  | IP Address assigned to the client from the server.                                                                                                                            |
-| SAddr   | IP Address of the next server the client should use in the bootstrap process (the server may be different from the one who sent the reply).                                   |
-| GAddr   | IP Address of the DHCP relay agent, allows the DHCP server to know where to send replies (used when the client and server are on different networks or subnets).              |
-| SName   | The name of the DHCP server (may be a domain name). Can also be used to extend options.                                                                                       |
-| CHAddr  | The client's hardware address (most of the time it's the MAC address).                                                                                                        |
-| File    | Optionally used by the client to indicate a particular boot file in a DHCPDISCOVER message. Use by the server in a DHCPOFFER message to fully specify the bootstrap filepath. |
-| Options | Options that contain configuration parameters for the client to properly work in a network.                                                                                   |
+| op      | Used to indicate if the DHCP message is a request (Op=1) or a reply (Op=2).                                                                                                   |
+| htype   | Type of underlying hardware being used in the LAN.                                                                                                                            |
+| hlen    | The length of the hardware address (for MAC addresses its 6 bytes).                                                                                                           |
+| hops    | Set to 0 in client requests. It is used by relay agents to control the forwarding of messages.                                                                                |
+| xid     | Transaction identifier for the client's requests and server responses.                                                                                                        |
+| secs    | Number of seconds elapsed since the client attempted to acquire or renew a lease (can be used by servers to set priorities).                                                  |
+| htype   | Type of underlying hardware being used.                                                                                                                                       |
+| flags   | Currently only one bit is set to indicate that a server should reply in broadcast (or not).                                                                                   |
+| caddr   | IP Address of the client if it has one, otherwise it is set to 0.                                                                                                             |
+| yiaddr  | IP Address assigned to the client from the server.                                                                                                                            |
+| saddr   | IP Address of the next server the client should use in the bootstrap process (the server may be different from the one who sent the reply).                                   |
+| gaddr   | IP Address of the DHCP relay agent, allows the DHCP server to know where to send replies (used when the client and server are on different networks or subnets).              |
+| sname   | The name of the DHCP server (may be a domain name). Can also be used to extend options.                                                                                       |
+| chaddr  | The client's hardware address (most of the time it's the MAC address).                                                                                                        |
+| file    | Optionally used by the client to indicate a particular boot file in a DHCPDISCOVER message. Use by the server in a DHCPOFFER message to fully specify the bootstrap filepath. |
+| options | Options that contain configuration parameters for the client to properly work in a network.                                                                                   |
 
 ## DHCP Options
 
@@ -204,4 +207,25 @@ The following table describes the most important and essential DHCP options.
 | 54   | Server Identifier         | IP address of the DHCP server that sent the reply.                     |
 | 58   | Renewal Time Value (T1)   | The value of the renewal timer.                                        |
 | 59   | Rebinding Time Value (T2) | The value of the rebinding timer.                                      |
+
+## DHCP Server Implementation
+
+DHCP servers are essentially databases that store the configuration parameters
+discussed so far. When it comes to setting up a DHCP server in the network the
+administrator should opt for at least two servers and a RAID setup for storage.
+This eliminates the single point of failure if the server goes down or needs
+maintanance.
+
+DHCP server configuration parameters:
+
+- Authentication and authorization policies for the database.
+- Lease duration.
+- Address pool range.
+- If there is more than one server, decide wether they have overlapping or
+  distinct address pools.
+- T1 and T2 timers.
+- Wether or not DHCP relays are used.
+
+
+
 
