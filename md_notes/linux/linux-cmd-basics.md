@@ -114,3 +114,78 @@ ln -s item link
 
 NOTE: broken symbolic links can exists and occur when the original file they
 point is deleted but the link still exists.
+
+## Redirection
+
+| File Descriptor | Name   |
+| --------------- | ------ |
+| 0               | stdin  |
+| 1               | stdout |
+| 2               | stderr |
+
+The > operator redirects the output of the command. It always truncates the file
+to which it points. If the file does not exist it creates it.
+
+Trick to truncate or create e new file is simply put the > with no command
+before it:
+
+```bash
+> filename.extension
+```
+
+The >> appends instead of truncating the destination file. If the file does not
+exist it creates it.
+
+```bash
+ls -l >> ls-contents.txt
+```
+
+To redirect the errors from commands we need to specify the file descriptor:
+
+```bash
+ls -l /nonexistent/path 2> error.txt
+```
+
+Redirecting both standard output and standard error:
+
+```bash
+ls -l /some/path &> out.txt
+
+ls -l /some/path &>> out.txt
+```
+
+Some commands make use of the standard input, the most known example is cat. We
+can redirect the standard input to cat like so (not very usefull for cat):
+
+```bash
+cat < hello.txt
+```
+
+## Tailing files in realtime 
+
+The tail (and head) has a useful option for tailing files in realtime:
+
+```bash
+tail -f /var/log/messages
+```
+
+## The tee command
+
+The tee command copies the output to a specified file(s) but also to the
+standard output. This is specially usefull to allow data to continue down a
+pipeline
+
+It's also usefull if we want to also see the output at the same time we saved it
+in a file.
+
+In the example bellow we save the output of ls in output.txt but also pipe it to
+grep and sort.
+
+```bash
+
+ls /usr/bin/ | tee output.txt | grep zip | sort
+
+ls /usr/bin/ | grep zip | sort | tee output.txt
+
+```
+
