@@ -2,6 +2,10 @@
 
 Some notes taken from the book The Linux Command Line by William Shotts.
 
+## The printenv command
+
+Used to print the enviornment variables
+
 ## The ls command
 
 Lists the contents of a directory. Common options used in the ls command.
@@ -187,5 +191,46 @@ ls /usr/bin/ | tee output.txt | grep zip | sort
 
 ls /usr/bin/ | grep zip | sort | tee output.txt
 
+```
+
+## Brace expansion
+
+Brace expansion is useful for creating several documents or directories. The
+following will expand to file01.txt, file02.txt, etc.
+
+```bash
+echo file{01..10}.txt
+```
+
+Using xargs and touch to create multiple files:
+
+```bash
+echo file{01..10}.txt | xargs touch
+```
+
+Using mkdir and brace expansion to create multiple directories:
+
+```bash
+mkdir photos-{2007..2009}-{01..12}
+```
+
+## Command substitution
+
+Can be performed with $(command). It allows the use of command outputs as
+expansions. Entire pipelines can be used.
+
+```bash
+echo $(ls)
+echo $(pgrep firefox)
+ls -l $(which go)
+file $(ls -d /usr/bin/* | grep zip)
+```
+
+## The history command
+
+Simple trick to run a specific command in history line x:
+
+```bash
+!x
 ```
 
