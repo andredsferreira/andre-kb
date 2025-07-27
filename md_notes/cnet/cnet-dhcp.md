@@ -120,6 +120,19 @@ detail a lease lifecycle from the perspective of the client.
 
 ![](images/cnet-dhcp-01.png)
 
+In the SELECTING state the client waits for an DHCPOFFER, optionally before
+sending the DHCPOFFER the server may optionally check if the IP address to be
+given is already taken by performing an ICMP echo request to that address and
+waiting for a reply (this is not usually performed tho).
+
+In the REQUESTING state clients also usually check the IP address received in
+the lease. They perform an ARP request to the LAN to see if it's not already in
+use. If it is they send a DHCPDECLINE response and return to the INIT state.
+This double checking is not required by the DHCP protocol, but it should be done
+when possible.
+
+NOTE: When sending DHCPREQUEST messages the client puts the offered IP in the requested ip address option 
+
 NOTE: Since DHCP is an application layer protocol using UDP, it also uses IP.
 But some DHCP messages are sent even when the client does not have an IP address
 (DHCPDISCOVER for example). This is where the 0.0.0.0 reserved address is used,
@@ -140,11 +153,11 @@ configuration values.
 
 Here are the types of DHCP messages along with a general description and other info.
 
-| Message      | Description                                                                                                           | Type Number | Op  |
-| ------------ | --------------------------------------------------------------------------------------------------------------------- | ----------- | --- |
+| Message      | Description                                                                                                             | Type Number | Op  |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------- | ----------- | --- |
 | DHCPDISCOVER | Sent by clients as *broadcast* to find DHCP servers.                                                                    | 1           | 1   |
-| DHCPOFFER    | Sent by servers as *unicast* or *broadcast*, includes IP address and configuration parameters.                            | 2           | 2   |
-| DHCPREQUEST  | Sent by clients as *broadcast* (or *unicast* if client is in RENEWING state) to inform the accepted lease.                | 3           | 1   |
+| DHCPOFFER    | Sent by servers as *unicast* or *broadcast*, includes IP address and configuration parameters.                          | 2           | 2   |
+| DHCPREQUEST  | Sent by clients as *broadcast* (or *unicast* if client is in RENEWING state) to inform the accepted lease.              | 3           | 1   |
 | DHCPDECLINE  | Sent by clients as *unicast* when the IP in the lease is taken and not valid.                                           | 4           | 1   |
 | DHCPACK      | Sent by servers as *unicast* to confirm the client's lease request.                                                     | 5           | 2   |
 | DHCPNACK     | Sent by servers as *broadcast* (because IP is no longer valid) to decline the clients lease request (IP already taken). | 6           | 2   |
@@ -195,18 +208,19 @@ options fields to maintain compatibility with BOOTP message format.
 
 The following table describes the most important and essential DHCP options.
 
-| Code | Name                      | Description                                                            |
-| ---- | ------------------------- | ---------------------------------------------------------------------- |
-| 1    | Subnet Mask               | The subnet mask supplied for the client to use in the current network. |
-| 3    | Router                    | IP addresses for the default gateways of the client's LAN.             |
-| 6    | DNS Name Server           | IP addresses of DNS name servers.                                      |
-| 12   | Host Name                 | The client's hostname.                                                 |
-| 15   | Domain Name               | The client's DNS domain name.                                          |
-| 51   | IP Lease Time             | The duration of the client's DHCP lease.                               |
-| 53   | DHCP Message Type         | The type of DHCP message (DHCPDISCOVER, DHCPOFFER, etc).               |
-| 54   | Server Identifier         | IP address of the DHCP server that sent the reply.                     |
-| 58   | Renewal Time Value (T1)   | The value of the renewal timer.                                        |
-| 59   | Rebinding Time Value (T2) | The value of the rebinding timer.                                      |
+| Code | Name                      | Description                                                                                                                                      |
+| ---- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | Subnet Mask               | The subnet mask supplied for the client to use in the current network.                                                                           |
+| 3    | Router                    | IP addresses for the default gateways of the client's LAN.                                                                                       |
+| 6    | DNS Name Server           | IP addresses of DNS name servers.                                                                                                                |
+| 12   | Host Name                 | The client's hostname.                                                                                                                           |
+| 15   | Domain Name               | The client's DNS domain name.                                                                                                                    |
+| 50   | Requested IP              | A specific IP address requested by the client, used in DHCPDISCOVER messages (also used in DHCPREQUEST messages when responding to a DHCPOFFER). |
+| 51   | IP Lease Time             | The duration of the client's DHCP lease.                                                                                                         |
+| 53   | DHCP Message Type         | The type of DHCP message (DHCPDISCOVER, DHCPOFFER, etc).                                                                                         |
+| 54   | Server Identifier         | IP address of the DHCP server that sent the reply.                                                                                               |
+| 58   | Renewal Time Value (T1)   | The value of the renewal timer.                                                                                                                  |
+| 59   | Rebinding Time Value (T2) | The value of the rebinding timer.                                                                                                                |
 
 ## DHCP Server Implementation
 

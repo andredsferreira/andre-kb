@@ -1,5 +1,7 @@
 # Process Control
 
+Process control is mainly done through the use of the *ps* and *kill* commands.
+
 ## Important process signals
 
 The names of the signals are derived from the C language standard.
