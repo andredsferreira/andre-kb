@@ -1,5 +1,13 @@
 # Concepts of Routing Protocols
 
+*Static Routing*: Routing tables and routing policies in routers are manually
+maintained by a network administrator. Not scalable and only ocassionally used
+in LAN's.
+
+*Dynamic Routing*: Routing tables and routing policies are maintained
+automatically by a routing protocol (the router implements a specific protocol).
+Scalable and used throughout the Internet.
+
 Routing protocols are the key to making the Internet work, they allow the
 forwarding of packets between different networks at a scalable and efficient
 way. They are probably the most important and complex part of the Internet, they
