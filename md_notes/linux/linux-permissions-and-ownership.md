@@ -51,3 +51,42 @@ This is often useful but it needs to be done with care.
 ```bash
 sudo -s
 ```
+
+## Ownership
+
+To change ownership the chown command is used:
+
+```bash
+chown [owner]:[group] file...
+```
+
+Changing ownership of the file to user andre:
+
+```bash
+chown andre file
+```
+
+Changing ownership of the file to user andre, and it's login group:
+
+```bash
+chown andre: file
+```
+
+Specifying both new owner and group:
+
+```bash
+chown andre:users file
+```
+
+Only changing the group:
+
+```bash
+chown :users file
+```
+
+Setting the groupid in a specific directory, this makes it that every file or
+directory created inside it will inherit it's group, not the creator's group.
+
+```bash
+chmod g+s /path/to/dir
+```

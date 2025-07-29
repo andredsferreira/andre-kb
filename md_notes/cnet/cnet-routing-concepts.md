@@ -80,3 +80,4 @@ of hops, delays, etc. Are much better at determining best routes (the shortest
 path between two networks), but also much more complex than distance-vector
 algorithms. Like in distance-vector routers mantain information about known
 networks metrics.
+
