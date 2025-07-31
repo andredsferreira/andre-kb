@@ -152,6 +152,10 @@ by companies.
 
 ![](images/cnet-ip-01.png)
 
+When there are no options (which is very common), the header length is exactly
+20 bytes. This means the value of IHL is 5 (the IHL counts the header size in 4
+bytes (32 bits) increment).
+
 ## Internet Minimum MTU: 576 Bytes
 
 Defined in RFC 791 routers must handle a MTU of 576 Bytes. Even if the local MTU
@@ -166,7 +170,9 @@ The process is usually the following:
 
 1. The device checks the identification field, MF flag, and the offset field,
    and stores the first fragment in a special buffer associated with that
-   particular IP message (identified in the identification field).
+   particular IP message (identified in the identification field), this means
+   the full IPv4 datagram is only reassembled after the buffer has all
+   fragments.
 2. It initializes a timer that puts an upper boundary on the amount of time it
    waits for the next fragment (if it expires an ICMP time exceeded message is
    generated, since IP is unrealible the sending host must rely on higher-layer
