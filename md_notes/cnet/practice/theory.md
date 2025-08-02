@@ -40,8 +40,8 @@ rule in the routing table, meaning it's the default gateway; when it appears in
 the gateway it means that the route is directly connected to the router itself
 (meaning no gateway needed).
 
-Example (simplified) of a routing table of a router (with public IP 2.0.0.2)
-with two connected LANS.
+Example (simplified) of a static routing table of a router (with public IP
+2.0.0.2) with two connected LANS.
 
 | Interface       | Address      |
 | --------------- | ------------ |
@@ -49,12 +49,11 @@ with two connected LANS.
 | eth02           | 192.168.10.1 |
 | eth03           | 192.168.20.1 |
 
-| Destination  | Gateway | Subnet mask   | Interface |
-| ------------ | ------- | ------------- | --------- |
-| 0.0.0.0      | 2.0.0.1 | 0.0.0.0       | eth01     |
-| 2.0.0.0      | 0.0.0.0 | 255.0.0.0     | eth01     |
-| 192.168.10.0 | 0.0.0.0 | 255.255.255.0 | eth02     |
-| 192.168.20.0 | 0.0.0.0 | 255.255.255.0 | eth03     |
+| Destination     | Gateway (next-hop) | Interface |
+| --------------- | ------------------ | --------- |
+| 0.0.0.0         | 2.0.0.1            | eth01     |
+| 192.168.10.0/16 | 0.0.0.0            | eth02     |
+| 192.168.20.0/16 | 0.0.0.0            | eth03     |
 
 ## NAT
 
