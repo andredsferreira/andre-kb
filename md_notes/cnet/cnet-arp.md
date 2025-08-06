@@ -83,3 +83,20 @@ These are the steps performed in a ARP transaction:
 9. The source updates it's cache for future use.
 
 ![](images/cnet-arp-02.png)
+
+## ARP Caching
+
+Caching is an essential feature of ARP. It allows the save up of alot of
+bandiwdth that is not wasted on every packet that is sent (remember, ARP
+requests are broadcasts). In general a caching entry is a *mapping between the
+MAC address and the IP address*.
+
+*Static Cache Entries*: Usually permanent and added by a network administrator.
+
+*Dynamic Cache Entries*: Dynamically added by the ARP protocol as a result of
+past resolutions. Usually these are short lived between 10 and 20 minutes.
+
+As mentioned in the steps above, caching is performed by the requesting and
+replying device.
+
+

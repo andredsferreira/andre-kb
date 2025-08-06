@@ -67,4 +67,11 @@ lower tier ISP’s.
 *Internet exchange point (IXP)*: A location where multiple different ISP’s can
 peer with each other. IXP’s are usually provided by third party companies.
 
-## Network performance metrics
+## The Adressing Layers of the Internet
+
+| Layer     | Addressing Scheme                      | Example               |
+| --------- | -------------------------------------- | --------------------- |
+| Transport | Port numbers and sockets               | 443, 192.168.1.72:443 |
+| Network   | IP addresses                           | 192.168.1.72          |
+| Data Link | Hardware addresses (most commonly MAC) | d0:cf:0e:59:c2:bf     |
+
