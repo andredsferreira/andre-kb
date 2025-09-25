@@ -10,3 +10,15 @@
 | IaC        | AWS CloudFormation | Provides IaC on AWS.                       |
 | Auditing   | AWS CloudTrail     | Provides auditing for API's.               |
 | Monitoring | AWS CloudWatch     | Monitors AWS services and provides alarms. |
+
+
+NOTE: In an IAM role's trust relationship the truested entity action is always
+"sts:AssumeRole". This just means that the specified entity can assume that role
+(and have the permissions associated with that role). Remember the purpose of
+the role is to allow services to assume it and have the related permissions
+associated with it.
+
+NOTE: By default an IAM user does not have any permissions.
+
+NOTE: By default a security group (firewall) blocks all inbound traffic and
+allows all outbound traffic.

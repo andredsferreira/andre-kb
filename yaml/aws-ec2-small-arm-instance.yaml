@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Launch a t4g.micro EC2 instance with Amazon Linux 2 (ARM64), no key pair, and default security group.
+
+Resources:
+  MyEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: t4g.micro
+      Architecture: arm64
+      ImageId: !Ref LatestAmiId
+      KeyName: ''
+      SecurityGroupIds:
+        - !Ref DefaultSecurityGroup
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 8
+            VolumeType: gp2
+            DeleteOnTermination: true
+
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/aws/service/ami-amazon-linux-latest/amzn2-ami-arm64-gp2'
+      Type: 'String'
+
+  DefaultSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Default security group allowing all inbound traffic'
+      SecurityGroupIngress:
+        - IpProtocol: '-1'
+          CidrIp: '0.0.0.0/0'
