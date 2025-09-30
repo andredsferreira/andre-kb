@@ -411,7 +411,7 @@ Resources:
       CidrBlock: '10.0.1.0/24'
       
   EIPNatGateway:
-    Type: 'AWS::EC2::EIP'x
+    Type: 'AWS::EC2::EIP'
     Properties:
       Domain: 'vpc'
       

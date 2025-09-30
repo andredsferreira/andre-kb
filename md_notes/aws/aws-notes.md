@@ -1,3 +1,7 @@
+# AWS Overview
+
+POSSIBLE CHAPTER REVIEWS: ch05, ch06
+
 | Type       | Service            | Description                                |
 | ---------- | ------------------ | ------------------------------------------ |
 | Compute    | Amazon EC2         | Virtual machines.                          |
@@ -11,8 +15,9 @@
 | Auditing   | AWS CloudTrail     | Provides auditing for API's.               |
 | Monitoring | AWS CloudWatch     | Monitors AWS services and provides alarms. |
 
+# AWS IAM
 
-NOTE: In an IAM role's trust relationship the truested entity action is always
+NOTE: In an IAM role's trust relationship the trusted entity action is always
 "sts:AssumeRole". This just means that the specified entity can assume that role
 (and have the permissions associated with that role). Remember the purpose of
 the role is to allow services to assume it and have the related permissions
@@ -20,6 +25,14 @@ associated with it.
 
 NOTE: By default an IAM user does not have any permissions.
 
+# AWS Networking
+
 NOTE: By default a security group (firewall) blocks all inbound traffic and
 allows all outbound traffic for AWS resources that use security groups (eg. 
 EC2, RDS, ElastiCache, etc).
+
+# AWS Lambda
+
+NOTE: By default an AWS Lambda function comes with internet access. It's
+possible to allow a lambda function to interact with VPC resources but it
+requries additional configuration.
