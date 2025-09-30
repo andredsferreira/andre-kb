@@ -21,4 +21,5 @@ associated with it.
 NOTE: By default an IAM user does not have any permissions.
 
 NOTE: By default a security group (firewall) blocks all inbound traffic and
-allows all outbound traffic.
+allows all outbound traffic for AWS resources that use security groups (eg. 
+EC2, RDS, ElastiCache, etc).
