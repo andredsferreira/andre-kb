@@ -1,7 +1,5 @@
 # AWS Overview
 
-POSSIBLE CHAPTER REVIEWS: ch05, ch06
-
 | Type       | Service            | Description                                |
 | ---------- | ------------------ | ------------------------------------------ |
 | Compute    | Amazon EC2         | Virtual machines.                          |
@@ -14,6 +12,25 @@ POSSIBLE CHAPTER REVIEWS: ch05, ch06
 | IaC        | AWS CloudFormation | Provides IaC on AWS.                       |
 | Auditing   | AWS CloudTrail     | Provides auditing for API's.               |
 | Monitoring | AWS CloudWatch     | Monitors AWS services and provides alarms. |
+
+## Stateful and Stateless Data
+
+| Data                    | Type      | AWS Service                                                   |
+| ----------------------- | --------- | ------------------------------------------------------------- |
+| User account data       | Stateful  | AWS AD, AWS Cognito, IAM Identity Center, IAM users and roles |
+| Session data            | Stateless | DynamoDB, Elasticache for Redis or Memcached                  |
+| Load balancer           | Stateless | ELB, sticky sessions, cookies                                 |
+| Database queries        | Stateful  | RDS, DynamoDB, DAX                                            |
+| Application state data  | Stateless | Amazon SQS, Amazon MQ                                         |
+| Event notification data | Stateless | Amazon SNS, AWS Eventbridge                                   |
+
+# AWS S3
+
+NOTE: Bucket names must be unique globally (on the internet itself).
+
+NOTE: By default versioning is off. If turned on, storing the same object
+doesn't replace the old one, instead it keeps different versions of it. This is
+usefull for archiving purposes.
 
 # AWS IAM
 
