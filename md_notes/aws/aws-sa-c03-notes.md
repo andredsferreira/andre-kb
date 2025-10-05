@@ -28,5 +28,36 @@ arn:aws:iam::123456789012:user/Bob
 arn:aws:lambda:us-east-1:123456789012:function:my-function
 ```
 
+# Chapter 06: Designing Resilient Architecture
+
+| Storage Service             | Resiliency                   | Additional Resiliency Options                   |
+| --------------------------- | ---------------------------- | ----------------------------------------------- |
+| EBS                         | Copies within a single AZ    | AWS DataSync: copies EBS volumes across regions |
+| EFS                         |                              |                                                 |
+| FSx for Windows File Server |                              |                                                 |
+| RDS                         | Single AZ                    |                                                 |
+| Aurora                      | Six copies across 3 AZs      |                                                 |
+| DynamoDB                    | Six copies across 3 AZs      |                                                 |
+| S3                          | Copies across 3 AZs at least |                                                 |
+| Kinesis Data Streams        | Multi AZs                    |                                                 |
+| Kinesis Data Firehose       | S3, Amazon Redshift          |                                                 |
+| Redshift                    | Multi AZs                    |                                                 |
+| SQS                         | Multi AZs                    |                                                 |
+| SNS                         | Multi AZs                    |                                                 |
+
+# Chapter 07: Highly Available and Fault-Tolerant Architecture
+
+*Reliability*: Capacity of a system to handle failures and respond to
+disruptions without affecting the quality and performance of the application.
+
+NOTE: No two AZ's share the same data center.
+
+*SNI (Server Name Indication)*: Allows a client to indicate to the server which
+domain name (www.example.com) it's trying to reach during the TLS handshake.
+It's a vital part of HTTPS that allows server to host the same application under
+different domain names. When the client indicates the domain name (actually the
+FQDN), the server will pick the right TLS certificate for that website (since
+each domain name needs a different TLS certificate).
+
 
 
