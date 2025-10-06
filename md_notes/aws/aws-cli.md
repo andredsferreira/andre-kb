@@ -1,3 +1,15 @@
+## Connect to an EC2 instance using SSM
+
+Prerequisites: The instance must have SSM installed (already installed on AML),
+and must have an IAM role attached with the following policy:
+AmazonSSMManagedInstanceCore.
+
+Prerequisites: The client must have the amazon-ssm-agent installed.
+
+```bash
+aws ssm start-session --target ${instance-id}
+```
+
 ## View account id through the AWS CLI
 
 ```bash
@@ -57,4 +69,32 @@ Deleting the bucket.
 
 ```bash
 aws s3 rb --force s3://$bucketname
+```
+
+## Creating EBS snapshot volumes to backup data
+
+Always try to unmount the volume or stop the instance before creating a snapshot
+(otherwise problems with unfinished writes may arise).
+
+```bash
+aws ec2 create-snapshot --volume-id ${volume-id}
+```
+
+See the status of the snapshots.
+
+```bash
+aws ec2 describe-snapshots --snapshot-ids ${snapshot-id}
+```
+
+Restore the snapshot (you create an EBS volume out of the snapshot).
+
+```bash
+aws ec2 create-volume --snapshot-id ${snapshot-id} --availability-zone ${az-name}
+```
+
+Cleaning up
+
+```bash
+aws ec2 delete-snapshot --snapshot-id ${snapshot-id}
+aws ec2 delete-volume --volume-id ${volume-id}
 ```

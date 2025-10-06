@@ -59,5 +59,7 @@ different domain names. When the client indicates the domain name (actually the
 FQDN), the server will pick the right TLS certificate for that website (since
 each domain name needs a different TLS certificate).
 
-
+| AWS Service | Use Case                                                           | HA & FT | Deployment | Considerations |
+| ----------- | ------------------------------------------------------------------ | ------- | ---------- | -------------- |
+| EC2         | Web apps, databases, general purpose or memory optimized computing |         |            |                |
 
