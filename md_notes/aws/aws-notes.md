@@ -24,32 +24,52 @@
 | Application state data  | Stateless | Amazon SQS, Amazon MQ                                         |
 | Event notification data | Stateless | Amazon SNS, AWS Eventbridge                                   |
 
+# AWS EC2
+
+Instances can have two types of storage: *block storage* connected over network
+(EBS), and *instance storage*, physically attached to the host. The former are
+separate from the instance and can be unmounted and mounted to different
+instances (for sharing storage with multiple instances EFS is usually used), the
+latter are not and will be lost if the instance is stopped or deleted.
+
+When creating a new EBS volume you need to create the filesystem for it, create
+a mount point, and mount it. NOTE: The device is usually "xvdf"; to persist the
+volume across reboots add to fstab;
+
+```bash
+sudo mkfs -t ${filesystem-type} /dev/${device}
+sudo mkdir ${mount-point}
+sudo mount /dev/${device} ${mount-point}
+```
+
+EBS Snapshots backup data incrementaly.
+
 # AWS S3
 
-NOTE: Bucket names must be unique globally (on the internet itself).
+Bucket names must be unique globally (on the internet itself).
 
-NOTE: By default versioning is off. If turned on, storing the same object
+By default versioning is off. If turned on, storing the same object
 doesn't replace the old one, instead it keeps different versions of it. This is
 usefull for archiving purposes.
 
 # AWS IAM
 
-NOTE: In an IAM role's trust relationship the trusted entity action is always
+In an IAM role's trust relationship the trusted entity action is always
 "sts:AssumeRole". This just means that the specified entity can assume that role
 (and have the permissions associated with that role). Remember the purpose of
 the role is to allow services to assume it and have the related permissions
 associated with it.
 
-NOTE: By default an IAM user does not have any permissions.
+By default an IAM user does not have any permissions.
 
 # AWS Networking
 
-NOTE: By default a security group (firewall) blocks all inbound traffic and
+By default a security group (firewall) blocks all inbound traffic and
 allows all outbound traffic for AWS resources that use security groups (eg. 
 EC2, RDS, ElastiCache, etc).
 
 # AWS Lambda
 
-NOTE: By default an AWS Lambda function comes with internet access. It's
+By default an AWS Lambda function comes with internet access. It's
 possible to allow a lambda function to interact with VPC resources but it
 requries additional configuration.

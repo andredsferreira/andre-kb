@@ -4,6 +4,7 @@ Description: Launch a t4g.micro EC2 instance with Amazon Linux 2 (ARM64), no key
   pair, and default security group.
 
 Resources:
+
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
