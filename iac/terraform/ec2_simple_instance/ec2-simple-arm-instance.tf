@@ -9,28 +9,26 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-west-3" # change as needed
+  region = "eu-west-3"
 }
 
-data "aws_ssm_parameter" "latest_amzn2_arm64" {
-  name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-arm64-gp2"
+data "aws_ssm_parameter" "al2023_ami" {
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64"
 }
 
-# Default security group
 data "aws_security_group" "default" {
   name   = "default"
   vpc_id = data.aws_vpc.default.id
 }
 
-# Default VPC
 data "aws_vpc" "default" {
   default = true
 }
 
 resource "aws_instance" "ec2_instance" {
-  ami                    = data.aws_ssm_parameter.latest_amzn2_arm64.value
+  ami                    = data.aws_ssm_parameter.al2023_ami.value
   instance_type          = "t4g.micro"
-  key_name               = "" # no key pair
+  key_name               = ""
   vpc_security_group_ids = [data.aws_security_group.default.id]
 
   root_block_device {
@@ -40,7 +38,7 @@ resource "aws_instance" "ec2_instance" {
   }
 
   tags = {
-    Name = "Terraform-EC2"
+    Name = "aml-arm-micro-01"
   }
 }
 
