@@ -13,6 +13,13 @@
 | Auditing   | AWS CloudTrail     | Provides auditing for API's.               |
 | Monitoring | AWS CloudWatch     | Monitors AWS services and provides alarms. |
 
+*RTO (Recovery Time Objective)*: The acceptable amount of time for a system to
+recover from a failure.
+
+*RPO (Recovery Point Objective)*: The acceptable amount of data loss (measured
+in time) a system can have. You can think as the maximum amount of time between
+backups/snapshots.
+
 ## Stateful and Stateless Data
 
 | Data                    | Type      | AWS Service                                                   |
@@ -63,6 +70,12 @@ associated with it.
 By default an IAM user does not have any permissions.
 
 # AWS Networking
+
+A VPC is always bound to a region. A subnet within a VPC is always bound to an
+AZ.
+
+Elastic IP addresses (static IP addresses) can't be used in a VM launched by
+autoscaling. The elastic IP address must be assigned to the VM during bootstrap.
 
 By default a security group (firewall) blocks all inbound traffic and
 allows all outbound traffic for AWS resources that use security groups (eg. 

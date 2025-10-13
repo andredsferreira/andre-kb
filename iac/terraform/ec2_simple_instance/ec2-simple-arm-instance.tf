@@ -1,3 +1,10 @@
+/* 
+
+Creates a very simple EC2 instance attached to the default VPC and security
+group. It's an arm micro instance that uses the latest AML arm image.
+
+*/
+
 terraform {
   required_providers {
     aws = {
@@ -16,20 +23,10 @@ data "aws_ssm_parameter" "al2023_ami" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64"
 }
 
-data "aws_security_group" "default" {
-  name   = "default"
-  vpc_id = data.aws_vpc.default.id
-}
-
-data "aws_vpc" "default" {
-  default = true
-}
-
 resource "aws_instance" "ec2_instance" {
-  ami                    = data.aws_ssm_parameter.al2023_ami.value
-  instance_type          = "t4g.micro"
-  key_name               = ""
-  vpc_security_group_ids = [data.aws_security_group.default.id]
+  ami           = data.aws_ssm_parameter.al2023_ami.value
+  instance_type = "t4g.micro"
+  key_name      = ""
 
   root_block_device {
     volume_size           = 8
