@@ -18,20 +18,4 @@ locals {
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
 
-  master_role_policies = [
-    "arn:aws:iam::aws:policy/AttachRolePolicy",
-    "arn:aws:iam::aws:policy/CreatePolicy",
-    "arn:aws:iam::aws:policy/CreateRole",
-    "arn:aws:iam::aws:policy/DeleteGroup",
-    "arn:aws:iam::aws:policy/DeletePolicyVersion",
-    "arn:aws:iam::aws:policy/DeleteRolePolicy",
-    "arn:aws:iam::aws:policy/PutRolePolicy",
-    "arn:aws:iam::aws:policy/CreateGroup",
-    "arn:aws:iam::aws:policy/CreatePolicyVersion",
-    "arn:aws:iam::aws:policy/CreateUser",
-    "arn:aws:iam::aws:policy/DeletePolicy",
-    "arn:aws:iam::aws:policy/DeleteRole",
-    "arn:aws:iam::aws:policy/DeleteUser"
-  
-  ]
 }

@@ -71,6 +71,9 @@ By default an IAM user does not have any permissions.
 
 # AWS Networking
 
+IMPORTANT!! -> A VPC has a default table that allows all subnets to communicate
+with each other internally.
+
 A VPC is always bound to a region. A subnet within a VPC is always bound to an
 AZ.
 
