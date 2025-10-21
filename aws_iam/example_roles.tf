@@ -1,38 +1,6 @@
-
-
-resource "aws_iam_policy" "policy_01" {
-  name        = "policy-01"
-  description = "Custom policy for EC2 S3 and SSM access"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetObject"
-        ]
-        Resource = [
-          "arn:aws:s3:::my-bucket",
-          "arn:aws:s3:::my-bucket/*"
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "ssm:SendCommand",
-          "ssm:GetCommandInvocation"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
-
 resource "aws_iam_role" "role_01" {
   name        = "role-01"
-  description = "Sample role with an AWS managed policy attached"
+  description = "Sample role with AWS managed policies attached"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -51,6 +19,11 @@ resource "aws_iam_role" "role_01" {
 resource "aws_iam_role_policy_attachment" "role_01_pa_01" {
   role       = aws_iam_role.role_01.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "role_01_pa_02" {
+  role = aws_iam_role.role_01.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
 resource "aws_iam_role" "role_02" {
