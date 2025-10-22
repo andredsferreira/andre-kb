@@ -1,25 +1,9 @@
-terraform {
-  required_version = ">= 1.6.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
 
-provider "aws" {
-  region = var.region
-}
-
-#####################
-#   INPUT VARIABLES #
-#####################
 
 variable "region" {
   description = "AWS region"
   type        = string
-  default     = "eu-west-1"
+  default     = "eu-west-3"
 }
 
 variable "jenkins_admin_password" {
