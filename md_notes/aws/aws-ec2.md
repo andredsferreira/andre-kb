@@ -69,4 +69,5 @@ necessary to connect to it via SSM).
 ### Auto Scaling
 
 Launch templates can be modified by creating new versions of it, however launch
-configurations cannot be modified at all.
+configurations cannot be modified at all. Launch templates are the recommended
+way to launch ASG instances.
