@@ -1,9 +1,7 @@
-/* 
+##########################################################################################
 
-Creates a very simple EC2 instance attached to the default VPC and security
-group. It's an arm micro instance that uses the latest AML arm image.
-
-*/
+# Creates a very simple EC2 instance attached to the default VPC and security
+# group. It's an arm micro instance that uses the latest AML arm image.
 
 data "aws_ssm_parameter" "al2023_ami" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64"
@@ -17,6 +15,9 @@ resource "aws_instance" "ec2_instance" {
   # Links the instance profile to allow users to connect to the instance using
   # SSM.
   iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
+
+  # Bootstraps the machine using a script.
+  user_data = templatefile("${path.module}/bootstrap.sh", {})
 
   root_block_device {
     volume_size           = 8
@@ -33,8 +34,10 @@ output "instance_id" {
   value = aws_instance.ec2_instance.id
 }
 
+##########################################################################################
+
 # Creating the necessary resources for the instance to be acessible by SSM. We
-# need an IAM role, the policy that allows SSM attached to it, and the instance
+# need an IAM role; the policy that allows SSM attached to it; and the instance
 # profile for the instance to be able to assume the role.
 
 resource "aws_iam_role" "ssm_role" {

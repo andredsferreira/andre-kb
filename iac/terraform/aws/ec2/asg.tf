@@ -25,6 +25,7 @@ resource "aws_security_group" "instance" {
   }
 }
 
+
 resource "aws_launch_configuration" "example" {
   image_id        = data.aws_ssm_parameter.al2023_ami.value
   instance_type   = "t4g.micro"

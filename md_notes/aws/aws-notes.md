@@ -31,25 +31,6 @@ backups/snapshots.
 | Application state data  | Stateless | Amazon SQS, Amazon MQ                                         |
 | Event notification data | Stateless | Amazon SNS, AWS Eventbridge                                   |
 
-# AWS EC2
-
-Instances can have two types of storage: *block storage* connected over network
-(EBS), and *instance storage*, physically attached to the host. The former are
-separate from the instance and can be unmounted and mounted to different
-instances (for sharing storage with multiple instances EFS is usually used), the
-latter are not and will be lost if the instance is stopped or deleted.
-
-When creating a new EBS volume you need to create the filesystem for it, create
-a mount point, and mount it. NOTE: The device is usually "xvdf"; to persist the
-volume across reboots add to fstab;
-
-```bash
-sudo mkfs -t ${filesystem-type} /dev/${device}
-sudo mkdir ${mount-point}
-sudo mount /dev/${device} ${mount-point}
-```
-
-EBS Snapshots backup data incrementaly.
 
 # AWS S3
 
