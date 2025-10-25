@@ -51,7 +51,7 @@ down. Every instance created has an instance volume attached to it by default.
 The safest way to access an EC2 instance nowadays is to use AWS SSM. Assuming
 the instance is in a private subnet (if the instance is in a public subnet step
 3 is skipped) these are the steps required to successfully access the instance
-(see[this](../../iac/terraform/aws/ec2/simple_arm_instance.tf) for a practical
+(see [this](../../iac/terraform/aws/ec2/simple_arm_instance.tf) for a practical
 Terraform configuration that creates an instance and the minimal resources
 necessary to connect to it via SSM).
 

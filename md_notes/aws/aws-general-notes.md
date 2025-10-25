@@ -31,7 +31,6 @@ backups/snapshots.
 | Application state data  | Stateless | Amazon SQS, Amazon MQ                                         |
 | Event notification data | Stateless | Amazon SNS, AWS Eventbridge                                   |
 
-
 # AWS S3
 
 Bucket names must be unique globally (on the internet itself).
