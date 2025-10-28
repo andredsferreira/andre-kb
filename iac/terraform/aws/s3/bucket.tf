@@ -97,6 +97,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket_02" {
     id     = "cleanup"
     status = "Enabled"
 
+    # Optional: apply only to objects with this prefix.
+    filter {
+      prefix = "logs/"
+    }
+
     # If versioning is enabled this will apply to older objects.
     noncurrent_version_expiration {
       noncurrent_days = 30

@@ -16,7 +16,8 @@ overwrite the old one.
 
 *Life Cycle Management*: You can configure objects in a bucket to move to a
 different class after a set number of days. For example, you might want objects
-to move to a S3 Glacier bucket after a 90 day period.
+to move to a S3 Glacier bucket after a 90 day period. Life cycle rules can apply
+to objects with a specific prefix.
 
 ## Access Control
 
