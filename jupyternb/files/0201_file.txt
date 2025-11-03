@@ -1,0 +1,2 @@
+This is the fourth line written to the file.
+All others are gone!
