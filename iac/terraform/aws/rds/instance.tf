@@ -2,7 +2,7 @@
 resource "aws_security_group" "rds_sg" {
   name        = "rds-maria-sg"
   description = "Allow MySQL/MariaDB access"
-  vpc_id      = "vpc-xxxxxxxx" # replace with your VPC
+  vpc_id      = "vpc-xxxxxxxx" 
 
   ingress {
     description = "MariaDB"

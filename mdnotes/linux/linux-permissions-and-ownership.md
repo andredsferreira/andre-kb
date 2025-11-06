@@ -90,3 +90,10 @@ directory created inside it will inherit it's group, not the creator's group.
 ```bash
 chmod g+s /path/to/dir
 ```
+
+Recursively changing ownership inside a directory (applies to every file and
+subdirectory inside it).
+
+```bash
+chmod -R 755 /path/to/dir 
+```

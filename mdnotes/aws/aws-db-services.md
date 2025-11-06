@@ -54,3 +54,25 @@ database can handle in a second.
 | General purpose (gp2, gp3)  | Applies to most use cases. IOPS scales with the amount of storage. | 16K          |
 | Provisioned IOPS (io1, io2) | You specify the IOPS you need pay for no more no less.             | 80K          |
 | Magnetic                    | Legacy storage.                                                    | 1000         |
+
+## Multi-AZ and Read Replicas
+
+Multi-AZ and Read Replicas are related to the way a database instance is
+deployed. They are extra database instances that provide high availability and
+high scalability.
+
+*Multi-AZ*: Provides an extra standby instance (where everything is replicated
+to it). The standby instance cannot handle queries it only takes over if the
+primary instance fails.
+
+*Read-Replica*: Provides extra read instances that only serve reads. The main
+database replicates the writes to the read replicas asynchronously (lags can
+occur). If the primary instance fails one of the replicas can assume its
+position.
+
+*AuroraDB*: Aurora handles deployment differently. It automatically replicates
+data across three AZs within a cluster volume (i.e, one cluster volume per AZ).
+You have one primary instance and up to 15 read replicas.
+
+
+
