@@ -1,4 +1,5 @@
 # Security Group for RDS
+
 resource "aws_security_group" "rds_sg" {
   name        = "rds-maria-sg"
   description = "Allow MySQL/MariaDB access"

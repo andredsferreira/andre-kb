@@ -12,6 +12,8 @@
 
 # OTHER IMPORTANT NOTE: The backend block does not allow variables! Sad...
 
+# Backend configuration:
+
 terraform {
   backend "s3" {
     bucket         = "terraform-state"

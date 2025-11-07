@@ -1,3 +1,5 @@
+# Organization
+
 resource "aws_organizations_organization" "org" {
   aws_service_access_principals = [
     "cloudtrail.amazonaws.com",
@@ -14,6 +16,8 @@ resource "aws_organizations_organizational_unit" "some-project" {
   name      = "some-project"
   parent_id = aws_organizations_organization.example.roots[0].id
 }
+
+# Accounts
 
 resource "aws_organizations_account" "org_account_01" {
   name  = "account_02"
