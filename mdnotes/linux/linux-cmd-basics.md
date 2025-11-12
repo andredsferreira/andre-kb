@@ -214,6 +214,15 @@ Using mkdir and brace expansion to create multiple directories:
 mkdir photos-{2007..2009}-{01..12}
 ```
 
+## Run last command as sudo
+
+If you forgot to type sudo in the previous command this shortcut will run it as
+sudo:
+
+```bash
+sudo !!
+```
+
 ## Command substitution
 
 Can be performed with $(command). It allows the use of command outputs as
