@@ -14,3 +14,5 @@ expensive, less flexibility and more limitations.
 
 *IaaS*: Provides the enviornment, but you take care of the deployment. Less
 expensive, more flexibility and less limitions. Harder to execute.
+
+In general you should go PaaS when you can, transfer to IaaS when you need to.
