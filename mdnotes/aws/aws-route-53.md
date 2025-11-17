@@ -14,11 +14,12 @@ alias for that domain name).
 
 ## Routing Policies
 
-| Policy            | Description                                                                           |
-| ----------------- | ------------------------------------------------------------------------------------- |
-| Simple            | Default for new record sets. It routes every request to one single IP or domain name. |
-| Weighted          |                                                                                       |
-| Latency           |                                                                                       |
-| Failover          |                                                                                       |
-| Geolocation       |                                                                                       |
-| Multivalue Answer |                                                                                       |
+| Policy            | Description                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Simple            | Default for new record sets. It routes every request to one single IP or domain name.                             |
+| Weighted          | Routes based on weights, 70% to one record 30% to other for example.                                              |
+| Latency           | Routes based on network latency for resources across Regions.                                                     |
+| Failover          | Routes based on whether health checks pass for the main record. If they fail a secondary record handles requests. |
+| Geolocation       | Routes based on specific continent or country (or US state).                                                      |
+| Multivalue Answer | Routes requests to one healthy IP (only works for IPs) within a set of records.                                   |
+
