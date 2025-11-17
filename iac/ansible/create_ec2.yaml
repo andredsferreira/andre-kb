@@ -1,0 +1,47 @@
+- name: Deploy EC2 instances in AWS
+  hosts: localhost
+  gather_facts: no
+  environment:
+    AWS_REGION: us-east-2
+  vars:
+    num_instances: 1
+    base_name: sample_app_ansible
+    http_port: 8080
+  tasks:
+    - name: Create security group
+      amazon.aws.ec2_security_group:
+        name: "{{ base_name }}"
+        description: "{{ base_name }} HTTP and SSH"
+        rules:
+          - proto: tcp
+            ports: ["{{ http_port }}"]
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports: [22]
+            cidr_ip: 0.0.0.0/0
+      register: aws_security_group
+
+    - name: Create a new EC2 key pair
+      amazon.aws.ec2_key:
+        name: "{{ base_name }}"
+        file_name: "{{ base_name }}.key"
+      no_log: true
+      register: aws_ec2_key_pair
+
+    - name: "Get all Amazon Linux AMIs"
+      amazon.aws.ec2_ami_info:
+        owners: amazon
+        filters:
+          name: al2023-ami-2023.*-x86_64
+      register: amazon_linux_amis
+
+    - name: Create EC2 instances with Amazon Linux
+      loop: "{{ range(num_instances | int) | list }}"
+      amazon.aws.ec2_instance:
+        name: "{{ '%s_%d' | format(base_name, item) }}"
+        key_name: "{{ aws_ec2_key_pair.key.name }}"
+        instance_type: t2.micro
+        security_group: "{{ aws_security_group.group_id }}"
+        image_id: "{{ amazon_linux_amis.images[-1].image_id }}"
+        tags:
+          Ansible: "{{ base_name }}"
