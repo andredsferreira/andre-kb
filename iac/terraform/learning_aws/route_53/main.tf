@@ -217,8 +217,6 @@ resource "aws_route53_record" "geolocation_na" {
 
 # Multivalue policy
 
-
-
 resource "aws_route53_record" "multivalue_1" {
   zone_id = aws_route53_zone.pub_zone.zone_id
   name    = "app.example.com"
@@ -227,7 +225,7 @@ resource "aws_route53_record" "multivalue_1" {
   records = [data.aws_instance.instance_01.private_ip]
 
   set_identifier = "multivalue-01"
-  
+
   multivalue_answer_routing_policy = true
 
 }
@@ -244,3 +242,4 @@ resource "aws_route53_record" "multivalue_2" {
   multivalue_answer_routing_policy = true
 }
 
+################################################################################
