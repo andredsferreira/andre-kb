@@ -1,0 +1,14 @@
+# The load balancer for the containers
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-app-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: sample-app-pods
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
