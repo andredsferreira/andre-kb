@@ -1,3 +1,7 @@
+# For this to work AWS must be configured with an OpenID Connect provider for GitHub
+# and a role that can be assumed by GitHub Actions.
+# See https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/
+
 name: Tofu Plan
 
 on:

@@ -1,6 +1,10 @@
+# For this to work AWS must be configured with an OpenID Connect provider for GitHub
+# and a role that can be assumed by GitHub Actions.
+# See https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/
+
 name: Tofu Apply
 on:
-  push:                                                                      
+  push:
     branches: ["main"]
     paths: ["ch5/tofu/live/lambda-sample/**"]
 jobs:
@@ -17,25 +21,25 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@v3
         with:
           # TODO: fill in your IAM role ARN!
-          role-to-assume: arn:aws:iam::111111111111:role/lambda-sample-apply 
+          role-to-assume: arn:aws:iam::111111111111:role/lambda-sample-apply
           role-session-name: apply-${{ github.run_number }}-${{ github.actor }}
           aws-region: us-east-2
 
       - uses: opentofu/setup-opentofu@v1
 
-      - name: tofu apply                                                     
+      - name: tofu apply
         id: apply
         working-directory: ch5/tofu/live/lambda-sample
         run: |
           tofu init -no-color -input=false
           tofu apply -no-color -input=false -lock-timeout=60m -auto-approve
 
-      - uses: jwalton/gh-find-current-pr@master                              
+      - uses: jwalton/gh-find-current-pr@master
         id: find_pr
         with:
           state: all
 
-      - uses: peter-evans/create-or-update-comment@v4                        
+      - uses: peter-evans/create-or-update-comment@v4
         if: steps.find_pr.outputs.number
         env:
           RESULT_EMOJI: ${{ steps.apply.outcome == 'success' && '✅' || '⚠️' }}
