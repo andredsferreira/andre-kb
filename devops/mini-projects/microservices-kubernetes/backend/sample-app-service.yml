@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-app-backend-service 
+spec:
+  # Since this is a backend service, we use ClusterIP. This makes 
+  # the service accessible only within the cluster (and not to the 
+  # outside world).
+  type: ClusterIP                  
+  selector:
+    app: sample-app-backend-pods   
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
