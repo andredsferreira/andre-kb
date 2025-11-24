@@ -13,3 +13,13 @@
 
 # Ignore .terraform.lock.hcl if you don't want to track provider versions
 **/.terraform.lock.hcl
+
+################################################################################
+
+# SECRETS AND SENSITIVE FILES
+
+/devops/docker/go-app-fiber/Makefile
+
+################################################################################
+
+
