@@ -1,5 +1,11 @@
 # Fundamentals Of DevOps
 
+This document contains some notes regarding the book "Fundamentals of Devops and
+Software Delivery - A Hands-On Guide to Deplying and Managing Software in
+Production" by Yevgeniy Brikman.
+
+---
+
 The goal of DevOps is to make software delivery vastly more efficient.
 
 ## Deploying an application
