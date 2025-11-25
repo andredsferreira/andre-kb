@@ -1,7 +1,3 @@
-This document contains some notes regarding the book "Cloud Native - Using
-Containers, Functions, and Data to Build Next-Generation Applications" by Boris
-Scholl, Trent Swanson, and Peter Jausovec.
-
 # Cloud Native
 
 Cloud native applications are distributed systems.
@@ -185,4 +181,20 @@ When associated with functions (as is commonly done although there are other
 serverless offerings such as containers and ML services) serverless usually
 comes hand in hand with event driven programming models. Also, you pay per
 execution.
+
+## Microservices
+
+Services run in seperate processes and communicate synchronously, through APIs,
+or asynchrnously, through message queues.
+
+Each service is viewed as a seperate application with an independent team, data
+store, infrastructure, etc.
+
+| Pros                                                                                                 | Cons                                                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Improved scale and resource usage, allows different service to scale differently.                    | Complexity, specially arround the network and communication between services.                                                                                                  |
+| Fault isolation, it's easier to detect where bugs and errors come from since services are seperated. | Data integrity and constistency, each service usually has a data store, and since they are constantly communicating keeping that data consistent across services is very hard. |
+| Improved observability, since services are seperated it's easier to reason about application needs.  | Performance, network requests and data serialization add overhead.                                                                                                             |
+| Independent teams working on each service makes management a lot easier.                             | Versioning and integration, each service's dependencies evolve independently and thus need to be carefully released, with attention to forward and backard compatibility.      |
+| Agility, it's usually easier to deploy and adopt new technologies in microservices.                  | Service dependency management, in microservices service dependencies require environment specific routing and discovery.                                                       |
 
