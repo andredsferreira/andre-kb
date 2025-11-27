@@ -246,4 +246,19 @@ it's the primary endpoint for receiving and responding client's requests.
 Gateways can become a bottleneck if not properly scaled. They should also be
 fault tolerant of course.
 
-## Egress
+## Service Mesh
+
+In Cloud Native each service is deployed and served independently. As services
+grow communication between them also becomes more complex. Service meshes
+abstract common communication code away from each individual service (this
+reduces code replication). Keep in mind that service meshes should only be
+deployed if the application is starting to scale and needs it! A service mesh
+can be overkill in many cases.
+
+*Service Mesh*: A proxy that is responsible for managing incoming and outgoing
+traffic, monitoring said traffic, security, and failure handling It usually runs
+next to a service (side car pattern), or in a seperate container (in the case of
+Kubernetes if using the side car pattern it runs an extra container in the same
+pod as the service, otherwise it can run in a separate host, dedicated to the
+service mesh). Examples: Istio, Linkerd, Consul Connect, AWS App Mesh.
+
