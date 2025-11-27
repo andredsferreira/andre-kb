@@ -128,6 +128,8 @@ great.
 each other. Or, in other words, the stable documented contract a service exposes
 to others.
 
+Always try to use *semantic versioning* (major.minor.patch).
+
 Since services communicate through APIs design and versioning are very
 important. In terms of versioning there are three main approaches:
 
@@ -156,4 +158,33 @@ deprecated endpoint can be removed when all the consumers stop using it (hence
 why monitoring is important), or in a specific date with warning to the
 consumers. Deprecation is kinda of like a signal "this works but start migrating
 away".
+
+## Service Communication
+
+*Internal communication*: Between the services inside a cluster
+(service-to-service, in the case of Kubernetes, pod-to-pod communication).
+
+*External communication*: Anything that is external to the cluster, for example
+traffic to a DBMS, or the Internet.
+
+### Protocols
+
+For external communication HTTP is the main protocol used (Websockets can also
+be used).
+
+For internal communication more performant options are available such as gRPC
+(runs over HTTP/2). When event driven designs are in place however, message
+protocols are employed: such as AMQP, or MQTT (both use WebSockets over TCP).
+
+### Idempotency
+
+*Idempotency*: Being able to run the same operation multiple times without
+changing the result.
+
+Design communication to be idempotent: if the same message ends up in a service
+twice (because of a failure or retry policy) the service needs to produce the
+same result. A good way to ensure this is to add a UUID to the message, the
+service only processes if the IDs are different (i.e, you check if the message
+with that UUID has already been processed).
+
 
