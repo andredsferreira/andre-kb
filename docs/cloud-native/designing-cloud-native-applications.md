@@ -187,4 +187,63 @@ same result. A good way to ensure this is to add a UUID to the message, the
 service only processes if the IDs are different (i.e, you check if the message
 with that UUID has already been processed).
 
+### Request/Response and Pub/Sub
 
+They are the two main mechanisms in service communication.
+
+*Request and Response*: Can be implemented synchronously or asynchronously with
+message queues. The client sends a request and waits for the response from the
+server.
+
+Synchronous request and response:
+
+![](images/03.png)
+
+Asynchronous request and response:
+
+![](images/04.png)
+
+*Publisher Subscriber*: A publisher sends a message to a topic which may have
+more than one subscriber. The broker delivers the message to the subscribers and
+the subscribers.
+
+![](images/05.png)
+
+### Asynchronous Messaging
+
+In general synchronous request and response tightly couples services, while
+publisher subscriber does not. In a cloud native environment asynchronous
+messaging patterns (such as the pub/sub) are the most common and should be used
+and abused!
+
+## Gateways
+
+A gateway sits between the clients requests and the application's services. It
+can be used in different ways and perform different functions:
+
+*Routing*: They can act as a reverse proxy and route the client's requests to
+the appropriate service.
+
+*Aggregation*: The gateway is responsible for receiving the client request and
+sending the multiple necessary requests to the services (at the same time); then
+receive the service's requests and aggregate them into one response to be sent
+back to the client. This can put a lot of load in the gateway and a seperate
+aggregation service may be needed in some cases.
+
+*Offloading*: Gateways can be used to offload taks that are common to all
+services inside the application. The common here is very important, business
+logic should not be present in the gateway. The offloaded tasks often include:
+
+- Authentication and authorization
+- SSL offloading
+- Rate limiting and retry policies
+- Caching
+- Compression
+- Logging and monitoring
+
+It's very important to take into account the scalability of a gateway, since
+it's the primary endpoint for receiving and responding client's requests.
+Gateways can become a bottleneck if not properly scaled. They should also be
+fault tolerant of course.
+
+## Egress
