@@ -12,9 +12,9 @@
   <style>
     * {
       box-sizing: border-box;
-      color: rgb(30, 30, 30);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-      line-height: 1.30;
+      color: rgb(25, 25, 25);
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+      line-height: 1.5;
       margin: 0;
       padding: 0;
     }
@@ -30,7 +30,6 @@
     nav {
       align-self: start;
       border-right: 1px solid rgb(200, 200, 200);
-      font-size: 14px;
       height: 100vh;
       overflow: auto;
       padding-bottom: 10vh;
@@ -76,7 +75,7 @@
     }
 
     .logo {
-      color: rgb(30, 30, 30);
+      color: rgb(25, 25, 25);
       cursor: pointer;
       margin-left: 0.5vw;
       transform-origin: center;
@@ -92,7 +91,7 @@
     /* ---------- Main ---------- */
 
     main {
-      padding: 10vh 18vw 10vh 6vw;
+      padding: 10vh 28vw 10vh 5vw;
     }
 
     main ol {
@@ -103,21 +102,35 @@
     h2,
     h3 {
       color: rgb(20, 20, 20);
-      padding: 2.5vh 0px;
+      padding: 1.8vh 0px;
+    }
+
+    main h1 {
+      border-bottom: 1px solid rgb(200, 200, 200);
+      padding-bottom: 3vh;
+      margin-bottom: 3vh;
+    }
+
+    main h2 {
+      font-size: 1.27em;
+    }
+
+    main h3 {
+      font-size: 1.1em;
     }
 
     p {
-      color: rgb(30, 30, 30);
-      padding: 1.2vh 0px;
+      color: rgb(25, 25, 25);
+      padding: 0.8vh 0px;
     }
 
     em {
-      color: rgb(30, 30, 30);
+      color: rgb(25, 25, 25);
     }
 
     a {
       border-radius: 5px;
-      color: rgb(30, 30, 30);
+      color: rgb(25, 25, 25);
       display: block;
       padding: 0.6vh;
       text-decoration: none;
@@ -134,7 +147,7 @@
 
     li {
       padding: 0.2vh 0px;
-      color: rgb(30, 30, 30);
+      color: rgb(25, 25, 25);
     }
 
     table {
@@ -147,7 +160,7 @@
     th,
     td {
       border: 1px solid rgb(190, 190, 190);
-      color: rgb(30, 30, 30);
+      color: rgb(25, 25, 25);
       font-size: 1em;
       padding: 1.1vh;
       text-align: left;
@@ -206,15 +219,24 @@
 
     <br>
 
+    <p><b>Cloud Native</b></p>
+    <ol>
+      <li><a href="./docs/cloud-native/cloud-native.md">Cloud Native</a></li>
+      <li><a href="./docs/cloud-native/cloud-native.md">Designing Cloud Native Applications</a></li>
+    </ol>
+
     <p><b>AWS</b></p>
     <ol>
       <li><a href="./docs/aws/aws-general-notes.md">AWS General Notes</a></li>
       <li><a href="./docs/aws/aws-ec2.md">AWS EC2</a></li>
       <li><a href="./docs/aws/aws-s3.md">AWS S3</a></li>
-      <li><a href="./docs/aws/aws-db-services.md">AWS Database Services</a></li>
+      <li><a href="./docs/aws/aws-rds.md">AWS RDS</a></li>
+      <li><a href="./docs/aws/aws-cloudfront.md">AWS CloudFront</a></li>
+      <li><a href="./docs/aws/aws-cloudwatch.md">AWS CloudWatch</a></li>
+      <li><a href="./docs/aws/aws-route-53.md">AWS Route 53</a></li>
+      <li><a href="./docs/aws/aws-eventbridge.md">AWS EventBridge</a></li>
       <li><a href="./docs/aws/aws-cli.md">AWS CLI</a></li>
     </ol>
-
 
     <p><b>Computer Networking</b></p>
     <ol>

@@ -24,7 +24,7 @@ Event driven architectures (they utilize asyncrhnous communication patterns) are
 also very common in the cloud, the main compute workload for these are mainly
 functions.
 
-### Communication Patterns
+## Communication Patterns
 
 There are mainly two ways a service or function can communicate in the cloud:
 synchronously and asynchronously.
