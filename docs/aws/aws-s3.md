@@ -47,7 +47,7 @@ aws s3 presign s3://my-unique-bucket-name-01/example.txt --expires-in 300
 S3 buckets can be used to host static websites. The bucket url (or domain name
 that can be configured with Route 53) usually points to the index.html file to
 start serving the website (see the bucket_03 in
-[this](../../iac/terraform/aws/s3/bucket.tf) Terraform configuration).
+[this](../../devops/terraform/learning-aws/s3/bucket.tf) Terraform configuration).
 
 ## S3 Glacier
 

@@ -17,11 +17,11 @@ development, staging, and production.
 The cloud is a *pay as you go* service.
 
 Microservices is the most common architecture in the cloud. The most common
-compute workloads are containers and functions (functions come associated, most
+compute workloads are *containers* and *functions* (functions come associated, most
 of the time, with event-driven communication patterns).
 
-Event driven architectures (they utilize asyncrhnous communication patterns) are
-also very common in the cloud, the main compute workload for these are mainly
+Event driven architectures (they utilize asynchronous communication patterns)
+are also very common in the cloud, the main compute workload for these are
 functions.
 
 ## Communication Patterns
@@ -69,7 +69,9 @@ cloud native applications.
    in the environment. Never store configuration in code, most tools in the
    cloud allow for environment setup.
 
-4. *Backing Services*:
+4. *Backing Services*: Backing services are any service that consume network as
+   part of normal application operation (datastores such as MySQL or message
+   queues such as RabbitMQ).
 
 5. *Build, Release, Run*: Strictly seperate these stages and automate them using
    CI/CD pipelines.
@@ -112,7 +114,7 @@ In general, high availability is harder to design and it's more costly.
 
 ## Containers
 
-Bellow is an image that represents the difference between traditional VMs and
+Below is an image that represents the difference between traditional VMs and
 containers.
 
 ![Containers and VMs](images/01.png)
@@ -184,8 +186,8 @@ execution.
 
 ## Microservices
 
-Services run in seperate processes and communicate synchronously, through APIs,
-or asynchrnously, through message queues.
+Services run in separate processes and communicate synchronously, through APIs,
+or asynchronously, through message queues.
 
 Each service is viewed as a seperate application with an independent team, data
 store, infrastructure, etc.
