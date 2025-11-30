@@ -1,5 +1,7 @@
 # Working with Data
 
+NOTE: These topics are related to Data Engineering field.
+
 Cloud native applications work very well with the polyglot model for data
 storage. That is, multiple data store technologies are used together in an
 application, taking advantage of their strengths. For example, a SQL database
@@ -69,7 +71,7 @@ of the challenges:
 - Analysis of the data across the datastores.
 - Backup of the data across the datastores.
 
-### Change Data Capture
+### Change Data Capture (CDC)
 
 *Change Data Capture (CDC)*: The process of identifying and capturing changes
 made to a datastore (writes), so that other services/systems can react to.
@@ -92,5 +94,41 @@ the datastore doesn't support change event streams it
 For AWS specifically: AWS Aurora MySQL and DynamoDB directly support database
 activity streams. For other databases you may need to enable logging and use the
 AWS DMS service to respond to changes.
+
+### Extract, Transform, and Load
+
+*ETL*: The practice of ETL (extract, transform, and load) is usually employed to
+extract data from various sources: databases, enterprise systems such as ERPs
+and CRMs, APIs, etc, into a single source of truth (data lakes or data
+warehouses). It's thus taking data and transforming it into useful information.
+Example tools include: Informatica PowerCenter, AWS Glue, IBM DataStage, SAP
+Data Services, Apache NiFi. ETL is mostly employed for business intelligence
+contexts.
+
+*Business Intelligence*: The practice of collecting (using ETL) and analyzing
+data to make better informed business decisions in different business
+intelligence areas such as sales, operations, marketing, hr, etc.
+
+*Data Lake*: A central repository that stores massive amounts of raw data in
+original format. Can handle structured, unstructured, and different formats of
+data. Typically used for big data analytics, ML, and exploratory analysis.
+Examples: Amazon Athena, AWS Lake Formation, Hadoop Distributed File System
+(HDFS), Databricks Lakehouse.
+
+*Data Warehouse*: A central repository that stores massive amounts of organized
+and structured data. That is, it stores information ready for analysis. Usually
+the targets of BI data. Examples: Amazon Redshift, Snowflake, GoogleBiQuery.
+
+### Microservices and Data
+
+In microservices there is often the need to perform analysis on data that comes
+from multiple services (multiple datastores). To perform analytics the data
+needs to be stored in a common datastore (usually a data lake or data
+warehouse). Thus the best approach is to aggregate the data from multiple
+services into a common datastore to be used by the analytics team. The
+approaches to move the data to the common datastore were already discussed: CDC
+or ETL (although others exist).
+
+![Microservices and Data](images/06.png)
 
 
