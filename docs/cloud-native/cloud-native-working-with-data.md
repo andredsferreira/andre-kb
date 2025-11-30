@@ -7,8 +7,18 @@ for transactional data (MySQL); an object store to store files (S3); a Cache
 store for ephemeral data (Redis); a NoSQL database for document storage or key
 value stores (DynamoDB).
 
+For cloud native environments in almost all use cases you should use a *managed
+datastore service* (such as AWS RDS or AWS DynamoDB). This reduces costs and
+operation overhead.
+
 *In-memory*: Datastores that store data in memory instead of disk. Usually
 employed for ephemeral data, and are insanely fast. Examples: Redis, Memached.
+
+*Strong consistency*: After a write completes, every read on any node always
+returns the latest value. Lower availability and speed.
+
+*Eventual consistency*: After a write completes, a read on a node may return the
+old value but only for a while. Higher availability and speed.
 
 ## Datastore Types
 
@@ -49,4 +59,38 @@ for log streams or event streams.
 *Queues*: Queues usually store messages that can be read or removed by
 subscribers, they are named message queues. A *message queue* will have one
 subscriber, a *topic* has multiple.
+
+## Data in Multiple Datastores
+
+In distributed systems having data across different datastores is the norm. Some
+of the challenges:
+
+- Data consistency across the datastores. This is the most notible challenge.
+- Analysis of the data across the datastores.
+- Backup of the data across the datastores.
+
+### Change Data Capture
+
+*Change Data Capture (CDC)*: The process of identifying and capturing changes
+made to a datastore (writes), so that other services/systems can react to.
+Example: if a orders service inserts a record we may have another service
+respond to that event by updating a user profile. 
+
+Some databases support CDC natively by exposing changes as event streams,
+allowing external consumers to react to inserts, updates, or deletes in real
+time. Examples: AWS DynamoDb, AWS RDS Aurora, MongoDB.
+
+Databases that don't support CDC natively implement it with different mechanisms
+that depend on the DBMS itself, and then have another system consume the changes
+(AWS DMS is able to do that).MySQL supports CDC by using binary logs (must
+enable log_bin and set binlog_format=ROW). PostgreSQL supports CDC by enabling
+logical replication (https://www.postgresql.org/docs/17/logical-replication-quick-setup.html).
+
+The events for the datastore are usually stored in *change event streams*. If
+the datastore doesn't support change event streams it
+
+For AWS specifically: AWS Aurora MySQL and DynamoDB directly support database
+activity streams. For other databases you may need to enable logging and use the
+AWS DMS service to respond to changes.
+
 
