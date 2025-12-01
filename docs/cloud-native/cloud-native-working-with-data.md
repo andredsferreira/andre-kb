@@ -76,7 +76,7 @@ of the challenges:
 *Change Data Capture (CDC)*: The process of identifying and capturing changes
 made to a datastore (writes), so that other services/systems can react to.
 Example: if a orders service inserts a record we may have another service
-respond to that event by updating a user profile. 
+respond to that event by updating a user profile.
 
 Some databases support CDC natively by exposing changes as event streams,
 allowing external consumers to react to inserts, updates, or deletes in real
@@ -86,7 +86,8 @@ Databases that don't support CDC natively implement it with different mechanisms
 that depend on the DBMS itself, and then have another system consume the changes
 (AWS DMS is able to do that).MySQL supports CDC by using binary logs (must
 enable log_bin and set binlog_format=ROW). PostgreSQL supports CDC by enabling
-logical replication (https://www.postgresql.org/docs/17/logical-replication-quick-setup.html).
+logical replication
+(https://www.postgresql.org/docs/17/logical-replication-quick-setup.html).
 
 The events for the datastore are usually stored in *change event streams*. If
 the datastore doesn't support change event streams it
@@ -116,8 +117,9 @@ Examples: Amazon Athena, AWS Lake Formation, Hadoop Distributed File System
 (HDFS), Databricks Lakehouse.
 
 *Data Warehouse*: A central repository that stores massive amounts of organized
-and structured data. That is, it stores information ready for analysis. Usually
-the targets of BI data. Examples: Amazon Redshift, Snowflake, GoogleBiQuery.
+and structured data. That is, it stores information that went through analysis.
+Usually the targets of BI data. Examples: Amazon Redshift, Snowflake,
+GoogleBiQuery.
 
 ### Microservices and Data
 
@@ -130,5 +132,67 @@ approaches to move the data to the common datastore were already discussed: CDC
 or ETL (although others exist).
 
 ![Microservices and Data](images/06.png)
+
+## Fast Scalable Data
+
+*A vast majority of application scaling and performance problems can be
+attributed to databases.*
+
+Scaling data systems can be done through *partitioning* (sharding) and
+*replication* (caching).
+
+### Sharding 
+
+*Sharding*: Dividing the datastore into horizontal partitions known as shards.
+Each shards contains a subset of the data (same schema).
+
+### Caching
+
+*Caching*: Having data in a faster storage closer to the consumer. Caches store
+in memory most of the time.
+
+Keeping data from the source synchronized with the cache is challenging. A list
+of common approaches to update or invalidate data in a cache:
+
+- Rely on TTL configurations to remove an item from the cache. The application
+  is then responsible for checking the cache for the item.
+- Use CDC to update the cache.
+- Application logic is responsible for updating or invalidating the cache.
+- Use a passthrough caching layer. This removes responsibility from the
+  application.
+
+### Content Delivery Networks
+
+*CDNs are great, they should be used often.*
+
+*Content Delivery Network (CDN)*: A group of geographically distributed
+datacenters known as points of presence (POP). They cache data and reduce load
+from origin servers. Cached data usually has TTL configurations. Another
+important concept is the *cache key*: what defines a unique cached object, cache
+keys are mostly based on URLs (for example /user/geoff?size=big and
+/user/geoff?size=small may be treated as the same object if the CDN only treats
+the URL as a cache key and ignores query parameters).
+
+CDNs are commonly used to cache static content (for example from a web app)
+closer to the user thus reducing latency.
+
+![CDN](images/07.png)
+
+## Analyzing Data
+
+Analyzing data is all about extracting useful information from it. Data stored
+continues to grow at exponential rates, companies use different tools to extract
+information from data.
+
+*Stream*: Streams produce data continuously over time (some times indefinetly)
+and are processed in the same fashion. Analyzing streams in real time is a great
+way to get on demand business insights.
+
+*Batch*: A collection of data that is processed all at once (spaced in large
+intervals). Batch processing usually happens in very large bounded data sets
+with the intent of exploring data science hypothesis.
+
+*Data analytics systems tipically use a combination of stream and batch
+processing.*
 
 
