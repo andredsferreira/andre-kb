@@ -84,10 +84,9 @@ time. Examples: AWS DynamoDb, AWS RDS Aurora, MongoDB.
 
 Databases that don't support CDC natively implement it with different mechanisms
 that depend on the DBMS itself, and then have another system consume the changes
-(AWS DMS is able to do that).MySQL supports CDC by using binary logs (must
+(AWS DMS is able to do that). MySQL supports CDC by using binary logs (must
 enable log_bin and set binlog_format=ROW). PostgreSQL supports CDC by enabling
-logical replication
-(https://www.postgresql.org/docs/17/logical-replication-quick-setup.html).
+logical replication (https://www.postgresql.org/docs/17/logical-replication-quick-setup.html).
 
 The events for the datastore are usually stored in *change event streams*. If
 the datastore doesn't support change event streams it
@@ -184,13 +183,13 @@ Analyzing data is all about extracting useful information from it. Data stored
 continues to grow at exponential rates, companies use different tools to extract
 information from data.
 
-*Stream*: Streams produce data continuously over time (some times indefinetly)
-and are processed in the same fashion. Analyzing streams in real time is a great
-way to get on demand business insights.
+*Stream processing*: Streams produce data continuously over time (some times
+indefinetly) and are processed in the same fashion. Analyzing streams in real
+time is a great way to get on demand business insights.
 
-*Batch*: A collection of data that is processed all at once (spaced in large
-intervals). Batch processing usually happens in very large bounded data sets
-with the intent of exploring data science hypothesis.
+*Batch processing*: A batch is a collection of data that is processed all at
+once (spaced in large intervals). Batch processing usually happens in very large
+bounded data sets with the intent of exploring data science hypothesis.
 
 *Data analytics systems tipically use a combination of stream and batch
 processing.*
