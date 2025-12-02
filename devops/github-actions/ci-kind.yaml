@@ -1,0 +1,62 @@
+# GitHub Actions workflow for CI using Kind (Kubernetes in Docker)
+# Kind is used to create an ephemeral Kubernetes cluster for testing purposes.
+# The cluster is hosted within the GitHub Actions runner environment.
+# To see a full example of locally testing a Go App with Minikube refer to:
+# /prog/script/bash/minikube-go-app-test.sh
+
+
+# This workflow automates the CI process for Kubernetes-based applications.
+# It builds the Docker image, deploys it to the Kind cluster, runs integration
+# tests, and then tears down the cluster (last not needed since github runners
+# are destroyed by default at the end).
+
+name: CI with Kind
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-in-kind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: '1.27.0'
+
+      - name: Install Kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
+      - name: Create Kind cluster
+        run: kind create cluster --name ci-cluster
+
+      - name: Build Docker image for Kind
+        run: |
+          docker build -t myapp:ci .
+          kind load docker-image myapp:ci --name ci-cluster
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
+      - name: Wait for pods to be ready
+        run: kubectl wait --for=condition=Ready pods --all --timeout=120s
+
+      - name: Run integration tests
+        run: go test ./tests/integration/...
+
+      - name: Delete Kind cluster
+        if: always()
+        run: kind delete cluster --name ci-cluster
