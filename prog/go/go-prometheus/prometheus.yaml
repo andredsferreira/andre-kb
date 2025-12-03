@@ -1,0 +1,14 @@
+# To start prometheus:
+# docker run -d \
+#  --name prometheus \
+#  -p 9090:9090 \
+#  -v /home/andre/andre-kb/prog/go/production-ready-hello-world/prometheus.yaml:/etc/prometheus/prometheus.yml \
+#  prom/prometheus:latest
+
+global:
+  scrape_interval: 5s # Prometheus will scrape every 15 seconds
+
+scrape_configs:
+  - job_name: "production_ready_hello_world"
+    static_configs:
+      - targets: ["172.17.0.1:8080"] # your Fiber app
