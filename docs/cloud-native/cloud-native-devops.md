@@ -97,4 +97,18 @@ examples include:
 
 - TLS certificates.
 
+## Example CI/CD Flows
+
+NOTE: This are just examples of a CI/CD flow. Depending on the use case more
+steps could be added or removed.
+
+Example of deployment to a Kubernetes cluster flow:
+
+![](images/08.png)
+
+Example of serverless deployment flow:
+
+![](images/09.png)
+
+
 
