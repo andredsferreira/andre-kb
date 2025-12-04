@@ -1,4 +1,4 @@
-module andrekb.com/go-prometheus
+module andrekb/go-prometheus
 
 go 1.24.3
 

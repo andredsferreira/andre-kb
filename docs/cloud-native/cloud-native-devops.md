@@ -81,7 +81,7 @@ through multiple services. Distributed tracing tools can manage the generation
 of CIDs, and can also include logging. Example tools: Jaeger, Zipkin, Grafana
 Tempo, AWS X-Ray.
 
-## Configuration management
+## Configuration Management
 
 Like the twelve factor app manifesto entails, configuration variables should be
 seperate from the application. You can either store configuration in environment
@@ -96,3 +96,5 @@ examples include:
 - Feature flags.
 
 - TLS certificates.
+
+

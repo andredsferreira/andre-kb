@@ -1,0 +1,13 @@
+replicaCount: 2
+
+image:
+  repository: standard-http-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30080
+
+resources: {}

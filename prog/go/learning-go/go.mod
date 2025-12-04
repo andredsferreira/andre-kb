@@ -1,3 +1,3 @@
-module andrekb.com/learning-go
+module andrekb/learning-go
 
 go 1.24.3

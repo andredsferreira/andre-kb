@@ -1,0 +1,4 @@
+apiVersion: v2
+name: standard-http-server
+version: 0.1.0
+description: A simple HTTP server in Go

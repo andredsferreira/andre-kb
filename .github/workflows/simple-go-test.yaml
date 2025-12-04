@@ -20,5 +20,5 @@ jobs:
           go-version: "1.22"
 
       - name: Run tests for basics package
-        working-directory: prog/go
+        working-directory: prog/go/learning-go
         run: go test ./basics
