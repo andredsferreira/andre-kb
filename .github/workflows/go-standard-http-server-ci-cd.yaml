@@ -1,0 +1,104 @@
+name: Pipeline for mini-project located in prog/go/standard-http-server
+
+on:
+  # For manual triggering of the workflow in the GitHub UI
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    paths:
+      - "prog/go/standard-http-server/**"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+
+      - name: Install dependencies
+        working-directory: prog/go/standard-http-server
+        run: go mod download
+
+      - name: Run tests
+        working-directory: prog/go/standard-http-server
+        run: go test ./...
+
+      - name: Build application
+        working-directory: prog/go/standard-http-server
+        run: go build -o main .
+
+  docker-build-and-push:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Extract short SHA
+        id: vars
+        run: echo "SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        run: |
+          docker build \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:${SHA} \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:latest \
+            prog/go/standard-http-server
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:${SHA}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:latest
+
+  test-kind-cluster:
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Install Kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
+      - name: Create Kind cluster
+        run: kind create cluster --name ci-cluster --wait 60s
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+
+      - name: Deploy Helm chart
+        run: |
+          helm upgrade --install standard-http-server prog/go/standard-http-server/k8s \
+            --set image.repository=${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server \
+            --set image.tag=latest \
+            --wait \
+            --timeout 120s
+
+      - name: Delete Kind cluster
+        if: always()
+        run: kind delete cluster --name ci-cluster
