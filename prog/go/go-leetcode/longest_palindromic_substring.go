@@ -1,4 +1,4 @@
-package leetcode
+package main
 
 func longestPalindromicSubstring(input string) string {
 	var answer string
