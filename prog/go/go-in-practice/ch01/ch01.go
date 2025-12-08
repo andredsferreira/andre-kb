@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 )
 
 /********************************************************************************/
@@ -123,3 +124,22 @@ func rsaAsymmetricEncryption() {
 }
 
 /********************************************************************************/
+
+// Small showcase of go concurrency
+
+func count() {
+	for i := 1; i <= 5; i++ {
+		fmt.Println(i)
+		time.Sleep(time.Millisecond * 5)
+	}
+}
+
+func countingConcurrently() {
+	go count()
+	time.Sleep(time.Millisecond * 20)
+	fmt.Println("Concurrent hello!")
+	time.Sleep(time.Millisecond * 10)
+}
+
+/********************************************************************************/
+
