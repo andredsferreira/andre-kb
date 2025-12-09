@@ -1,4 +1,4 @@
-packer {
+dpacker {
   required_plugins {
     amazon = {
       version = ">= 1.3.1"

@@ -2,7 +2,6 @@ package ch01
 
 import (
 	"testing"
-	"time"
 )
 
 func Test_tcpConnect(t *testing.T) {
@@ -27,6 +26,9 @@ func Test_rsaAsymmetricEncryption(t *testing.T) {
 
 func Test_countingConcurrently(t *testing.T) {
 	countingConcurrently()
-	// Sleep needed for proper concurrency showcase
-	time.Sleep(time.Second * 5)
 }
+
+func Test_passingNumbersConcurrently(t *testing.T) {
+	passingNumbersConcurrently()
+}
+

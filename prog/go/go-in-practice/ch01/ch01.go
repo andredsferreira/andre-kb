@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -125,9 +126,11 @@ func rsaAsymmetricEncryption() {
 
 /********************************************************************************/
 
-// Small showcase of go concurrency
+// Small showcase of go concurrency.
+// Just counts some numbers and prints them aswell as a string.
 
-func count() {
+func count(wg *sync.WaitGroup) {
+	defer wg.Done()
 	for i := 1; i <= 5; i++ {
 		fmt.Println(i)
 		time.Sleep(time.Millisecond * 5)
@@ -135,11 +138,41 @@ func count() {
 }
 
 func countingConcurrently() {
-	go count()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go count(&wg)
 	time.Sleep(time.Millisecond * 20)
 	fmt.Println("Concurrent hello!")
 	time.Sleep(time.Millisecond * 10)
+	wg.Wait()
 }
 
 /********************************************************************************/
 
+// Passing data between go routines with channels.
+// Prints numbers passed in the channel.
+
+func printCount(c chan int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	num := 0
+	for num >= 0 {
+		// Wait for number to arrive on the channel
+		num = <-c
+		fmt.Println("Received number: ", num)
+	}
+}
+
+func passingNumbersConcurrently() {
+	var wg sync.WaitGroup
+	wg.Add(1)
+	c := make(chan int)
+	nums := []int{8, 6, 7, 4, 0, 2, 9, -1}
+	// Initialize the go routine to print.
+	go printCount(c, &wg)
+	for i := 0; i < len(nums); i++ {
+		// Pass the number to the channel
+		c <- nums[i]
+	}
+}
+
+/********************************************************************************/
