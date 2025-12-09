@@ -36,7 +36,7 @@ func Test_helloCommand(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
-			cmd := initCommand()
+			cmd := initHelloCommand()
 
 			// Capture output to a buffer for testing
 			buf := new(bytes.Buffer)

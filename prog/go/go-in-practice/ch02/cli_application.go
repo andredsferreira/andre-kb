@@ -6,12 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-/********************************************************************************/
-
 // Simple command showcase using Cobra library.
 // Link: https://github.com/spf13/cobra
 
-func initCommand() *cobra.Command {
+func initHelloCommand() *cobra.Command {
 	helloCommand := &cobra.Command{
 		Use:   "hello",
 		Short: "Print hello world",
@@ -40,4 +38,16 @@ func sayHello(cmd *cobra.Command, args []string) {
 	fmt.Fprintf(cmd.OutOrStdout(), "%s %s!\n", greeting, name)
 }
 
-/********************************************************************************/
+/*
+	In a production scenario the command would be wraped in the main function
+	like this:
+
+	func main() {
+	    rootCmd := initCommand()
+	    if err := rootCmd.Execute(); err != nil {
+	        fmt.Println(err)
+	        os.Exit(1)
+	    }
+	}
+*/
+
