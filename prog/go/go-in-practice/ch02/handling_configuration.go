@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/go-yaml/yaml"
+
 )
 
 /********************************************************************************/
@@ -30,5 +33,24 @@ func loadJSONConfig() {
 	}
 	fmt.Println(conf.Path)
 }
+
+/********************************************************************************/
+
+// Handling configuration in YAML files.
+
+func loadYAMLConfig() {
+	file, err := os.Open("config.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	decoder := yaml.NewDecoder(file)
+	conf := configuration{}
+	if err := decoder.Decode(&conf); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(conf.Path)
+}
+
 
 /********************************************************************************/
