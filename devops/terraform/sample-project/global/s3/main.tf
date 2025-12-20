@@ -2,43 +2,34 @@ provider "aws" {
   region = "eu-west-3"
 }
 
-##########################################################################################
-
-# Backend configuration
-
 terraform {
   backend "s3" {
     bucket         = "terraform-state"
     key            = "global/s3/terraform.tfstate"
     region         = "eu-west-3"
     dynamodb_table = "terraform-locks"
-    encryp         = true
+    encrypt        = true
   }
 }
 
-##########################################################################################
-
-# Bucket configuration for storing tfstate
-
-resource "aws_s3_bucket" "terraform_state" {
+resource "aws_s3_bucket" "tf_state" {
   bucket = "terraform-state"
-  
-  # Prevent accidental deletion
-    lifecycle {
-      prevent_destroy = true
-    }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
-resource "aws_s3_bucket_versioning" "terraform_state_versioning" {
-  bucket = aws_s3_bucket.terraform_state.id
+resource "aws_s3_bucket_versioning" "tf_state_versioning" {
+  bucket = aws_s3_bucket.tf_state.id
 
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_encryption" {
-  bucket = aws_s3_bucket.terraform_state.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "tf_state_encryption" {
+  bucket = aws_s3_bucket.tf_state.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -48,16 +39,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_e
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket                  = aws_s3_bucket.terraform_state.id
+  bucket                  = aws_s3_bucket.tf_state.id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-
-##########################################################################################
-
-# DynamoDB table for state locking
 
 resource "aws_dynamodb_table" "terraform_locks" {
   name         = "terraform-locks"
@@ -69,5 +56,3 @@ resource "aws_dynamodb_table" "terraform_locks" {
     type = "S"
   }
 }
-
-##########################################################################################
