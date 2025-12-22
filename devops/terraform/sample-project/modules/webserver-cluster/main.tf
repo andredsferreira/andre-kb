@@ -2,6 +2,35 @@ provider "aws" {
   region = "eu-west-3"
 }
 
+resource "aws_security_group" "alb_sg" {
+  name   = "${var.cluster_name}-alb-sg"
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_lb" "alb" {
+  name               = "${var.cluster_name}-alb"
+  load_balancer_type = "application"
+  internal           = false
+  security_groups    = [aws_security_group.alb_sg.id]
+  subnets = [
+  ]
+}
+
+
 resource "aws_autoscaling_group" "asg" {
   launch_template {
     id = aws_launch_template.lt.id
