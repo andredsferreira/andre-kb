@@ -13,7 +13,7 @@ environments need to be as close as production as possible. Stage should
 particularly try not use mocks and use real dependencies as well as similar
 infrastructure to production.
 
-There are several types of tests in software, and they are posisioned
+There are several types of tests in software, and they are positioned
 differently in the CI/CD pipeline. Below is a (non compreheensive) table with
 some common types of tests and their characteristics.
 

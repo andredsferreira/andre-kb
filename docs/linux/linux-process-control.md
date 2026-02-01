@@ -62,6 +62,26 @@ Common flags used in the ps:
 ps aux
 ```
 
+Show processes belonging to you:
+
+```bash
+ps x
+```
+
+Show all processes:
+
+```bash
+ps ax
+```
+
+Filter some columns:
+
+```bash
+ps ax o user,pid,comm
+
+ps ax o user,pid,comm --sort=user
+```
+
 Frequent pattern to identify a PID:
 
 ```bash

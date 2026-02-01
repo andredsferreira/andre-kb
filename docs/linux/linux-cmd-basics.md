@@ -6,7 +6,7 @@ Some notes taken from the book The Linux Command Line by William Shotts.
 
 Used to print the enviornment variables
 
-## The ls command
+## The ls command<>
 
 Lists the contents of a directory. Common options used in the ls command.
 
