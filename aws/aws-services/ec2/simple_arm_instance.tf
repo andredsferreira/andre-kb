@@ -14,7 +14,7 @@ resource "aws_instance" "ec2_instance" {
 
   # Links the instance profile to allow users to connect to the instance using
   # SSM.
-  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
+  iam_instance_profile = aws_iam_instance_profile.ssm_instance_profile.name
 
   # Bootstraps the machine using a script.
   user_data = templatefile("${path.module}/bootstrap.sh", {})
