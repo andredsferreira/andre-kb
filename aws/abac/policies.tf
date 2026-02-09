@@ -21,6 +21,13 @@ resource "aws_iam_policy" "access-assume-role" {
   })
 }
 
+# IMPORTANT!
+# This policy uses a strategy to allow all actions for a service, but explicitly deny permissions-altering 
+# actions. Denying an action overrides any other policy that allows the principal to perform that action. 
+# This can have unintended results. As a best practice, use explicit denies only when there is no circumstance
+# that should allow that action. Otherwise, allow a list of individual actions, and the unwanted actions are 
+# denied by default.
+
 resource "aws_iam_policy" "access-same-project-team" {
   name = "access-same-project-team"
 

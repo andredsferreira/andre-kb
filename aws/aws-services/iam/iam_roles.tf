@@ -8,8 +8,6 @@ resource "aws_iam_role" "role_01" {
       {
         Effect = "Allow"
         Principal = {
-          // Who can assume the role.
-          Service = "ec2.amazonaws.com"
         }
         Action = "sts:AssumeRole"
       }
@@ -85,7 +83,7 @@ resource "aws_iam_role" "role_04" {
         Effect = "Allow"
         Principal = {
           AWS = [
-            "arn:aws:iam::youraccountid:group/YourIamGroup"
+            "arn:aws:iam::youraccountid:group/${}"
           ]
         }
         Action = "sts:AssumeRole"
