@@ -83,7 +83,7 @@ resource "aws_iam_role" "role_04" {
         Effect = "Allow"
         Principal = {
           AWS = [
-            "arn:aws:iam::youraccountid:group/${}"
+            "arn:aws:iam::youraccountid:group/YourIamGroup"
           ]
         }
         Action = "sts:AssumeRole"
@@ -98,3 +98,7 @@ resource "aws_iam_role_policy_attachment" "role_04_pa_01" {
   policy_arn = each.value
 }
 
+resource "aws_iam_role_policy_attachment" "role_04_pa_02" {
+  role = aws_iam_role.role_04.name
+  policy_arn = "arn:aws:iam::aws:policy/SignInLocalDevelopmentAccess"
+}

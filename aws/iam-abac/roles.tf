@@ -3,14 +3,15 @@ resource "aws_iam_role" "access_peg_engineering" {
     description = "Allows engineers to read all engineering resources and create and manage Pegasus engineering resources."
 
     assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-        {
-            Effect = "Allow"
-            Principal = {
-                AWS = "*"
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Effect = "Allow"
+                Principal = {
+                    AWS = "*"
+                }
+                Action = "sts:AssumeRole"
             }
-            Action = "sts:AssumeRole"
         ]
     })
 
