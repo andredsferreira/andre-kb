@@ -163,8 +163,9 @@ resource "aws_security_group" "sqs_endpoint_sg" {
 # The VPC endpoint.
 
 resource "aws_vpc_endpoint" "sqs_subnet_02" {
-  vpc_id              = aws_vpc.vpc.id
-  service_name        = "com.amazonaws.eu-west-3.sqs"
+  vpc_id       = aws_vpc.vpc.id
+  service_name = "com.amazonaws.eu-west-3.sqs"
+  # In the case of an endpoint to S3 or DynamoDB, the VPC endpoint type would be "Gateway".
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [aws_subnet.private_subnet_02.id]
   security_group_ids  = [aws_security_group.sqs_endpoint_sg.id]
