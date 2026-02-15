@@ -10,6 +10,8 @@ resource "aws_subnet" "public_subnet" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.0.0.0/24"
   availability_zone = "eu-west-3a"
+  # Automatically assign public IPs to ENIs created on this subnet.
+  map_public_ip_on_launch = true
 }
 
 resource "aws_subnet" "private_subnet_01" {

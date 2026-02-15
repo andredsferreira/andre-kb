@@ -3,16 +3,16 @@ resource "aws_vpc" "vpc" {
 }
 
 ################################################################################
-# SUBNETS 
+# Subnets 
 ################################################################################
 
-resource "aws_subnet" "public_1a" {
+resource "aws_subnet" "public_a" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.0.0.0/24"
   availability_zone = "eu-west-3a"
 }
 
-resource "aws_subnet" "public_2b" {
+resource "aws_subnet" "public_b" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.0.1.0/24"
   availability_zone = "eu-west-3b"
@@ -43,7 +43,7 @@ resource "aws_subnet" "private_2b" {
 }
 
 ################################################################################
-# INTERNET GATEWAY AND PUBLIC ROUTE TABLE
+# Internet gateway and public route tables
 ################################################################################
 
 resource "aws_internet_gateway" "igw" {
@@ -60,17 +60,17 @@ resource "aws_route_table" "public_rt" {
 }
 
 resource "aws_route_table_association" "public_rt_1a" {
-  subnet_id      = aws_subnet.public_1a.id
+  subnet_id      = aws_subnet.public_a.id
   route_table_id = aws_route_table.public_rt.id
 }
 
 resource "aws_route_table_association" "public_rt_2b" {
-  subnet_id      = aws_subnet.public_2b.id
+  subnet_id      = aws_subnet.public_b.id
   route_table_id = aws_route_table.public_rt.id
 }
 
 ################################################################################
-# NAT GATEWAY AND PRIVATE ROUTE TABLE
+# NAT gateway and private route tables
 ################################################################################
 
 resource "aws_eip" "nat_eip_1a" {
@@ -79,7 +79,7 @@ resource "aws_eip" "nat_eip_1a" {
 
 resource "aws_nat_gateway" "ngw__1a" {
   allocation_id = aws_eip.nat_eip_1a.id
-  subnet_id     = aws_subnet.public_1a.id
+  subnet_id     = aws_subnet.public_a.id
 }
 
 resource "aws_route_table" "private_rt_1a" {
@@ -97,7 +97,7 @@ resource "aws_route_table_association" "private_rt_1a" {
 }
 
 #################################################################################
-# VPC ENDPOINT FOR SSM INSIDE SUBNETS IN AZ-A
+# VPC Endpoint for SSM in subnets private_1a and private_1b
 #################################################################################
 
 resource "aws_security_group" "sg_ssm" {
@@ -125,4 +125,3 @@ resource "aws_vpc_endpoint" "ssm" {
 
   security_group_ids = [aws_security_group.sg_ssm.id]
 }
-
