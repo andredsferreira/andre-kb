@@ -74,7 +74,7 @@ resource "aws_security_group" "sg_albs" {
 
 resource "aws_lb_target_group" "albs_target_group" {
   name     = "albs-target-group"
-  port     = 8080
+  port     = var.app_port
   protocol = "HTTP"
   vpc_id   = aws_vpc.vpc.id
 
@@ -99,7 +99,7 @@ resource "aws_lb_target_group_attachment" "app_attach" {
   count            = length(aws_instance.app_server)
   target_group_arn = aws_lb_target_group.albs_target_group.arn
   target_id        = aws_instance.app_server[count.index].id
-  port             = 8080
+  port             = var.app_port
 }
 
 ################################################################################
@@ -111,7 +111,9 @@ resource "aws_instance" "app_server" {
   ami                    = data.aws_ssm_parameter.al2023_ami.value
   instance_type          = "t4g.micro"
   subnet_id              = element([aws_subnet.public_a.id, aws_subnet.public_b.id], count.index)
-  vpc_security_group_ids = [aws_security_group.app_sg.id]
+  vpc_security_group_ids = [aws_security_group.app_server_sg.id]
+
+  iam_instance_profile = aws_iam_instance_profile.ssm_role_instance_profile.name
 
   tags = {
     Name = "app-server-${count.index}"
@@ -121,21 +123,17 @@ resource "aws_instance" "app_server" {
 resource "aws_security_group" "app_server_sg" {
   name        = "app-server-sg"
   description = "Allow traffic from ALB only"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = aws_vpc.vpc.id
 
   ingress {
     description     = "From ALB"
-    from_port       = 8080
-    to_port         = 8080
+    from_port       = var.app_port
+    to_port         = var.app_port
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id]
+    security_groups = [aws_security_group.sg_albs.id]
   }
 
   tags = {
     Name = "app-server-sg"
   }
 }
-
-
-
-

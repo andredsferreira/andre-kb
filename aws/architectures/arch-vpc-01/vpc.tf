@@ -1,5 +1,12 @@
 resource "aws_vpc" "vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+
+  # Default DNS configuration. See more at (on the section "DNS attributes 
+  # for your VPC"):
+  # https://docs.aws.amazon.com/vpc/latest/userguide/AmazonDNS-concepts.html
+  enable_dns_hostnames = false
+  enable_dns_support   = true
 }
 
 ################################################################################
