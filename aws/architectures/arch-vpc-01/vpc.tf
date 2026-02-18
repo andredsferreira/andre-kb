@@ -64,6 +64,7 @@ resource "aws_route_table" "public_rt" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
+
 }
 
 resource "aws_route_table_association" "public_rt_1a" {
@@ -77,16 +78,21 @@ resource "aws_route_table_association" "public_rt_2b" {
 }
 
 ################################################################################
-# NAT gateway and private route tables
+# NAT gateways and private route tables
 ################################################################################
 
-resource "aws_eip" "nat_eip_1a" {
+resource "aws_eip" "nat_eip_a" {
   domain = "vpc"
 }
 
-resource "aws_nat_gateway" "ngw__1a" {
-  allocation_id = aws_eip.nat_eip_1a.id
+resource "aws_nat_gateway" "ngw_a" {
+  allocation_id = aws_eip.nat_eip_a.id
   subnet_id     = aws_subnet.public_a.id
+}
+
+resource "aws_nat_gateway" "ngw_b" {
+  allocation_id = aws_eip.nat_eip_b.id
+  subnet_id     = aws_subnet.public_b.id
 }
 
 resource "aws_route_table" "private_rt_1a" {
@@ -94,7 +100,16 @@ resource "aws_route_table" "private_rt_1a" {
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.ngw__1a.id
+    nat_gateway_id = aws_nat_gateway.ngw_a.id
+  }
+}
+
+resource "aws_route_table" "private_rt_1b" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.ngw_b.id
   }
 }
 
@@ -103,8 +118,13 @@ resource "aws_route_table_association" "private_rt_1a" {
   route_table_id = aws_route_table.private_rt_1a.id
 }
 
+resource "aws_route_table_association" "private_rt_1b" {
+  subnet_id      = aws_subnet.private_1b.id
+  route_table_id = aws_route_table.private_rt_1b.id
+}
+
 #################################################################################
-# VPC Endpoint for SSM in subnets private_1a and private_1b
+# VPC Endpoint for SSM in subnets private_2a and private_2b
 #################################################################################
 
 resource "aws_security_group" "sg_ssm" {
@@ -126,8 +146,8 @@ resource "aws_vpc_endpoint" "ssm" {
   vpc_endpoint_type = "Interface"
 
   subnet_ids = [
-    aws_subnet.private_1a.id,
-    aws_subnet.private_1b.id
+    aws_subnet.private_2a.id,
+    aws_subnet.private_2b.id
   ]
 
   security_group_ids = [aws_security_group.sg_ssm.id]
