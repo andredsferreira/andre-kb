@@ -48,7 +48,7 @@
 | 23       | B          |
 | 24       | B          |
 
-# Chapter 03 
+# Chapter 03
 
 ## Review Questions
 
