@@ -1,4 +1,4 @@
-### The Compilation System
+## The Compilation System
 
 *Preprocessing*: Take the source code (.c file) and process directives starting with"#". For example
 directly including headers (stdio.h). Produces a .i file.
@@ -40,4 +40,15 @@ between the CPU and memory, between CPU and I/O devices.
 
 Bigger storage capacity implies slower access.
 
+*Volatile memory*: Erases data if there is no current (power). Main memory is volatile memory,
+aswell as CPU registers and caches. Example technologies: DRAM, SRAM.
+
+*Non-volatile memory*: Permanently keeps data even when power is turned off. Secondary memory is
+non-volatile. Example technologies: NAND Flash, PROM, EPROM, Magnetic Storage, Optical Storage.
+
+***
+
+*Hyperthreading*: The concept of a single CPU executing multiple tasks. This is allowed by the
+replication of certain hardware components of the CPU such as the program counter (PC) and register
+file.
 

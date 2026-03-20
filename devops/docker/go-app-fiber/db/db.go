@@ -12,7 +12,7 @@ import (
 var MySql *sql.DB
 
 func ConnectDatabase() {
-
+	
 	cfg := mysql.Config{
 		User:   os.Getenv("DB_USER"),
 		Passwd: os.Getenv("DB_PASS"),

@@ -98,6 +98,7 @@ or directory. If the link is deleted the original file or directory lives.
 Symbolic links are more modern and prefered to hard links (similar to Windows
 shortcuts).
 
+
 In general we have:
 
 ```bash

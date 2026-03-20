@@ -20,4 +20,3 @@ workload identities). Specially when users require programmatic access through
 the AWS CLI or SDKs.
 
 ***
-
