@@ -32,3 +32,12 @@ while all others are set to 0):
 | -1           | 0xFF        | 0xFFFF           | 0xFFFFFFFF                  |
 | 0            | 0x00        | 0x0000           | 0x00000000                  |
 
+#### Functions
+
+
+$$
+U2T(x) = x - 2^w , x > Tmax
+$$
+$$
+T2U(x) = 2^w + x , x < 0
+$$

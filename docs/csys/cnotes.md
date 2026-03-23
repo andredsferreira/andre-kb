@@ -6,8 +6,16 @@ Keep shift amounts less than word size, i.e, don't do this, assuming
 "a" is a byte: a << 16, a << 8, a << 7. In general avoid w << b, where
 b > w (this also applies to right shifts >>).
 
-C implicitly converts signed values to unsigned when performing
-logical operations between them (when performing "<", ">", or "==" for
-example). This gives rise to weird evaluations, the following for
-example will wield false: *214748364U > INT_MIN (-2147483648) == 0*.
-The second operand is converted to unsigned.
+In logical operations, *if one operand is unsigned C implicitly*
+*converts all operands to unsigned*. This can give rise to bugs if
+special attention is not paid. For example, considering that both
+operands are 8 bits long (char): 1U > -1 will yield false (-1 will be
+converted to unsigned since the first operand is unsigned and -1
+converted to unsigned is 255).
+
+When converting size and sign at the same time, the C standard
+establishes that first the size is converted then the sign is
+converted. For example, converting *short x = -12345* (0xCFC7) to an
+*unsigned int* yields 4294954951 (0xFFFFCFC7) decimal. Due to sign
+extension left bytes were set to F, giving a very large unsigned
+result.

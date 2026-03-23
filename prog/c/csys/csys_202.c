@@ -1,5 +1,7 @@
-#include "common.h"
 #include <stdio.h>
+#include <string.h>
+
+#include "csys_utils.h"
 
 void signed_to_unsigned() {
 
@@ -34,10 +36,12 @@ void unsigned_casts_in_expressions() {
 }
 
 /*
- * Zero and sign extensions preserve the sign of a number.
+ * When converting from one size to another zero and sign extensions
+ * preserve the sign of a number. Again, notice that we are only
+ * converting size, not sign and size at the same time.
  */
 
-void zero_and_sign_extension() {
+void converting_size() {
   short s = -12345; // unsigned = 53191 = 2¹⁶ + (-12345)
   unsigned short us = 64000;
 
@@ -54,10 +58,31 @@ void zero_and_sign_extension() {
   print_bytes((unsigned char *)&ux, sizeof(ux));
 }
 
+/* The C standard establishes that when converting size and sign at
+the same time first the type is changed and then the sign.*/
+
+void converting_size_and_sign() {
+  short s = -12345;
+  unsigned u = s;
+
+  printf("uy = %u : \t", u);
+  print_bytes((unsigned char *)&u, sizeof(u));
+}
+
+int fun1(unsigned word) { return (int)((word << 24) >> 24); }
+
+int fun2(unsigned word) { return ((int)word << 24) >> 24; }
+
+int strlonger(char *s, char *t) { return strlen(s) > strlen(t); }
+
 int main() {
 
   // unsigned_casts_in_expressions();
-  zero_and_sign_extension();
+  // converting_size();
+  // converting_size_and_sign();
+
+  int res = strlonger("And", "An");
+  printf("res=%d\n", res);
 
   return 0;
 }

@@ -1,9 +1,8 @@
-#include "common.h"
+#include "csys_utils.h"
 
 void print_bytes(unsigned char *start, size_t len) {
-  printf("0x");
   for (int i = 0; i < len; i++) {
-    printf("%02X", start[len - i - 1]);
+    printf("%02X ", start[len - i - 1]);
   }
   printf("\n");
 }

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "common.h"
+#include "csys_utils.h"
 
 void test_print_bytes() {
   int a = 327594219;
@@ -71,6 +71,14 @@ void lsb_set_to_ones(unsigned int x) {
   unsigned int res = x | 0xFF;
   printf("All set to ones except LSB: 0x%X\n", res);
 }
+
+/*
+ * Logical left shifts: always append zeros to the right.
+ * Logical right shifts: can only happen on unsigned numbers, appending
+ * zeros to the left.
+ * Arithmetic right shifts: can only happen on signed numbers,
+ * appending ones to the left.
+ */
 
 void bshifts() {
   unsigned char a = 0b11010100; // 0xD4
