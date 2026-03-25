@@ -1,4 +1,6 @@
 #include "csys_utils.h"
+#include <assert.h>
+#include <stdio.h>
 
 void print_bytes(unsigned char *start, size_t len) {
   for (int i = 0; i < len; i++) {

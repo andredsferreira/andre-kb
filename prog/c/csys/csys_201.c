@@ -5,6 +5,7 @@
 #include "csys_utils.h"
 
 void test_print_bytes() {
+
   int a = 327594219;
   short b = 19835;
   int c = 0x11223344;
@@ -20,6 +21,7 @@ void test_print_bytes() {
 }
 
 void char_range() {
+
   char a = 67;
   unsigned char b = 230;
   char c = -22;
@@ -81,6 +83,7 @@ void lsb_set_to_ones(unsigned int x) {
  */
 
 void bshifts() {
+
   unsigned char a = 0b11010100; // 0xD4
   unsigned char b = 0b01100100; // 0x64
   unsigned char c = 0b01110010; // 0x72
@@ -103,6 +106,14 @@ void bshifts() {
   printb_char((signed char)b >> 3);
   printb_char((signed char)c >> 3);
   printb_char((signed char)d >> 3);
+}
+
+void set_bit(int *x, unsigned char pos) {
+  if (pos >= 32) {
+    return;
+  }
+  unsigned mask = 1 << pos;
+  *x = (int)((unsigned int)*x | mask);
 }
 
 int main() { return 0; }

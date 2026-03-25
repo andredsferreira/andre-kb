@@ -17,18 +17,21 @@ in memory. Byte ordering, least significant byte to most significant,
 or most significant to least, is dictated by the machine being little
 endian or big endian respectively.
 
-Max unsigned value for *b* bits: $2^b - 1$
+Max unsigned value for *b* bits: 
 
-Example for a byte: $2⁸-1=255$
+*Unsigned Max* = $2^b - 1$
 
-Important numbers (note that for signed min, the sign bit is set to 1
-while all others are set to 0):
+*Signed Max* = $ 2^(b-1) - 1$
+
+*Signed Min* = $- 2^(b-1) - 1$
+
+Examples:
 
 | Value        | 8 bits      | 16 bits          | 32 bits                     |
 | ------------ | ----------- | ---------------- | --------------------------- |
 | Unsigned max | 0xFF (255)  | 0xFFFF (65,535)  | 0xFFFFFFFF (4,294,967,295)  |
-| Signed min   | 0x80 (-128) | 0x8000 (-32,768) | 0x80000000 (-2,147,483,648) |
 | Signed max   | 0x7F (127)  | 0x7FFF (32,767)  | 0x7FFFFFFF (2,147,483,647)  |
+| Signed min   | 0x80 (-128) | 0x8000 (-32,768) | 0x80000000 (-2,147,483,648) |
 | -1           | 0xFF        | 0xFFFF           | 0xFFFFFFFF                  |
 | 0            | 0x00        | 0x0000           | 0x00000000                  |
 
