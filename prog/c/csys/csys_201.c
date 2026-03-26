@@ -116,4 +116,7 @@ void set_bit(int *x, unsigned char pos) {
   *x = (int)((unsigned int)*x | mask);
 }
 
-int main() { return 0; }
+int main() {
+  bshifts();
+  return 0;
+}
