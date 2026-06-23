@@ -2,7 +2,6 @@ name: Docker CI/CD pipeline example for devops/docker/hello-docker
 
 on:
   workflow_dispatch:
-
   push:
     branches:
       - main
@@ -13,22 +12,28 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Login to Docker Hub
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      -
-        name: Build and push
+
+      - name: Build and push
         uses: docker/build-push-action@v7
         with:
-          push: true
+          # Loads image into local docker Daemon (just to see the output of CMD).
+          load: true
+          tags: hello-docker:latest
+          context: ./devops/docker/hello-docker
+          push: false
           build-args: |
             GITHUB_ACTOR=${{ github.actor }}
 
-
-        
+      - name: Run container
+        run: docker run hello-docker:latest
