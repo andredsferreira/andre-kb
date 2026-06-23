@@ -2,6 +2,11 @@
 Meaning, if you are trying to use the char to represent an ASCII
 character it doesn't really matter if its signed or unsigned.
 
+*Arithmetic* in C always undergoes *integer promotion* for types smaller
+than int. For example having two chars "a" and "b", and a char sum = a
++ b, the chars first get converted to integers, then the sum happens,
+then the sum gets converted back to char.
+
 Keep shift amounts less than word size, i.e, don't do this, assuming
 "a" is a byte: a << 16, a << 8, a << 7. In general avoid w << b, where
 b > w (this also applies to right shifts >>).

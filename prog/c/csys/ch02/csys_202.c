@@ -103,9 +103,9 @@ int strlonger(char *s, char *t) { return strlen(s) > strlen(t); }
 
 int main() {
 
-  // signed_to_unsigned();
-  // unsigned_to_signed();
-  variable_quirks();
+  signed_to_unsigned();
+  unsigned_to_signed();
+  // variable_quirks();
   // unsigned_casts_in_expressions();
   // converting_size();
   // converting_size_and_sign();

@@ -39,7 +39,7 @@ Examples:
 
 
 $$
-U2T(x) = x - 2^w , x > Tmax
+U2T(x) = 2^w - x , x > Tmax
 $$
 $$
 T2U(x) = 2^w + x , x < 0

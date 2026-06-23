@@ -1,0 +1,6 @@
+FROM alpine AS base
+
+ARG GITHUB_ACTOR
+ENV GITHUB_ACTOR=${GITHUB_ACTOR}
+
+CMD ["sh", "-c", "echo Hello, $GITHUB_ACTOR!"]

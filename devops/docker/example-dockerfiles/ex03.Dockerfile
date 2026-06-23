@@ -1,0 +1,5 @@
+FROM alpine AS base
+
+ARG BUILDPLATFORM
+
+RUN echo ${BUILDPLATFORM}
