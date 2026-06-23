@@ -1,4 +1,4 @@
-name: Pipeline for mini-project located in prog/go/standard-http-server
+name: Pipeline for mini-project located in projects/standard-http-server
 
 on:
   # For manual triggering of the workflow in the GitHub UI
