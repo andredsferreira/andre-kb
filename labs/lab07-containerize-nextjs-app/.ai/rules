@@ -1,0 +1,158 @@
+# Next.js + Docker Project Rules
+
+When creating or modifying Next.js app code, Dockerfiles, Docker Compose, or related config in this project, follow these rules.
+
+---
+
+## Project context
+
+- **Stack:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS, Vitest, ESLint.
+- **Package manager:** npm (package-lock.json); Dockerfiles also support yarn and pnpm via lockfile detection.
+- **Repo:** docker-nextjs-sample (Next.js + Docker sample).
+
+---
+
+## Next.js conventions
+
+- Use the **App Router**: `app/` directory, `page.tsx`, `layout.tsx`, `loading.tsx`, etc.
+- Use **TypeScript** for app and config; keep types accurate and avoid `any` where possible.
+- **Static export:** Use `output: "export"` in `next.config` only when building for `out/` (Dockerfile.serve, Dockerfile.nginx). Default in this repo is `output: "standalone"` for the main Dockerfile.
+- **Standalone:** Copy only `.next/standalone`, `.next/static`, and `public/` into the runtime image; do not copy the full `.next/` directory.
+- **Paths:** Use project-relative imports; avoid hardcoded absolute paths that assume a specific host layout.
+- **Env:** Use `process.env` for runtime config; never commit secrets. Use `.env*` only for local/dev and ensure `.dockerignore` excludes them from build context.
+
+---
+
+## Docker: image version pinning
+
+- **ALWAYS** pin exact base image versions. No `latest` or floating tags.
+- Use ARGs for versions: e.g. `ARG NODE_VERSION=24.14.0-alpine`, `ARG NGINXINC_IMAGE_TAG=alpine3.22`.
+- This project: Node `24.14.0-alpine` (serve/nginx) or `24.14.0-slim` (standalone/dev); Nginx `nginxinc/nginx-unprivileged` with Alpine tag.
+
+---
+
+## Docker: base image selection
+
+- Use **Alpine** or **Slim** variants only.
+- Prefer Alpine for static export (serve/nginx); use Slim when glibc or compatibility is needed (standalone/dev).
+
+---
+
+## Docker: multi-stage builds
+
+- **ALWAYS** use multi-stage builds for production Dockerfiles.
+- Typical stages: `dependencies` → `builder` (or `build`) → `runner` (or `final`).
+- Name stages clearly: `dependencies`, `builder`, `runner`, `final`, `dev`.
+- Copy only required artifacts: for standalone, copy `.next/standalone`, `.next/static`, `public/`; for static, copy `out/` only.
+
+---
+
+## Docker: non-root user
+
+- **ALWAYS** run production containers as non-root.
+- Use built-in users: `node`, `nginx` (nginxinc/nginx-unprivileged).
+- Use `COPY --chown=node:node` (or appropriate user) and set `USER node` (or `nginx`) before `CMD`/`ENTRYPOINT`.
+
+---
+
+## Docker: layer caching
+
+- Copy `package.json` and lockfiles before source code.
+- Use `npm ci` (or yarn/pnpm equivalent with frozen lockfile) for production.
+- Use BuildKit cache mounts: `--mount=type=cache,target=/root/.npm` for npm; optional `--mount=type=cache,target=/app/.next/cache` for Next.js build.
+- Order instructions from least to most frequently changing.
+
+---
+
+## Docker: security
+
+- Never hardcode secrets in Dockerfiles; use env vars or Docker secrets.
+- Set `ENV NODE_ENV=production` in production stages.
+- Prefer `nginxinc/nginx-unprivileged` over default nginx when using Nginx.
+- Use explicit `COPY` of known files; avoid broad wildcards that could pull in secrets.
+
+---
+
+## Docker Compose
+
+- Use unique, descriptive `container_name`s per service.
+- Pin image versions in production; no `latest`.
+- Add healthchecks for production services where useful.
+- Use named networks and restart policies (`unless-stopped` for long-running).
+- This project: `nextjs-prod-standalone` (3000), `nextjs-prod-static-nginx` / `nextjs-prod-static-serve` (8080), `nextjs-dev` (3000, watch), plus `nextjs-test` and `nextjs-lint` under profile `tools`.
+
+---
+
+## Package installation (Docker)
+
+- Use `npm ci` for production; support yarn/pnpm via lockfile detection if present.
+- Pin global or one-off tools: e.g. `serve@14.2.6` in Dockerfile.serve.
+- Use `--omit=dev` or `--only=production` when installing only production deps in final stage (if applicable).
+
+---
+
+## File ownership and .dockerignore
+
+- Set ownership on copy: `COPY --chown=user:group`.
+- `.dockerignore` must exclude: `node_modules`, `.next`, `out`, `dist`, `build`, `.env*`, `.git`, IDE/CI files, Docker and compose files, docs, test/cache dirs. See project `.dockerignore` for the full list.
+
+---
+
+## Project Dockerfiles and ports
+
+| Dockerfile       | Mode        | Port |
+| ---------------- | ----------- | ---- |
+| Dockerfile       | Standalone  | 3000 |
+| Dockerfile.serve | Static      | 8080 |
+| Dockerfile.nginx | Static      | 8080 |
+| Dockerfile.dev   | Development | 3000 |
+
+- Working directory: `/app`.
+- When adding or changing Dockerfiles, keep the same multi-stage and non-root patterns; reference existing Dockerfiles and AGENTS.md.
+
+---
+
+## Code style (Dockerfiles)
+
+- Use clear section comments (e.g. `# ============================================`).
+- Keep ARGs at the top; group related instructions.
+- Prefer comments that explain why, not only what.
+
+---
+
+## What to avoid
+
+- ❌ `latest` or floating base image tags
+- ❌ Running as root in production
+- ❌ Copying full `.next/` into runner (use standalone + static only for standalone mode)
+- ❌ `npm install` in production Dockerfiles (use `npm ci`)
+- ❌ Copying source before dependency manifests
+- ❌ Hardcoding secrets
+- ❌ Skipping multi-stage for production
+- ❌ Using `ADD` instead of `COPY`
+- ❌ Forgetting `NODE_ENV=production` in production images
+- ❌ Committing `.env*` with secrets or including them in build context
+
+---
+
+## Validation checklist
+
+Before finalizing Docker or Next.js deploy changes:
+
+- [ ] Base image version pinned
+- [ ] Alpine or Slim variant used as appropriate
+- [ ] Multi-stage build for production images
+- [ ] Non-root user and correct `--chown`
+- [ ] Dependency manifests before source; `npm ci` in production
+- [ ] BuildKit cache mounts where applicable
+- [ ] Correct Next.js artifacts (standalone vs `out/`) copied
+- [ ] `.dockerignore` complete; no secrets in Dockerfile
+- [ ] `NODE_ENV=production` and optionally `NEXT_TELEMETRY_DISABLED=1` in production
+
+---
+
+## References
+
+- **AGENTS.md** in this folder: full Next.js + Docker best practices and project Dockerfile reference.
+- [Next.js with Docker (official)](https://github.com/vercel/next.js/tree/canary/examples/with-docker)
+- [Dockerfile best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)

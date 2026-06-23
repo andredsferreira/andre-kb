@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - "devops/docker/hello-docker/**"
+      - "cloud-native/docker/hello-docker/**"
 
 jobs:
   docker:

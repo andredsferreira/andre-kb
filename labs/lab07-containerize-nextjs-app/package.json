@@ -1,0 +1,47 @@
+{
+  "name": "next-js-docker-sample",
+  "version": "0.0.1",
+  "homepage": "https://github.com/kristiyan-velkov/docker-nextjs-sample",
+  "author": {
+    "name": "Kristiyan Velkov",
+    "url": "https://www.linkedin.com/in/kristiyan-velkov-763130b3/"
+  },
+  "bugs": {
+    "url": "https://github.com/kristiyan-velkov/docker-nextjs-sample/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/kristiyan-velkov"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10",
+    "@testing-library/react": "^16",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "^15",
+    "jsdom": "^25",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^2"
+  }
+}
