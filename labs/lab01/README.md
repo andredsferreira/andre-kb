@@ -1,4 +1,4 @@
-# Container orchestration Kubernetes mini-project
+# LAB01: Kubernetes Container Orchestration
 
 Demonstrates the same principles as the vm orchestration mini project, but
 applied to containers. It packages the same Node app inside a Docker image. It

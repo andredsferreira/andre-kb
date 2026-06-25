@@ -1,0 +1,41 @@
+services:
+  lab08:
+    depends_on:
+      - roach-db
+    build:
+      context: .
+    container_name: lab08-app
+    hostname: lab08-app
+    networks:
+      - lab08-net
+    ports:
+      - 8080:8080
+    environment:
+      - PGUSER=${PGUSER:-lab08-user}
+      - PGHOST=roach-db
+      - PGPORT=${PGPORT:-26257}
+      - PGDATABASE=${PGDATABASE:-lab08-db}
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  roach-db:
+    image: cockroachdb/cockroach:latest-v25.4
+    container_name: roach-db
+    hostname: roach-db
+    networks:
+      - lab08-net
+    ports:
+      - 26257:26257
+      - 8090:8090
+    volumes:
+      - roach-db:/cockroach/cockroach-data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: start-single-node --insecure
+
+volumes:
+  roach-db:
+
+networks:
+  lab08-net:
+    driver: bridge

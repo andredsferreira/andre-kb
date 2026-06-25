@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - "programming/go/standard-http-server/**"
+      - "labs/lab06/**"
 
 jobs:
   build-and-test:
