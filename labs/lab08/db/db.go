@@ -7,10 +7,11 @@ import (
 	"os"
 	"time"
 
+	// Cockroach DB uses the PostgresSQL driver under the hood.
 	_ "github.com/lib/pq"
 )
 
-var PostgresDB *sql.DB
+var CockroachDB *sql.DB
 
 type dbConfig struct {
 	Host        string
@@ -24,30 +25,27 @@ type dbConfig struct {
 
 func Setup() {
 	dbConfig := &dbConfig{
-		Host:        os.Getenv("PQDB_HOST"),
-		Port:        os.Getenv("PQDB_PORT"),
-		User:        os.Getenv("PQDB_USER"),
-		Password:    os.Getenv("PQDB_PASSWORD"),
-		Database:    os.Getenv("PQDB_DATABASE"),
-		SSLMode:     os.Getenv("PQDB_SSLMODE"),
-		SSLRootCert: os.Getenv("PQDB_ROOT_CERT"),
+		Host:        os.Getenv("CRDB_HOST"),
+		Port:        os.Getenv("CRDB_PORT"),
+		User:        os.Getenv("CRDB_USER"),
+		Password:    os.Getenv("CRDB_PASSWORD"),
+		Database:    os.Getenv("CRDB_DATABASE"),
+		SSLMode:     os.Getenv("CRDB_SSLMODE"),
+		SSLRootCert: os.Getenv("CRDB_ROOT_CERT"),
 	}
-	db, err := sql.Open("postgres", dbConfig.connectionString())
+	var err error
+	CockroachDB, err = sql.Open("postgres", dbConfig.connectionString())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
+	CockroachDB.SetConnMaxLifetime(time.Minute * 3)
+	CockroachDB.SetMaxOpenConns(10)
+	CockroachDB.SetMaxIdleConns(10)
 
-	err = db.Ping()
+	err = CockroachDB.Ping()
 	if err != nil {
 		log.Fatalf("database is not responding: %v", err)
-	}
-
-	if os.Getenv("ENV") == "dev" {
-		// Bootstrap db
 	}
 }
 

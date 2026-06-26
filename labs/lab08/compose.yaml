@@ -1,7 +1,8 @@
 services:
   lab08:
     depends_on:
-      - roach-db
+      roach-db-init:
+        condition: service_completed_successfully
     build:
       context: .
     container_name: lab08-app
@@ -11,15 +12,12 @@ services:
     ports:
       - 80:8080
     environment:
-      - PQDB_PORT=roach-db
-      - PQDB_PORT=8080
-      - PQDB_USER=root
-      - PQDB_PASSWORD=
-      - PGDATABASE=lab08-db
-      - ENV=dev
-    deploy:
-      restart_policy:
-        condition: on-failure
+      - CRDB_HOST=roach-db
+      - CRDB_PORT=26257
+      - CRDB_USER=root
+      - CRDB_PASSWORD=
+      - CRDB_DATABASE=lab08-db
+      - CRDB_SSLMODE=disable
 
   roach-db:
     image: cockroachdb/cockroach:latest-v25.4
@@ -33,6 +31,23 @@ services:
     volumes:
       - roach-db:/cockroach/cockroach-data
     command: start-single-node --insecure
+    healthcheck:
+      test: ["CMD", "cockroach", "sql", "--insecure", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  roach-db-init:
+    image: cockroachdb/cockroach:latest-v25.4
+    networks:
+      - lab08-net
+    depends_on:
+      roach-db:
+        condition: service_healthy
+    volumes:
+      - ./init.sql:/init.sql
+    command: sql --insecure --host=roach-db:26257 -f /init.sql
+    restart: "no"
 
 volumes:
   roach-db:
