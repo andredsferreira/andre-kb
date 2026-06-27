@@ -48,8 +48,8 @@ func GetUserByUsername(username string) (User, error) {
 	return u, nil
 }
 
-func AddUser(username, password, email string) error {
-	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3)`
-	_, err := db.CockroachDB.Exec(query, username, password, email)
+func AddUser(username, email string) error {
+	query := `INSERT INTO users (username, email) VALUES ($1, $2)`
+	_, err := db.CockroachDB.Exec(query, username, email)
 	return err
 }
