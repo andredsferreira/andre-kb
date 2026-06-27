@@ -19,6 +19,26 @@ services:
       - CRDB_DATABASE=lab08-db
       - CRDB_SSLMODE=disable
 
+  lab08-test:
+    depends_on:
+      roach-db-init:
+        condition: service_completed_successfully
+    build:
+      context: .
+    container_name: lab08-test
+    networks:
+      - lab08-net
+    environment:
+      - CRDB_HOST=roach-db
+      - CRDB_PORT=26257
+      - CRDB_USER=root
+      - CRDB_PASSWORD=
+      - CRDB_DATABASE=lab08-db
+      - CRDB_SSLMODE=disable
+    command: go test ./...
+    profiles:
+      - test # only started when --profile test is passed
+
   roach-db:
     image: cockroachdb/cockroach:latest-v25.4
     container_name: roach-db

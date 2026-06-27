@@ -4,7 +4,6 @@ import (
 	"andrekb/lab08/db"
 	"database/sql"
 	"fmt"
-	"regexp"
 )
 
 type User struct {
@@ -38,11 +37,7 @@ func GetUsers() ([]User, error) {
 
 func GetUserByUsername(username string) (User, error) {
 	var u User
-	query := `
-		SELECT username, email
-		FROM users
-		WHERE username = ?
-	`
+	query := `SELECT username, email FROM users WHERE username = $1`
 	row := db.CockroachDB.QueryRow(query, username)
 	if err := row.Scan(&u.Username, &u.Email); err != nil {
 		if err == sql.ErrNoRows {
@@ -54,22 +49,7 @@ func GetUserByUsername(username string) (User, error) {
 }
 
 func AddUser(username, password, email string) error {
-	query := `
-        INSERT INTO users (username, email) 
-        VALUES (?, ?)
-    `
+	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3)`
 	_, err := db.CockroachDB.Exec(query, username, password, email)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func ValidateUser(username, password, email string) bool {
-	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	isValidEmail := regexp.MustCompile(emailRegex).MatchString(email)
-	if len(username) >= 3 && len(password) >= 3 && isValidEmail {
-		return true
-	}
-	return false
+	return err
 }
