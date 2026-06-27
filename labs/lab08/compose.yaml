@@ -25,6 +25,7 @@ services:
         condition: service_completed_successfully
     build:
       context: .
+      target: test
     container_name: lab08-test
     networks:
       - lab08-net
@@ -35,7 +36,6 @@ services:
       - CRDB_PASSWORD=
       - CRDB_DATABASE=lab08-db
       - CRDB_SSLMODE=disable
-    command: go test ./...
     profiles:
       - test # only started when --profile test is passed
 
