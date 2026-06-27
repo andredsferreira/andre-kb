@@ -1,4 +1,4 @@
-name: Pipeline for mini-project located in projects/standard-http-server
+name: lab06-cicd
 
 on:
   # For manual triggering of the workflow in the GitHub UI
@@ -24,15 +24,15 @@ jobs:
           go-version: "1.21"
 
       - name: Install dependencies
-        working-directory: prog/go/standard-http-server
+        working-directory: labs/lab06/
         run: go mod download
 
       - name: Run tests
-        working-directory: prog/go/standard-http-server
+        working-directory: labs/lab06/
         run: go test ./...
 
       - name: Build application
-        working-directory: prog/go/standard-http-server
+        working-directory: labs/lab06/
         run: go build -o main .
 
   docker-build-and-push:
@@ -61,7 +61,7 @@ jobs:
           docker build \
             -t ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:${SHA} \
             -t ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:latest \
-            prog/go/standard-http-server
+            labs/lab06/
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:${SHA}
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:latest
 
@@ -93,7 +93,7 @@ jobs:
 
       - name: Deploy Helm chart
         run: |
-          helm upgrade --install standard-http-server prog/go/standard-http-server/k8s \
+          helm upgrade --install standard-http-server labs/lab06//k8s \
             --set image.repository=${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server \
             --set image.tag=latest \
             --wait \

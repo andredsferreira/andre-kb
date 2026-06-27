@@ -1,0 +1,33 @@
+name: lab08-cicd
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "labs/lab08/**"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: labs/lab08
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build images
+        run: docker compose build
+
+      - name: Run integration tests
+        run: docker compose --profile test run --rm lab08-test
+
+      - name: Tear down
+        if: always()
+        run: docker compose --profile test down --volumes --remove-orphans

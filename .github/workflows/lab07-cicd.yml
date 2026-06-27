@@ -1,18 +1,18 @@
 # CI/CD – Next.js Application with Docker
 # Builds the app, runs tests in a container, and pushes the production image to Docker Hub.
 
-name: CI/CD - Next.js Application with Docker
+name: lab07-cicd
 
 on:
   push:
     branches: [main]
     paths: 
-      - "labs/lab07-containerize-nextjs-app"
+      - "labs/lab07/**"
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened]
     paths: 
-      - "labs/lab07-containerize-nextjs-app"
+      - "labs/lab07/**"
 
 jobs:
   build-test-push:
