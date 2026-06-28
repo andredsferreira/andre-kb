@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"andrekb/standard-http-server/handlers"
-	"andrekb/standard-http-server/middleware"
+	"andrekb/lab01/handlers"
+	"andrekb/lab01/middleware"
 )
 
 func main() {

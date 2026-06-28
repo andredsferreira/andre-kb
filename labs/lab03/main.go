@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"andrekb/lab08/db"
-	"andrekb/lab08/handler"
+	"andrekb/lab03/db"
+	"andrekb/lab03/handler"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("LAB08: Containerizing Go Application")
+		return c.SendString("LAB03: Containerizing Go Application")
 	})
 
 	app.Get("/users", handler.GetUsers)

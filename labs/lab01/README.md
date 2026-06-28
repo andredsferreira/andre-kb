@@ -1,7 +1,20 @@
-# LAB01: Kubernetes Container Orchestration
+#### Build
 
-Demonstrates the same principles as the vm orchestration mini project, but
-applied to containers. It packages the same Node app inside a Docker image. It
-then launches multiple containers from that image that are orchestrated through
-the use of Kubernetes.
+```bash
+# Start local kubernetes cluster (if not started)
+minikube start
 
+# Build docker image inside minikube
+eval $(minikube -p minikube docker-env)
+docker build -t standard-http-server:latest .
+
+# Apply Helm chart
+helm install my-server ./k8s
+
+```
+
+#### Run
+
+```bash
+minikube service standard-http-server
+```

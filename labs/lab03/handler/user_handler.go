@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"andrekb/lab08/service"
+	"andrekb/lab03/service"
 	"github.com/gofiber/fiber/v2"
 )
 

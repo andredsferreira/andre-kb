@@ -1,4 +1,4 @@
-name: lab06-cicd
+name: lab01-cicd
 
 on:
   # For manual triggering of the workflow in the GitHub UI
@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - "labs/lab06/**"
+      - "labs/lab01/**"
 
 jobs:
   build-and-test:
@@ -24,15 +24,15 @@ jobs:
           go-version: "1.21"
 
       - name: Install dependencies
-        working-directory: labs/lab06/
+        working-directory: labs/lab01/
         run: go mod download
 
       - name: Run tests
-        working-directory: labs/lab06/
+        working-directory: labs/lab01/
         run: go test ./...
 
       - name: Build application
-        working-directory: labs/lab06/
+        working-directory: labs/lab01/
         run: go build -o main .
 
   docker-build-and-push:
@@ -59,11 +59,11 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:${SHA} \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:latest \
-            labs/lab06/
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:${SHA}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server:latest
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/lab01:${SHA} \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/lab01:latest \
+            labs/lab01/
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/lab01:${SHA}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/lab01:latest
 
   test-kind-cluster:
     needs: docker-build-and-push
@@ -93,8 +93,8 @@ jobs:
 
       - name: Deploy Helm chart
         run: |
-          helm upgrade --install standard-http-server labs/lab06//k8s \
-            --set image.repository=${{ secrets.DOCKER_HUB_USERNAME }}/standard-http-server \
+          helm upgrade --install lab01 labs/lab01//k8s \
+            --set image.repository=${{ secrets.DOCKER_HUB_USERNAME }}/lab01 \
             --set image.tag=latest \
             --wait \
             --timeout 120s

@@ -1,14 +1,14 @@
 services:
-  lab08:
+  lab03:
     depends_on:
       roach-db-init:
         condition: service_completed_successfully
     build:
       context: .
-    container_name: lab08-app
-    hostname: lab08-app
+    container_name: lab03-app
+    hostname: lab03-app
     networks:
-      - lab08-net
+      - lab03-net
     ports:
       - 80:8080
     environment:
@@ -16,25 +16,25 @@ services:
       - CRDB_PORT=26257
       - CRDB_USER=root
       - CRDB_PASSWORD=
-      - CRDB_DATABASE=lab08-db
+      - CRDB_DATABASE=lab03-db
       - CRDB_SSLMODE=disable
 
-  lab08-test:
+  lab03-test:
     depends_on:
       roach-db-init:
         condition: service_completed_successfully
     build:
       context: .
       target: test
-    container_name: lab08-test
+    container_name: lab03-test
     networks:
-      - lab08-net
+      - lab03-net
     environment:
       - CRDB_HOST=roach-db
       - CRDB_PORT=26257
       - CRDB_USER=root
       - CRDB_PASSWORD=
-      - CRDB_DATABASE=lab08-db
+      - CRDB_DATABASE=lab03-db
       - CRDB_SSLMODE=disable
     profiles:
       - test # only started when --profile test is passed
@@ -44,7 +44,7 @@ services:
     container_name: roach-db
     hostname: roach-db
     networks:
-      - lab08-net
+      - lab03-net
     ports:
       - 26257:26257
       - 8080:8080
@@ -60,7 +60,7 @@ services:
   roach-db-init:
     image: cockroachdb/cockroach:latest-v25.4
     networks:
-      - lab08-net
+      - lab03-net
     depends_on:
       roach-db:
         condition: service_healthy
@@ -73,5 +73,5 @@ volumes:
   roach-db:
 
 networks:
-  lab08-net:
+  lab03-net:
     driver: bridge

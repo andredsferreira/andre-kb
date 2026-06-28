@@ -1,7 +1,7 @@
 package service
 
 import (
-	"andrekb/lab08/db"
+	"andrekb/lab03/db"
 	"testing"
 )
 

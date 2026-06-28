@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: standard-http-server
+  repository: lab01
   tag: latest
   pullPolicy: IfNotPresent
 

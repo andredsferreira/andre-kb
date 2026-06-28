@@ -1,0 +1,70 @@
+name: lab03-cicd
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "labs/lab03/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "labs/lab03/**"
+
+jobs:
+  build-test-push-dev:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: labs/lab03
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Cache Docker layers
+        uses: actions/cache@v5
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-buildx-
+
+      - name: Extract short SHA
+        id: shortsha
+        run: echo "SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Build images
+        run: docker compose build
+
+      - name: Run integration tests
+        run: docker compose --profile test run --rm lab03-test
+
+      - name: Tear down
+        if: always()
+        run: docker compose --profile test down --volumes --remove-orphans
+
+      - name: Login to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build and push dev image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: labs/lab03
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/lab03-dev:${{ steps.shortsha.outputs.SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/lab03-dev:latest
+
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max

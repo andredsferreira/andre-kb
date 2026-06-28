@@ -1,13 +1,40 @@
-# Microservices Kubernetes mini project
+### LAB03: Containerizing Go Application
 
-This is a learning mini project that deploys two services (backend, and
-frontend) in the Minikube cluster (for local development). It's an example of a
-very simple web application.
+**Description**
 
-The backend uses a ClusterIP Kubernetes service. This means it can only receive
-requests from the cluster (in this case it will receive only from the frontend),
-and distribute the load along the pods (3) running the backend.
+The main purpose of this lab is to properly setup a containerized
+(using Docker) application written in Go. Thus, the focus is on
+guaranteeing that there is a good setup of DEV environment (using
+Docker Compose) and there is a production ready (or as close as
+possible) CI/CD pipeline. This means the Go code itself it's not
+production ready and may not follow the best patterns for a production
+use case, or a particular use case.
 
-The frontend uses as LoadBalancer Kuberenetes service. This means it can be
-accessed from the Internet and distribute the load along the pods (2) running
-the frontend.
+**Running**
+
+This command runs the application and also rebuilds (remove the
+--build flag if you don't want to rebuild, just remember that any
+modifications to the source code will need to be rebuilt in order to
+be seen).
+
+NOTE: Run the command on this directory.
+
+```bash
+docker compose up --build -d
+```
+
+**Stopping**
+
+Just stops the app and removes the containers and networks.
+
+```bash
+docker compose down
+```
+
+**Cleaning**
+
+This will also remove the named volumes and thus the DB data.
+
+```bash
+docker compose down -v
+```

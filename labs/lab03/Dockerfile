@@ -7,7 +7,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o lab08 .
+RUN CGO_ENABLED=0 GOOS=linux go build -o lab03 .
 
 FROM build AS test
 
@@ -16,6 +16,6 @@ CMD ["go", "test", "./..."]
 FROM alpine:${ALPINE_VERSION} as final
 
 WORKDIR /app
-COPY --from=build /app/lab08 .
+COPY --from=build /app/lab03 .
 EXPOSE 8080
-CMD [ "./lab08" ]
+CMD [ "./lab03" ]
