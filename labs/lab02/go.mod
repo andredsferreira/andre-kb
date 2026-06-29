@@ -1,4 +1,4 @@
-module andrekb/lab03
+module andrekb/lab02
 
 go 1.26.4
 

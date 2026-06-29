@@ -1,4 +1,4 @@
-name: lab03-cicd
+name: lab02-cicd
 
 on:
   workflow_dispatch:
@@ -6,19 +6,19 @@ on:
     branches:
       - main
     paths:
-      - "labs/lab03/**"
+      - "labs/lab02/**"
   pull_request:
     branches:
       - main
     paths:
-      - "labs/lab03/**"
+      - "labs/lab02/**"
 
 jobs:
   build-test-push-dev:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: labs/lab03
+        working-directory: labs/lab02
 
     steps:
       - name: Checkout code
@@ -41,8 +41,21 @@ jobs:
       - name: Build images
         run: docker compose build
 
+      - name: Build and load image locally
+        uses: docker/build-push-action@v6
+        with:
+          context: labs/lab02
+          push: false
+          load: true
+          platforms: linux/amd64
+          tags: |
+            lab02-app:${{ steps.shortsha.outputs.SHA }}
+            lab02-app:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+
       - name: Run integration tests
-        run: docker compose --profile test run --rm lab03-test
+        run: docker compose --profile test run --rm lab02-test
 
       - name: Tear down
         if: always()
@@ -59,12 +72,12 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         with:
-          context: labs/lab03
+          context: labs/lab02
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/lab03-dev:${{ steps.shortsha.outputs.SHA }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/lab03-dev:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/lab02-dev:${{ steps.shortsha.outputs.SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/lab02-dev:latest
 
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max

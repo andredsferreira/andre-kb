@@ -1,4 +1,4 @@
-### LAB03: Containerizing Go Application
+### LAB02: Containerizing Go Application
 
 **Description**
 

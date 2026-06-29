@@ -1,7 +1,7 @@
 package service
 
 import (
-	"andrekb/lab03/db"
+	"andrekb/lab02/db"
 	"database/sql"
 	"fmt"
 )

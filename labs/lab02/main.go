@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"andrekb/lab03/db"
-	"andrekb/lab03/handler"
+	"andrekb/lab02/db"
+	"andrekb/lab02/handler"
 )
 
 func main() {

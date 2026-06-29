@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS "lab03-db";
-USE "lab03-db";
+CREATE DATABASE IF NOT EXISTS "lab02-db";
+USE "lab02-db";
 
 CREATE TABLE IF NOT EXISTS users (
     id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
