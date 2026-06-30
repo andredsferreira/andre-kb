@@ -7,6 +7,7 @@
 | docker build --pull -t image_name:version .              | The --pull flags updates the base image version.                                |
 | docker build --build-arg BUILD_ARGUMENT=argument_value . | Indicates a build argument that is present in the Dockerfile.                   |
 | docker images                                            |                                                                                 |
+| docker history image_name                                | See layer changes in a image, very useful!                                      |
 | docker rmi image_id                                      |                                                                                 |
 | docker pull nginx:alpine                                 |                                                                                 |
 | docker push myregistry/image_name:version                |                                                                                 |
