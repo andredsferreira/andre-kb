@@ -11,6 +11,7 @@
 | docker rmi image_id                                      |                                                                                 |
 | docker pull nginx:alpine                                 |                                                                                 |
 | docker push myregistry/image_name:version                |                                                                                 |
+| docker buildx ls                                         | List build containers for BuildKit                                              |
 
 ### Container Management
 

@@ -1,3 +1,11 @@
+# This workflow can still be improved a lot! I'm building multiple
+# times with the docker/build-push-action and docker compose for
+# testing (inside the docker compose we also build again).
+# A possible solution is maybe manually build with docker cli and
+# ditch the docker/build-push-action, and then test manually. Or read
+# the documentation on docker/build-push-action:
+# https://github.com/docker/build-push-action
+
 name: lab02-cicd
 on:
   workflow_dispatch:
