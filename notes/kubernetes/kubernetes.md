@@ -1,1 +1,0 @@
-studying some kubernetes  

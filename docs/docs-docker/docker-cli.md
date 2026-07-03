@@ -1,17 +1,21 @@
+## Docker CLI
+
 ### Image Management
 
-| Command                                                  | Description                                                                     |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| docker build -t image_name:version build_context_path    | The build_context_path is usually ".", to indicate the current local directory. |
-| docker build -f dockerfile_path/Dockerfile .             |                                                                                 |
-| docker build --pull -t image_name:version .              | The --pull flags updates the base image version.                                |
-| docker build --build-arg BUILD_ARGUMENT=argument_value . | Indicates a build argument that is present in the Dockerfile.                   |
-| docker images                                            |                                                                                 |
-| docker history image_name                                | See layer changes in a image, very useful!                                      |
-| docker rmi image_id                                      |                                                                                 |
-| docker pull nginx:alpine                                 |                                                                                 |
-| docker push myregistry/image_name:version                |                                                                                 |
-| docker buildx ls                                         | List build containers for BuildKit                                              |
+| Command                                                  | Description                                                                               |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| docker build -t image_name:version build_context_path    | The build_context_path is usually ".", to indicate the current local directory.           |
+| docker build -f dockerfile_path/Dockerfile .             |                                                                                           |
+| docker build --pull -t image_name:version .              | The --pull flags updates the base image version.                                          |
+| docker build --build-arg BUILD_ARGUMENT=argument_value . | Indicates a build argument that is present in the Dockerfile.                             |
+| docker compose --build up                                | Builds (and rebuilds, remove the --build flag if you don't want) with compose.            |
+| docker compose down -v                                   | Tears everything down from compose (including volumes, remove -v flag if you don't want). |
+| docker images                                            |                                                                                           |
+| docker history image_name                                | See layer changes in a image, very useful!                                                |
+| docker rmi image_id                                      |                                                                                           |
+| docker pull nginx:alpine                                 |                                                                                           |
+| docker push myregistry/image_name:version                |                                                                                           |
+| docker buildx ls                                         | List build containers for BuildKit                                                        |
 
 ### Container Management
 
