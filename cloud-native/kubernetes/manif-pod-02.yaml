@@ -1,0 +1,36 @@
+# Example manifest for a PostqreSQL database Pod.
+# Includes a volume mount on the host (node).
+
+apiVersion: v1
+
+kind: Pod
+
+metadata:
+  name: postgres-pod
+  labels:
+    app: postgres
+
+spec:
+  containers:
+    - name: postgres
+      image: postgres:16
+      env:
+        - name: POSTGRES_PASSWORD
+          value: password
+      ports:
+        - containerPort: 5432
+          name: postgres
+          protocol: TCP
+      volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+
+  # Volume is mounted from the host in a specific path. # Data lives
+  # on that specific node! If the Pod gets rescheduled to another node
+  # it won't have access to the data. For PROD use cases PVCs are
+  # better, this is purely demonstrational (check manif-pod-03.yaml).
+
+  volumes:
+    - name: postgres-storage
+      hostPath:
+        path: "/data/postgres"

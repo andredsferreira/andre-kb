@@ -1,4 +1,4 @@
-# Example of a manifest for a nginx Pod
+# Example of a manifest for a nginx Pod.
 
 apiVersion: v1
 kind: Pod
@@ -10,14 +10,27 @@ spec:
   containers:
     - name: nginx
       image: nginx:latest
+      resources:
+        # Minimum resources for the container, Kubernetees guarantees
+        # they exist on the node before starting the container.
+        requests:
+          cpu: "500m" # Half a core (m stands for milicores meaning 1000m=1core).
+          memory: "128Mi"
+        # Maximum resources the container can use.
+        limits:
+          cpu: "1000m"
+          memory: "256Mi"
+      # This block is optional
       ports:
         - containerPort: 80
+          name: http
+          protocol: TCP
 
       # Check if the container inside is healthy even if the process
       # is running ok. Kubernetes will always keep the container process
       # alive, but health checks are specific to the application and
       # must be specified in the manifest.
-      
+
       livenessProbe:
         httpGet:
           path: /
@@ -25,4 +38,17 @@ spec:
         initialDelaySeconds: 5
         periodSeconds: 10
         timeoutSeconds: 2
+        failureThreshold: 3
+
+      # Readiness probe to check if the container is ready to receive
+      # receive requests.
+
+      readinessProbe:
+        httpGet:
+          # Assuming this path exists
+          path: /ready
+          port: 80
+        initialDelaySeconds: 30
+        timeoutSeconds: 1
+        periodSeconds: 10
         failureThreshold: 3

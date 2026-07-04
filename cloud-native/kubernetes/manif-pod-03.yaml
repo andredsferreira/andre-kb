@@ -1,0 +1,52 @@
+# Example manifest for a PostgreSQL database Pod.
+# Includes a volume mount backed by a PersistentVolumeClaim.
+
+# First resource is the PVC
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+
+# This line seperates the resources, kubectl apply -f will create
+# both.
+---
+# Second resource is the Pod:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: postgres-pod
+  labels:
+    app: postgres
+spec:
+  containers:
+    - name: postgres
+      image: postgres:16
+      env:
+        - name: POSTGRES_PASSWORD
+          value: password
+      ports:
+        - containerPort: 5432
+          name: postgres
+          protocol: TCP
+      volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+
+  # Volume is backed by a PersistentVolumeClaim, not tied to a specific
+  # node. If the Pod gets rescheduled elsewhere, Kubernetes reattaches
+  # the same underlying volume (requires network/cloud-backed storage
+  # and a working StorageClass for dynamic provisioning).
+
+  volumes:
+    - name: postgres-storage
+      persistentVolumeClaim:
+        claimName: postgres-pvc
