@@ -1,0 +1,28 @@
+# Example of a manifest for a nginx Pod
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+
+      # Check if the container inside is healthy even if the process
+      # is running ok. Kubernetes will always keep the container process
+      # alive, but health checks are specific to the application and
+      # must be specified in the manifest.
+      
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 2
+        failureThreshold: 3
