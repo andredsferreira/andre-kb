@@ -7,6 +7,10 @@ kubectl COMMAND -h
 # General
 
 kubectl get resource_type [resource_name]
+# Selection based on labels
+kubectl get resource_type --selector="key=value"
+kubectl get resource_type --selector="key in (value-01, value-02, ...)"
+kubectl get resource_type --selector="key"
 
 kubectl describe resource_type/resource_name
 kubectl explain resource_type 
@@ -27,5 +31,7 @@ kubectl port-forward --address 0.0.0.0 pod_name LOCAL_PORT:REMOTE_PORT
 kubectl get nodes -o wide --no-headers
 kubectl get nodes -o json
 kubectl get nodes --watch
-e
+kubectl get deployments --show-labels
+kubectl get pods --selector="ver=2"
+
 ```
