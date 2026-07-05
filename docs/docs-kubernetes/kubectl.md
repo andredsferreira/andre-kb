@@ -34,4 +34,9 @@ kubectl get nodes --watch
 kubectl get deployments --show-labels
 kubectl get pods --selector="ver=2"
 
+# Spin up a temporary Pod and enter it's shell to troubleshoot
+# network, usefull to communicate with other Pods and services inside
+# the cluster.
+kubectl run tmp-shell --rm -it --image=nicolaka/netshoot --namespace=default -- /bin/bash
+
 ```

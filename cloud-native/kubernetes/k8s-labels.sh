@@ -6,12 +6,7 @@ set -euo pipefail
 # Pass --cleanup to delete everything this script creates instead.
 
 if [[ "${1:-}" == "--cleanup" ]]; then
-    echo "Cleaning up deployments..."
-    kubectl delete deployment alpaca-prod --ignore-not-found
-    kubectl delete deployment alpaca-test --ignore-not-found
-    kubectl delete deployment bandicoot-prod --ignore-not-found
-    kubectl delete deployment bandicoot-test --ignore-not-found
-    echo "Cleanup complete."
+    kubectl delete deployments --all
     exit 0
 fi
 
