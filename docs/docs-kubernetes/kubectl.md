@@ -33,6 +33,8 @@ kubectl get nodes -o json
 kubectl get nodes --watch
 kubectl get deployments --show-labels
 kubectl get pods --selector="ver=2"
+# See where a service is sending traffic (lower level)-
+kubectl get endpoints service_name --watch
 
 # Spin up a temporary Pod and enter it's shell to troubleshoot
 # network, usefull to communicate with other Pods and services inside

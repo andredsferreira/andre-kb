@@ -14,7 +14,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("LAB03: Containerizing Go Application")
+		return c.SendString("LAB02: Containerizing Go Application")
 	})
 
 	app.Get("/users", handler.GetUsers)
