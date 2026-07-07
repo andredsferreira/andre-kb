@@ -13,6 +13,8 @@ kubectl get resource_type --selector="key=value"
 kubectl get resource_type --selector="key in (value-01, value-02, ...)"
 kubectl get resource_type --selector="key"
 
+kubectl get resource_name --all-namespaces
+
 kubectl describe resource_type/resource_name
 kubectl explain resource_type 
 
@@ -25,6 +27,7 @@ kubectl cp pod_name:/remote_path /local_path
 # After creating the pod:
 kubectl port-forward pod_name LOCAL_PORT:REMOTE_PORT
 # Acessible to machines in the LAN aswell:
+kubectl port-forward --address 0.0.0.0 resource_type/resource_name LOCAL_PORT:REMOTE_PORT
 kubectl port-forward --address 0.0.0.0 pod_name LOCAL_PORT:REMOTE_PORT
 
 # Examples
