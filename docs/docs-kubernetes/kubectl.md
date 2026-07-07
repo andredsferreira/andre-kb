@@ -7,6 +7,7 @@ kubectl COMMAND -h
 # General
 
 kubectl get resource_type [resource_name]
+kubectl -n namespace get resource_type
 # Selection based on labels
 kubectl get resource_type --selector="key=value"
 kubectl get resource_type --selector="key in (value-01, value-02, ...)"
