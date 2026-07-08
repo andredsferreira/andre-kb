@@ -1,0 +1,25 @@
+# Example ReplicaSet manifest for learning purposes.
+# In practice you almost never use ReplicaSet directly but instead use
+# Deployment objects.
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx-replicaset
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx # Must be the same as the label in metadata field.
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27
+          ports:
+            - containerPort: 80

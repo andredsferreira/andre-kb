@@ -1,0 +1,16 @@
+# Service manifest of the alpaca app present in the
+# "k8s-service-discovery.sh" script.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: alpaca
+  labels:
+    app: alpaca
+spec:
+  selector:
+    app: alpaca
+  ports:
+    - port: 8080
+      targetPort: 80
+  type: ClusterIP

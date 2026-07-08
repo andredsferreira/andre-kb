@@ -1,0 +1,24 @@
+# Deployment manifest of the alpaca app present in the
+# "k8s-service-discovery.sh" script.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alpaca
+  labels:
+    app: alpaca
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: alpaca
+  template:
+    metadata:
+      labels:
+        app: alpaca
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
