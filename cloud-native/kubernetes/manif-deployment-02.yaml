@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  # This field specifies the maximum number of older deployments that
+  # hang arround if you wish to rollback or analyse them
+  revisionHistoryLimit: 14
+  replicas: 3
+  strategy:
+    # Default if ommited
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+      annotations:
+        # Annotation to use if you update the deployment, i.e, you
+        # roll out a new deployment. # This will show nicely on "kubectl
+        # rollout history deployment deployment_name".
+        kubernetes.io/change-cause: "Testing rolling update."
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"

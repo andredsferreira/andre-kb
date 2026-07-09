@@ -30,6 +30,16 @@ kubectl port-forward pod_name LOCAL_PORT:REMOTE_PORT
 kubectl port-forward --address 0.0.0.0 resource_type/resource_name LOCAL_PORT:REMOTE_PORT
 kubectl port-forward --address 0.0.0.0 pod_name LOCAL_PORT:REMOTE_PORT
 
+# The better alternative to rolling back a deployment with this
+# command is to actually modify the .yaml file so that you keep a
+# declarative track on the system state.
+
+kubectl rollout undo deployments deployment_name
+kubectl rollout status deployments deployment_name
+kubectl rollout pause deployments deployment_name
+kubectl rollout resume deployments deployment_name
+kubectl rollout history deployment deployment_name
+
 # Examples
 
 kubectl get nodes -o wide --no-headers
