@@ -14,6 +14,7 @@ fi
 
 kubectl create deployment alpaca --image=nginx:latest
 kubectl scale deployment alpaca --replicas=3
+# Create the service object
 kubectl expose deployment alpaca --port=8080 --target-port=80
 
 kubectl create deployment bandicoot --image=nginx:latest

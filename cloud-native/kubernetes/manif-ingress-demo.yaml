@@ -21,6 +21,7 @@ spec:
             pathType: Prefix
             backend:
               service:
+                # This Service object must be available on the cluster.
                 name: alpaca
                 port:
                   number: 8080

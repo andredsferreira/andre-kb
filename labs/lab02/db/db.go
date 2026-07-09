@@ -52,7 +52,7 @@ func Setup() {
 func (c *dbConfig) connectionString() string {
 	connStr := fmt.Sprintf(
 		"postgresql://%s:%s@%s:%s/%s?sslmode=%s",
-		c.User,
+		c.User,0
 		c.Password,
 		c.Host,
 		c.Port,

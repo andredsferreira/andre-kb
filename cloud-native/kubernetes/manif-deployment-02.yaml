@@ -8,6 +8,12 @@ spec:
   # This field specifies the maximum number of older deployments that
   # hang arround if you wish to rollback or analyse them
   revisionHistoryLimit: 14
+  # Wait at least 60 seconds before updating the next Pod. This
+  # ensures the Pod is really ready even though health checks are
+  # performed already.
+  minReadySeconds: 60
+  # Timeout for Pod.
+  progressDeadlineSeconds: 600
   replicas: 3
   strategy:
     # Default if ommited
