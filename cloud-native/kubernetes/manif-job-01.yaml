@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: oneshot-job
+  labels:
+    app: oneshot-job
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 120
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: oneshot-job
+    spec:
+      # Jobs must use Never or OnFailure, not Always (Jobs are mean't
+      # to run once).
+      restartPolicy: Never   
+      containers:
+        - name: hello
+          image: busybox:1.36
+          command: ["sh", "-c"]
+          args: ["echo Hello from the Job; sleep 5; echo Done"]

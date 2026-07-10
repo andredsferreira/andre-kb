@@ -1,0 +1,30 @@
+# Example of an HorizontalPodAutoscaler object associated with a
+# Deployment object (can also be assocaited with a ReplicaSet for
+# example). It's very important to note that once the HPA is
+# created it takes over the replicas field on the Deployment object,
+# meaning it can scale to numbers beyond the minimum and maximum defined
+# in the Deployment.
+# NOTE: As default HPA runs in a control loop checking metrics every
+# 15 seconds.
+# NOTE: For HPA to work the Metrics Server must be installed on the
+# cluster (in the case of minikube it's the metrics-server addon that
+# must be enabled: minikube addons enable metrics-server).
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70

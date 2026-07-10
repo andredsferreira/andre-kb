@@ -40,7 +40,10 @@ kubectl rollout pause deployments deployment_name
 kubectl rollout resume deployments deployment_name
 kubectl rollout history deployment deployment_name
 
-# Examples
+# View Job output (you must use the Pod created by the Job).
+kubectl logs 
+
+# Examples #########################################################################
 
 kubectl get nodes -o wide --no-headers
 kubectl get nodes -o json
