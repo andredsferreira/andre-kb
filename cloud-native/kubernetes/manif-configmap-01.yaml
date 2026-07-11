@@ -1,0 +1,46 @@
+# Example of a simple ConfigMap that loads into environment variables.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  LOG_LEVEL: "debug"           
+  MAX_CONNECTIONS: "100"
+  FEATURE_NEW_UI: "true"
+  API_BASE_URL: "https://api.internal.example.com"
+
+---
+# Deployment that uses the ConfigMap above
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: my-registry/my-app:1.0
+        # Pulling all configurations from the ConfigMap and loads them
+        # in the environment.
+        envFrom:
+        - configMapRef:
+            name: app-config
+        # Loads just a specific variable from the ConfigMap (since the
+        # first one already loads everything this statement is redundant
+        # it's only shown here for learning purposes).
+        env:
+        - name: SPECIFIC_VAR
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL   

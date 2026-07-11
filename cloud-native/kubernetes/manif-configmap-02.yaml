@@ -1,0 +1,51 @@
+# Example of a ConfigMap that is mounted aa a full configuration file
+# into the Deployment/Pods (nginx.conf in this case).
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+# Each key in data will become a file in the volume mount. In this
+# case we only have one key (nginx.conf).
+data:
+  nginx.conf: |                
+    server {
+      listen 80;
+      server_name example.com;
+
+      location / {
+        proxy_pass http://backend-service:8080;
+      }
+
+      location /health {
+        return 200 "OK";
+      }
+    }
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-proxy
+  template:
+    metadata:
+      labels:
+        app: nginx-proxy
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.27
+        volumeMounts:
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/conf.d
+      # We need a volume to persist the file from the ConfigMap:
+      volumes:
+      - name: nginx-config-volume
+        configMap:
+          name: nginx-config 

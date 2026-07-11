@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parallel-hello-job
+spec:
+  # Run 3 Pods at the same time.
+  parallelism: 3        
+  # Job ends once 6 Pods ran successfully.
+  completions: 6
+  template:
+    spec:
+      containers:
+      - name: hello
+        image: busybox
+        command: ["sh", "-c", "echo hello; sleep 1; exit 0"]
+      restartPolicy: Never
+  backoffLimit: 4

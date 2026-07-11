@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  # Run daily at 2:00 AM (cron syntax).
+  schedule: "0 2 * * *"        
+  concurrencyPolicy: Forbid    
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          containers:
+          - name: pg-dump
+            image: postgres:16-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              FILENAME=/backup/db-$(date +%Y%m%d-%H%M%S).sql.gz
+              pg_dump -h $(PGHOST) -U $(PGUSER) -d $(PGDATABASE) | gzip > $FILENAME
+              echo "Backup written to $FILENAME"
+            env:
+            - name: PGHOST
+              # The name of the Postgres DB service present in the cluster.
+              value: "postgres.default.svc.cluster.local"
+            - name: PGUSER
+              value: "postgres"
+            - name: PGDATABASE
+              value: "mydb"
+            - name: PGPASSWORD             
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+          - name: backup-storage
+            # Must exist in the cluster beforehand.
+            persistentVolumeClaim:
+              claimName: postgres-backup-pvc
