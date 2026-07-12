@@ -3,9 +3,9 @@ package main
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"log"
-	"net/http"
+
+	"github.com/gofiber/fiber/v3"
 )
 
 type keyResponse struct {
@@ -20,19 +20,19 @@ func generateKey(n int) (string, error) {
 	return base64.URLEncoding.EncodeToString(b), nil
 }
 
-func keyHandler(w http.ResponseWriter, r *http.Request) {
-	key, err := generateKey(32)
-	if err != nil {
-		http.Error(w, "failed to generate key", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(keyResponse{Key: key})
-}
-
 func main() {
-	http.HandleFunc("/generate-key", keyHandler)
-	log.Println("listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	app := fiber.New()
+
+	app.Get("/", func(c fiber.Ctx) error {
+		key, err := generateKey(32)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "failed to generate key",
+			})
+		}
+
+		return c.JSON(keyResponse{Key: key})
+	})
+
+	log.Fatal(app.Listen(":8080"))
 }
