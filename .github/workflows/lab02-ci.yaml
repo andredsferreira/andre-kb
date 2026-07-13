@@ -75,7 +75,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/lab02-dev:${{ steps.shortsha.outputs.SHA }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/lab02-dev:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/andre-kb:lab02-dev-${{ steps.shortsha.outputs.SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/andre-kb:lab02-dev-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -1,7 +1,7 @@
 ## Connect to an EC2 instance using SSM
 
-Prerequisites: The instance must have SSM installed (already installed on AML),
-and must have an IAM role attached with the following policy:
+Prerequisites: The instance must have SSM installed (already installed
+on AML), and must have an IAM role attached with the following policy:
 AmazonSSMManagedInstanceCore.
 
 Prerequisites: The client must have the amazon-ssm-agent installed.
