@@ -19,20 +19,20 @@
 
 ### Container Management
 
-| Command                                                                                     | Description                                              |
-| ------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| docker run -d --rm --name container_name image_name:latest -p HOST_PORT:CONTAINER_PORT      |                                                          |
-| docker run -d --name container_name image_name:latest -p 127.0.0.1:HOST_PORT:CONTAINER_PORT | Only the Docker host can access the published port.      |
-| docker run --restart unless-stopped image_name                                              | Restarts the container (unless it was manually stopped). |
-| docker container create --name container_name image_name:version                            |                                                          |
-| docker ps -a                                                                                |                                                          |
-| docker ps -q                                                                                | Only display container ids.                              |
-| docker rm container_name                                                                    |                                                          |
-| docker start container_name                                                                 |                                                          |
-| docker stop container_name                                                                  |                                                          |
-| docker restart container_name                                                               |                                                          |
-| docker kill container_name                                                                  |                                                          |
-| docker update --restart no image_name                                                       | Updates container to the default restart policy.         |
+| Command                                                                                     | Description                                                                  |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| docker run -d --rm --name container_name -p HOST_PORT:CONTAINER_PORT image_name:latest      | The --rm flags removes the container immediatly after running "docker stop". |
+| docker run -d --name container_name -p 127.0.0.1:HOST_PORT:CONTAINER_PORT image_name:latest | Only the Docker host can access the published port.                          |
+| docker run --restart unless-stopped image_name                                              | Restarts the container (unless it was manually stopped).                     |
+| docker container create --name container_name image_name:version                            |                                                                              |
+| docker ps -a                                                                                |                                                                              |
+| docker ps -q                                                                                | Only display container ids.                                                  |
+| docker rm container_name                                                                    |                                                                              |
+| docker start container_name                                                                 |                                                                              |
+| docker stop container_name                                                                  |                                                                              |
+| docker restart container_name                                                               |                                                                              |
+| docker kill container_name                                                                  |                                                                              |
+| docker update --restart no image_name                                                       | Updates container to the default restart policy.                             |
 
 ### Logs & Debugging
 
