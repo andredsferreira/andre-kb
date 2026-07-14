@@ -59,5 +59,4 @@ kubectl get endpoints service_name --watch
 # network, usefull to communicate with other Pods and services inside
 # the cluster.
 kubectl run tmp-shell --rm -it --image=nicolaka/netshoot --namespace=default -- /bin/bash
-
 ```

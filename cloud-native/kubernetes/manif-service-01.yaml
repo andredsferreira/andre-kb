@@ -8,9 +8,9 @@ metadata:
   labels:
     app: alpaca
 spec:
+  type: ClusterIP
   selector:
     app: alpaca
   ports:
     - port: 8080
       targetPort: 80
-  type: ClusterIP
