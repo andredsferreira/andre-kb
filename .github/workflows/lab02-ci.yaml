@@ -6,7 +6,7 @@
 # the documentation on docker/build-push-action:
 # https://github.com/docker/build-push-action
 
-name: lab02-cicd
+name: lab02-ci
 on:
   workflow_dispatch:
   push:
@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      - name: Build and push dev image
+      - name: Build and push final image
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         with:
@@ -75,7 +75,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/andre-kb:lab02-dev-${{ steps.shortsha.outputs.SHA }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/andre-kb:lab02-dev-latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/andre-kb:lab02-${{ steps.shortsha.outputs.SHA }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/andre-kb:lab02-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
