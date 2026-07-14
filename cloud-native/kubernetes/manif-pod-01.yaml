@@ -1,5 +1,4 @@
 # Example of a manifest for a nginx Pod.
-
 apiVersion: v1
 kind: Pod
 metadata:
@@ -7,30 +6,51 @@ metadata:
   labels:
     app: nginx
 spec:
+
+  # The restart policy defines how containers should restart default is already
+  # Always the other two are Never and OnFailure.
+  restartPolicy: Always
   containers:
     - name: nginx
+
+      # Never use latest tag in production settings, aim for reproducible
+      # deployments.
       image: nginx:latest
+
+      # Only pulls the image if it's not present in the cluster, otherwise it
+      # will use the image in the cache.
+      imagePullPolicy: IfNotPresent
+
       resources:
-        # Minimum resources for the container, Kubernetees guarantees
+        # Minimum resources for the container, Kubernetes guarantees
         # they exist on the node before starting the container.
         requests:
-          cpu: "500m" # Half a core (m stands for milicores meaning 1000m=1core).
+          cpu: "500m"      # Half a core (m stands for millicores, 1000m = 1 core).
           memory: "128Mi"
         # Maximum resources the container can use.
         limits:
           cpu: "1000m"
           memory: "256Mi"
+
       # This block is optional
       ports:
         - containerPort: 80
           name: http
           protocol: TCP
 
+      # preStop runs before the container receives SIGTERM. Sleeping here
+      # buys time for the endpoint to be removed from Service/kube-proxy
+      # so no new traffic arrives while your app is draining in-flight
+      # requests (see your Go server's graceful shutdown logic).
+      lifecycle:
+        preStop:
+          exec:
+            command: ["/bin/sh", "-c", "sleep 5"]
+
       # Check if the container inside is healthy even if the process
       # is running ok. Kubernetes will always keep the container process
       # alive, but health checks are specific to the application and
       # must be specified in the manifest.
-
       livenessProbe:
         httpGet:
           path: /
@@ -40,12 +60,11 @@ spec:
         timeoutSeconds: 2
         failureThreshold: 3
 
-      # Readiness probe to check if the container is ready to receive
+      # Readiness probe to check if the container is ready to
       # receive requests.
-
       readinessProbe:
         httpGet:
-          # Assuming this path exists
+          # Assuming this path exists.
           path: /ready
           port: 80
         initialDelaySeconds: 30

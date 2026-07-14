@@ -1,0 +1,52 @@
+# Manifest showcasing the sidecar pattern: an extra container running in the
+# Pod that extends functionality of the main app container. In this case the
+# sidecar container runs FluentBit agent.
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-fluentbit-sidecar
+  labels:
+    app: nginx-demo
+spec:
+  volumes:
+    - name: shared-logs
+      emptyDir: {}
+
+  # Native sidecar: an initContainer with restartPolicy Always. Starts before
+  # the main container, keeps running throughout the pod's life.
+
+  initContainers:
+    - name: fluentbit-sidecar
+      image: fluent/fluent-bit:3.1
+      # This is what makes it a sidecar:
+      restartPolicy: Always   
+      volumeMounts:
+        - name: shared-logs
+          mountPath: /var/log/nginx
+        - name: fluentbit-config
+          mountPath: /fluent-bit/etc/
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+
+  containers:
+    - name: nginx
+      image: nginx:1.27
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: shared-logs
+          mountPath: /var/log/nginx
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 250m
+          memory: 256Mi

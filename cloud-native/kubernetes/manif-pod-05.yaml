@@ -1,0 +1,25 @@
+# Manifest showcasing the ambassador pattern: a container that handles the
+# network complexity when the app container needs to connect to other services and
+# uses localhost. 
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-with-db-proxy
+spec:
+  containers:
+    - name: app
+      image: my-app:2.4
+      env:
+        - name: DB_HOST
+          # App talks to localhost
+          value: "127.0.0.1"
+        - name: DB_PORT
+          value: "5432"
+    - name: cloud-sql-proxy
+      image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11
+      args:
+        - "--structured-logs"
+        - "my-project:us-central1:my-db"
+      ports:
+        - containerPort: 5432

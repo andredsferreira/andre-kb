@@ -1,0 +1,27 @@
+# Manifest showcasing the adapter pattern: a container that transforms the
+# output of the app container into something other services expect. In this case
+# a legacy app that writes logs and then an adapter container transforms them
+# into metrics export to work with Prometheus.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: legacy-app-with-exporter
+spec:
+  volumes:
+    - name: metrics-socket
+      emptyDir: {}
+  containers:
+    - name: legacy-app
+      image: my-legacy-app:1.0
+      volumeMounts:
+        - name: metrics-socket
+          mountPath: /tmp/metrics
+    - name: prometheus-adapter
+      image: prom/statsd-exporter:v0.27.0
+      ports:
+        - containerPort: 9102
+      volumeMounts:
+        - name: metrics-socket
+          mountPath: /tmp/metrics
+          readOnly: true
