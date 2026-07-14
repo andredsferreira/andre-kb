@@ -44,6 +44,8 @@ spec:
     app: hello-k8s
   ports:
   - protocol: TCP
+    # Exposed port.
     port: 80
+    # Target port that the app is listening inside the container.
     targetPort: 80
   type: NodePort

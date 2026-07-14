@@ -7,9 +7,19 @@ metadata:
     app: nginx
 spec:
 
+  # Implementing least access principle using a security context.
+  # It's applyied to all containers here.
+
+  securityContext:
+    runAsUser: 1000         # Run all containers as UID 1000
+    runAsGroup: 3000        # Primary GID 3000
+    fsGroup: 2000           # Volumes are owned by GID 2000
+    runAsNonRoot: true      # Refuse to start if image runs as root
+
   # The restart policy defines how containers should restart default is already
   # Always the other two are Never and OnFailure.
   restartPolicy: Always
+
   containers:
     - name: nginx
 
@@ -21,12 +31,21 @@ spec:
       # will use the image in the cache.
       imagePullPolicy: IfNotPresent
 
+      # Specific to this container.
+      securityContext:
+        allowPrivilegeEscalation: false   # Prevent setuid binaries
+        readOnlyRootFilesystem: true      # Prevent writes to /
+        capabilities:
+          drop: ["ALL"]                   # Drop all Linux capabilities
+          # Add what you need here <---------
+
       resources:
         # Minimum resources for the container, Kubernetes guarantees
         # they exist on the node before starting the container.
         requests:
           cpu: "500m"      # Half a core (m stands for millicores, 1000m = 1 core).
           memory: "128Mi"
+
         # Maximum resources the container can use.
         limits:
           cpu: "1000m"
