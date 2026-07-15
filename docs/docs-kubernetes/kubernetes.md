@@ -45,3 +45,16 @@ with all Pods within that Node at minimum.
 
 You should declare for every Pod it's resources requests (minimum resources) and
 limits (maximum resources). 
+
+If your Pod is stuck on Pending, or ContainerCreating check the history of
+events with kubectl describe.
+
+## Deployments
+
+A Deployment manages a ReplicaSet underneath with more added capabilities.
+ReplicaSets in turn manage the Pods. You should almost always prefer Deployments
+over manually handling ReplicaSets. Both are Pod controllers.
+
+RollingUpdate and Recreate are the two available deployment types. RollingUpdate
+has no downtime, killing and creating Pods simultaneously. Recreate strategy
+kills all old ones and creates the new ones.

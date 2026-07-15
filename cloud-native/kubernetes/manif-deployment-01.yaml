@@ -1,18 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: manif-deployment-01
+  name: nginx-deployment
   labels:
-    app: hello-k8s
+    app: nginx
 spec:
-  replicas: 2
+  # This field specifies the maximum number of older deployments that # hang
+  # arround if you wish to rollback or analyse them. The default value is 10.
+  revisionHistoryLimit: 5
+  # Wait at least 60 seconds before updating the next Pod. This
+  # ensures the Pod is really ready even though health checks are
+  # performed already.
+  minReadySeconds: 60
+  # Timeout for Pod.
+  progressDeadlineSeconds: 600
+  replicas: 3
+  strategy:
+    # Default if ommited
+    type: RollingUpdate
+    rollingUpdate:
+      # How many Pods above replica count during deployment.
+      maxSurge: 1
+      # How many unavailable during deployment.
+      maxUnavailable: 1
   selector:
     matchLabels:
-      app: hello-k8s
+      app: nginx
   template:
     metadata:
       labels:
-        app: hello-k8s
+        app: nginx
+      annotations:
+        # Annotation to use if you update the deployment, i.e, you
+        # roll out a new deployment. # This will show nicely on "kubectl
+        # rollout history deployment deployment_name".
+        kubernetes.io/change-cause: "Testing rolling update."
     spec:
       containers:
       - name: nginx
@@ -21,14 +43,8 @@ spec:
         - containerPort: 80
         resources:
           requests:
-            cpu: 50m
-            memory: 64Mi
+            cpu: "50m"
+            memory: "64Mi"
           limits:
-            cpu: 100m
-            memory: 128Mi
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 10
+            cpu: "200m"
+            memory: "128Mi"

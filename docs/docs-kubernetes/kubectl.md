@@ -1,3 +1,21 @@
+## Deployment
+
+```bash
+
+# Check the status of a deployment.
+kubectl rollout status deployment/my-app
+
+# Pause a deployment.
+kubectl rollout pause deployment/my-app
+
+# Resume a deployment.
+kubectl rollout resume deployment/my-app
+
+# Rollback a deployment to the previous version.
+kubectl rollout undo deployment/my-app
+```
+
+
 ```bash
 
 # Getting help on  commands:
