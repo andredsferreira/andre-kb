@@ -42,6 +42,16 @@ kubectl rollout pause deployments deployment_name
 kubectl rollout resume deployments deployment_name
 kubectl rollout history deployment deployment_name
 
+# Stream live logs
+kubectl logs <name> -f
+
+# Logs from a specific container in a multi-container Pod
+kubectl logs <name> -c <container-name>
+
+# Logs from the previous (crashed) instance
+kubectl logs <name> --previous
+
+
 # View Job output (you must use the Pod created by the Job).
 kubectl logs 
 

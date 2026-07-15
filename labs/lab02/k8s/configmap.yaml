@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lab02-config
+data:
+  CRDB_HOST: "andre-kb-crdb-cluster-29296.j77.aws-eu-central-1.cockroachlabs.cloud"
+  CRDB_PORT: "26257"
+  CRDB_DATABASE: "lab02"
+  CRDB_SSLMODE: "verify-full"
+  CRDB_ROOT_CERT: "/etc/certs/root.crt"

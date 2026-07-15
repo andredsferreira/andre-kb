@@ -5,7 +5,6 @@ metadata:
   labels:
     app: lab02
 spec:
-
   replicas: 2
   selector:
     matchLabels:
@@ -14,14 +13,19 @@ spec:
     metadata:
       labels:
         app: lab02
-
     spec:
       containers:
         - name: lab02
           image: andredsferreiraa/andre-kb:lab02-latest
-          ports:
-            - containerPort: 8080
-
+          envFrom:
+            - configMapRef:
+                name: lab02-config
+            - secretRef:
+                name: lab02-db-secret
+          volumeMounts:
+            - name: db-cert
+              mountPath: /etc/certs
+              readOnly: true
           resources:
             requests:
               cpu: 100m
@@ -29,18 +33,19 @@ spec:
             limits:
               cpu: 500m
               memory: 256Mi
-
           # readinessProbe:
           #   httpGet:
           #     path: /healthz
           #     port: 8080
           #   initialDelaySeconds: 5
-
           # livenessProbe:
           #   httpGet:
           #     path: /healthz
           #     port: 8080
           #   initialDelaySeconds: 10
-
       imagePullSecrets:
         - name: dockerhub-creds
+      volumes:
+        - name: db-cert
+          secret:
+            secretName: lab02-db-cert

@@ -44,6 +44,8 @@ docker compose down -v
 This were necessary steps that were ran in order to have a correct deployment of
 the app (omitting sensitive information).
 
+Create a secret for docker hub credentials:
+
 ```bash
 kubectl create secret docker-registry dockerhub-creds \
   --docker-server=https://index.docker.io/v1/ \
@@ -52,3 +54,16 @@ kubectl create secret docker-registry dockerhub-creds \
   --namespace=default
 ```
 
+Create a secret for DB credentials:
+
+```bash
+kubectl create secret generic lab02-db-secret \
+  --from-literal=CRDB_USER=your-db-user \
+  --from-literal=CRDB_PASSWORD=your-db-password
+```
+
+Create a secret for the DB certificate:
+
+```bash
+kubectl create secret generic lab02-db-cert --from-file=ca.crt=./ca.crt
+```
