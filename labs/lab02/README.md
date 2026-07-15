@@ -38,3 +38,17 @@ This will also remove the named volumes and thus the DB data.
 ```bash
 docker compose down -v
 ```
+
+**Setup for deployment**
+
+This were necessary steps that were ran in order to have a correct deployment of
+the app (omitting sensitive information).
+
+```bash
+kubectl create secret docker-registry dockerhub-creds \
+  --docker-server=https://index.docker.io/v1/ \
+  --docker-username=<your-dockerhub-user> \
+  --docker-password=<your-dockerhub-token> \
+  --namespace=default
+```
+
