@@ -5,11 +5,16 @@ Kubernetes runs a **Reconciliation Loop** it's always checking the desired state
 a Pod (or any other resource for that matter) for a app Kubernetes will
 automatically launch a new one to match the desired state.
 
-Containers use different Linux kernel features. **Namespaces** provide resource
-isolation. **Cgroups** limit the computing resources (CPU, memory, etc) a container
-may use. **Layered Filesystem**, the instructions in a Dockerfile provide read-only
-layers, when you run a container from that Dockerfile a new write layer is added
-on top.
+All Kubernetes objects are deployed into Kubernetes Namespaces, this means
+that you may have the same objects but in different namespaces. In other others,
+Namespaces isolate resources.
+
+Containers use different Linux kernel features. **Namespaces** (linux namespaces
+not to be mistaken with the Kubernetes ones mentioned above) provide resource
+isolation. **Cgroups** limit the computing resources (CPU, memory, etc) a
+container may use. **Layered Filesystem**, the instructions in a Dockerfile
+provide read-only layers, when you run a container from that Dockerfile a new
+write layer is added on top.
 
 ## Pods
 
