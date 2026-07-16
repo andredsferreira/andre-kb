@@ -39,9 +39,9 @@ The kubelet uses exponential restarts (10s, 20s, 40s, ... up to 5 minutes). The
 **CrashLoopBackOff** status means kubelet is waiting before restarting the Pod
 again (after 10 minutes of successful running the timer resets).
 
-Every Pod can communicate with every other Pod on the cluster using it's IP.
-Every Pod gets a unique IP. Agents on a Node (like the kubelet) can communicate
-with all Pods within that Node at minimum.
+Every Pod can communicate with every other Pod on the cluster using it's IP
+(regardless of namespace). Every Pod gets a unique IP. Agents on a Node (like
+the kubelet) can communicate with all Pods within that Node at minimum.
 
 You should declare for every Pod it's resources requests (minimum resources) and
 limits (maximum resources). 
@@ -99,6 +99,13 @@ To do this you must recreate the StatefulSet.
 Backup your data, PVCs provide durability not backups (for example in a
 PostgresSQL you can maybe create a CronJob to run pgdump on a schedule).
 
+## DameonSets
+
+DaemonSets ensure all cluster Nodes (or some) run one copy of a Pod. The main
+use cases for DaemonSets are deploying infrastructure-level agents. Logging
+agents (fluentd, fluent-bit, filebeat) to collect container's logs; Node
+monitoring for metrics (Prometheus Node Exporter, collectd, Datadog agent); CNI 
+plugins (Calico, Cilium, Weave Net); Security agents (Falco, Sysdig).
 
 
 
