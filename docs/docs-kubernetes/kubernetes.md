@@ -58,3 +58,51 @@ over manually handling ReplicaSets. Both are Pod controllers.
 RollingUpdate and Recreate are the two available deployment types. RollingUpdate
 has no downtime, killing and creating Pods simultaneously. Recreate strategy
 kills all old ones and creates the new ones.
+
+To perform a canary deployment in Kubernetes you define two deployment manifests
+(one for the old version and another for the new). On the new version one you
+place a small number of replicas to serve few traffic. Then you monitor the new
+version and gradually scale it up; or rollout the new version on the old
+deployment and delete the canary one.
+
+## StatefulSets
+
+StatefulSets should only be used when your application / service requires stable
+storage and can't be replaced. They are mainly used for databases (PostgreSQL,
+MongoDB), distributed systems (Kafka, Zookeeper), message queues (RabbitMQ, NATS
+with Jetstream).
+
+Pods created with a StatefulSet are stable with unique identifiers (pgdb-01,
+pgdb-02, pgdb-03, etc). By default each Pod is created sequentially in order and
+not at the same time.
+
+Requires a Headless Service (A regular Kubernetes Services with ClusterIP set to
+none). This provides the DNS names needed for each Pod, i.e, their stable
+network identifier.
+
+PersistentVolumes are the storage resource pointing at real storage (NFS, AWS
+EBS, etc) and they are **cluster-scoped** (independent of namespaces). A
+PersistentVolumeClaim (not independent of namespace) is a claim on a
+PersistentVolume, i.e, a claim on storage (i want to use this PV as storage).
+The relationship between them is exclusive one on one.
+
+StatefulSets create PVCs (PersistentVolumeClaim) for each Pod based on a
+volumeClaimTemplate indicated in the StatefulSet manifest. When any Pod dies and
+is rescheduled it reuses the previous PVC that was attached to it.
+
+Even if you delete a StatefulSet (or the PODS) the underlying PVCs that were
+created remain, this is by design to protect accidental data losts.
+
+volumeClaimTemplates cannot be deleted or changed once a StatefulSet is created.
+To do this you must recreate the StatefulSet.
+
+Backup your data, PVCs provide durability not backups (for example in a
+PostgresSQL you can maybe create a CronJob to run pgdump on a schedule).
+
+
+
+
+
+
+
+

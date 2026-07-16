@@ -13,6 +13,9 @@ kubectl rollout resume deployment/my-app
 
 # Rollback a deployment to the previous version.
 kubectl rollout undo deployment/my-app
+
+# View history of deployments
+kubectl rollout history deployment/my-app
 ```
 
 
