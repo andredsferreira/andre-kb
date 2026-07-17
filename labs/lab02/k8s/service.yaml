@@ -3,11 +3,14 @@ kind: Service
 metadata:
   name: lab02
   annotations:
+    # Required annotation for AWS functionality.
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
 spec:
   type: LoadBalancer
   selector:
     app: lab02
   ports:
+      # Port exposed for communication.
     - port: 80
+      # Port exposed in the container (the app).
       targetPort: 8080

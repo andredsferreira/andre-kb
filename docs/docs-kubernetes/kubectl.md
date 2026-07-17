@@ -27,6 +27,9 @@ kubectl COMMAND -h
 
 # General
 
+# View a service endpoints
+kubectl get endpointslices -l kubernetes.io/service-name=myservice
+
 kubectl get resource_type [resource_name]
 kubectl -n namespace get resource_type
 # Selection based on labels

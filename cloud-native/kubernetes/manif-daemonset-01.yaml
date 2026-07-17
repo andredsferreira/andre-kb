@@ -1,4 +1,5 @@
 # Example of a DaemonSet that runs Fluentd logging agent.
+
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -30,7 +31,7 @@ spec:
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
-      terminationGracePeriodSeconds: 30
+      terminationGracePeri$odSeconds: 30
       volumes:
       - name: varlog
         hostPath:

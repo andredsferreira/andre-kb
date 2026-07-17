@@ -5,6 +5,7 @@ metadata:
   labels:
     app: hello-k8s
 spec:
+  type: ClusterIp     # Default value
   replicas: 2
   selector:
     matchLabels:
@@ -41,7 +42,7 @@ metadata:
   name: hello-k8s
 spec:
   selector:
-    app: hello-k8s
+    app: hello-k8s    # Must match the above app label
   ports:
   - protocol: TCP
     # Exposed port.

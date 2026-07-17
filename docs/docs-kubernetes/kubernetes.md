@@ -31,7 +31,7 @@ as a service mesh.
 Init containers (defined in manifests under spec.initContainers) start before
 the main app container runs. Mostly used in sidecar pattern.
 
-Kubernetes terminates Pods in a graceful shutdown way (sending the SIGTERM
+Kubernetes terminates Pods in a graceful shutdown way (sending the **SIGTERM**
 signal). The removing of endpoints (the endpoint controller removes the Pod's IP
 from all the Services and the kube-api updates the iptables rules on all nodes)
 for the app takes time and is done concurrently which means your app can
@@ -105,6 +105,28 @@ To do this you must recreate the StatefulSet.
 Backup your data, PVCs provide durability not backups (for example in a
 PostgresSQL you can maybe create a CronJob to run pgdump on a schedule).
 
+## Services
+
+The Service object provides basic networking and service discovery capabilities
+for your Deployment allowing it to be accessed from the Internet or from within
+the cluster.
+
+CoreDNS (Kubernetes's own DNS server) provides every Service a DNS hostname that
+can be accessed within the cluster (service.namespace.svc.cluster.local).
+
+**ClusterIp** Internal Service type used for communication inside the cluster.
+Assigns one IP to the Service.
+
+**NodePort** Exposes a Service by defining a static port to it (30000-32767).
+The NodePort Service can be accessed using **node-ip:port**.
+
+**LoadBalancer** Extends on NodePort by requesting an external load balancer
+from the cloud provider. The cloud controller provisions the LB and distributes
+traffic across NodePort Services (see [this](../../labs/lab02/k8s/service.yaml) for an example manifest). Assigning a
+LoadBalancer Service for each of your apps can become expensive since a LB is
+provisioned for each, a better pattern when you have a lot of microservices is
+to place an Ingress in front or API Gateway to distribute traffic.
+
 ## DameonSets
 
 DaemonSets ensure all cluster Nodes (or some) run one copy of a Pod. The main
@@ -112,4 +134,8 @@ use cases for DaemonSets are deploying infrastructure-level agents. Logging
 agents (fluentd, fluent-bit, filebeat) to collect container's logs; Node
 monitoring for metrics (Prometheus Node Exporter, collectd, Datadog agent); CNI 
 plugins (Calico, Cilium, Weave Net); Security agents (Falco, Sysdig).
+
+If you want DaemonSets to run on the Control Plane Node you must explicitally
+add the tolerations for it on the DaemonSet's manifest (see
+manif-daemonset-02.yaml).
 
