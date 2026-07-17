@@ -1,9 +1,15 @@
 ## Foundations
 
-Kubernetes runs a **Reconciliation Loop** it's always checking the desired state
-(declared on manifests) and matching it with the actual state. If you shut down
-a Pod (or any other resource for that matter) for a app Kubernetes will
-automatically launch a new one to match the desired state.
+Kubernetes runs **Reconciliation Loops** it's always checking the desired state
+(declared on manifests) of the resources that have controllers behind them, and
+matching it with the actual state. If you shut down a Pod belonging to a
+Deployment, Kubernetes will automatically launch a new one to match the desired
+state declared on the Deployment manifest.
+
+Some resources don't have controllers behind them and thus are not part of a
+reconciliation loop. A Pod created manually is the main example of this
+(ConfigMaps and Secrets are other examples). So if you delete this Pod it's
+gone.
 
 All Kubernetes objects are deployed into Kubernetes Namespaces, this means
 that you may have the same objects but in different namespaces. In other others,
@@ -106,10 +112,4 @@ use cases for DaemonSets are deploying infrastructure-level agents. Logging
 agents (fluentd, fluent-bit, filebeat) to collect container's logs; Node
 monitoring for metrics (Prometheus Node Exporter, collectd, Datadog agent); CNI 
 plugins (Calico, Cilium, Weave Net); Security agents (Falco, Sysdig).
-
-
-
-
-
-
 
