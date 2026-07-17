@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config-v3
+  labels:
+    app: myapp
+    version: "3"
+data:
+  config.yaml: |
+    database:
+      host: postgres.prod.svc
+      port: 5432
+      pool_size: 20
+    cache:
+      host: redis.prod.svc
+      ttl: 300
+immutable: true
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  template:
+    metadata:
+      annotations:
+        # Forces a rolling update when config changes.
+        configmap-version: "v3"
+    spec:
+      containers:
+        - name: myapp
+          image: myapp:2.1.0
+          volumeMounts:
+            - name: config
+              mountPath: /etc/app
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: app-config-v3

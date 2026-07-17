@@ -1,0 +1,19 @@
+# PersitentVolume example backed by NFS.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-shared-assets
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteMany               # NFS supports multi-node access
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-shared
+  nfs:
+    server: 10.0.1.50
+    path: /exports/shared-assets
+  mountOptions:
+    - hard
+    - nfsvers=4.1

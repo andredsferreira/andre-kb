@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
+  # Optional labels
   labels:
     app: nginx
 spec:
@@ -28,6 +29,7 @@ spec:
       app: nginx
   template:
     metadata:
+      # Required labels for the deployment to match with Pods.
       labels:
         app: nginx
       annotations:

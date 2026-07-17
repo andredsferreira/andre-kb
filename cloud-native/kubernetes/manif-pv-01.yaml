@@ -1,0 +1,31 @@
+# Example manifest for a PersistentVolume backed by AWS EBS.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ebs-pv-01
+  labels:
+    type: ebs
+    environment: production
+spec:
+  capacity:
+    storage: 50Gi
+  volumeMode: Filesystem          # Filesystem (default) or Block
+  accessModes:
+    - ReadWriteOnce               # EBS can only attach to one node
+  # What happens when the attached PVC is deleted:
+  persistentVolumeReclaimPolicy: Retain     
+  # The PVC must match this storage class.
+  storageClassName: gp3-encrypted
+  csi:
+    driver: ebs.csi.aws.com
+    volumeHandle: vol-0abcdef1234567890
+    fsType: ext4
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: topology.kubernetes.io/zone
+              operator: In
+              values:
+                - eu-central-1a

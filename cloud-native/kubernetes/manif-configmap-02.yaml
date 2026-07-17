@@ -1,4 +1,4 @@
-# Example of a ConfigMap that is mounted aa a full configuration file
+# Example of a ConfigMap that is mounted as a full configuration file
 # into the Deployment/Pods (nginx.conf in this case).
 
 apiVersion: v1

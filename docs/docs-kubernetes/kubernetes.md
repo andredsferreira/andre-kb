@@ -139,3 +139,31 @@ If you want DaemonSets to run on the Control Plane Node you must explicitally
 add the tolerations for it on the DaemonSet's manifest (see
 manif-daemonset-02.yaml).
 
+## ConfigMaps
+
+ConfigMaps are mainly created to store non sensitive environment variables, or
+configuration files that are later mounted as volumes in the necessary
+Deployments/Pods.
+
+If a ConfigMap that is consumed as an environment is updated it has no effect on
+running Pods. If the ConfigMap is consumed as a volume mount then the update is
+eventually consistent. The same applies for Secrets. You need to restart or
+recreate the Pods in order for them to pickup the updated values.
+
+A common production pattern is to version ConfigMaps and reference specific
+versions in Deployments (see [this](../../cloud-native/kubernetes/manif-configmap-03.yaml)).
+
+## Secrets
+
+By default they are not encrypted at rest, they are stored in etcd encoded in
+base 64 only. You should either set appropriate RBAC policies in your cluster or  
+encrypt the secrets at rest.
+
+**Opaque** Default value, user defined key value pairs.
+
+**kubernetes.io/dockerconfigjson** Docker Hub registry credentials for pulling private images.
+
+**kubernetes.io/tls** For TLS certificates.
+
+**kubernetes.io/basic-auth** For username password authentication.
+

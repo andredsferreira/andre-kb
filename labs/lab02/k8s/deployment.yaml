@@ -18,6 +18,8 @@ spec:
         - name: lab02
           image: andredsferreiraa/andre-kb:lab02-latest
           envFrom:
+            # You can also fetch individual keys if you want with
+            # configMapKeyRef.
             - configMapRef:
                 name: lab02-config
             - secretRef:

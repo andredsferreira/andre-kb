@@ -1,3 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-k8s
+spec:
+  selector:
+    app: hello-k8s    # Must match the bellow app label
+  ports:
+  - protocol: TCP
+    # Exposed port.
+    port: 80
+    # Target port that the app is listening inside the container.
+    targetPort: 80
+  type: NodePort
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,20 +50,3 @@ spec:
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 10
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: hello-k8s
-spec:
-  selector:
-    app: hello-k8s    # Must match the above app label
-  ports:
-  - protocol: TCP
-    # Exposed port.
-    port: 80
-    # Target port that the app is listening inside the container.
-    targetPort: 80
-  type: NodePort
