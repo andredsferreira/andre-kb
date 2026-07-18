@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+  namespace: databases
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # Must match the PV storage class.
+  storageClassName: gp3-encrypted
+  resources:
+    requests:
+      storage: 50Gi
+  # Optional: select a specific PV by label. Otherwise the PVC automatically
+  # bounds to an available PV that meets the requests.
+  selector:         
+    matchLabels:
+      type: ebs
+      environment: production

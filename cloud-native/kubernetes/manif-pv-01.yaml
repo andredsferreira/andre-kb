@@ -12,7 +12,7 @@ spec:
     storage: 50Gi
   volumeMode: Filesystem          # Filesystem (default) or Block
   accessModes:
-    - ReadWriteOnce               # EBS can only attach to one node
+    - ReadWriteOnce               
   # What happens when the attached PVC is deleted:
   persistentVolumeReclaimPolicy: Retain     
   # The PVC must match this storage class.

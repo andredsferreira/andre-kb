@@ -57,7 +57,7 @@ events with kubectl describe.
 
 ## Deployments
 
-A Deployment manages a ReplicaSet underneath with more added capabilities.
+A Deployment manages a ReplicaSet underneath, with more added capabilities.
 ReplicaSets in turn manage the Pods. You should almost always prefer Deployments
 over manually handling ReplicaSets. Both are Pod controllers.
 
@@ -70,6 +70,57 @@ To perform a canary deployment in Kubernetes you define two deployment manifests
 place a small number of replicas to serve few traffic. Then you monitor the new
 version and gradually scale it up; or rollout the new version on the old
 deployment and delete the canary one.
+
+## Services
+
+The Service object provides basic networking and service discovery capabilities
+for your Deployment allowing it to be accessed from the Internet or from within
+the cluster.
+
+CoreDNS (Kubernetes's own DNS server) provides every Service a DNS hostname that
+can be accessed within the cluster (service.namespace.svc.cluster.local).
+
+**ClusterIp** Internal Service type used for communication inside the cluster.
+Assigns one IP to the Service.
+
+**NodePort** Exposes a Service by defining a static port to it (30000-32767).
+The NodePort Service can be accessed using **node-ip:port**.
+
+**LoadBalancer** Extends on NodePort by requesting an external load balancer
+from the cloud provider. The cloud controller provisions the LB and distributes
+traffic across NodePort Services (see [this](../../labs/lab02/k8s/service.yaml) for an example manifest). Assigning a
+LoadBalancer Service for each of your apps can become expensive since a LB is
+provisioned for each, a better pattern when you have a lot of microservices is
+to place an Ingress in front or API Gateway to distribute traffic.
+
+## ConfigMaps
+
+ConfigMaps are mainly created to store non sensitive environment variables, or
+configuration files that are later mounted as volumes in the necessary
+Deployments/Pods.
+
+If a ConfigMap that is consumed as an environment is updated it has no effect on
+running Pods. If the ConfigMap is consumed as a volume mount then the update is
+eventually consistent. The same applies for Secrets. You need to restart or
+recreate the Pods in order for them to pickup the updated values.
+
+A common production pattern is to version ConfigMaps and reference specific
+versions in Deployments (see [this](../../cloud-native/kubernetes/manif-configmap-03.yaml)).
+
+## Secrets
+
+By default they are not encrypted at rest, they are stored in etcd encoded in
+base 64 only. You should either set appropriate RBAC policies in your cluster or  
+encrypt the secrets at rest.
+
+*Secret types*
+
+| Type                           | Description                                  |
+| ------------------------------ | -------------------------------------------- |
+| Opaque                         | Default value, user defined key value pairs. |
+| kubernetes.io/dockerconfigjson | Docker Hub registry credentials.             |
+| kuberentes.io/tls              | For TLS certificates.                        |
+| kubernetes.io/basic-auth       | For username and password authentication.    |
 
 ## StatefulSets
 
@@ -105,27 +156,58 @@ To do this you must recreate the StatefulSet.
 Backup your data, PVCs provide durability not backups (for example in a
 PostgresSQL you can maybe create a CronJob to run pgdump on a schedule).
 
-## Services
+## PersistentVolumes & PersistentVolumeClaims
 
-The Service object provides basic networking and service discovery capabilities
-for your Deployment allowing it to be accessed from the Internet or from within
-the cluster.
+PVs and PVCs are the main storage mechanism in Kubernetes, needed when data must
+be persisted (mainly databases and queues).
 
-CoreDNS (Kubernetes's own DNS server) provides every Service a DNS hostname that
-can be accessed within the cluster (service.namespace.svc.cluster.local).
+PVs and PVCs seperate the physical storage mechanism (PV) from the user
+requesting the storage (PVC). Their relationship is strictly **one to one**: a
+PVC binds to only one PV if that PV meets the required storage capacity.
 
-**ClusterIp** Internal Service type used for communication inside the cluster.
-Assigns one IP to the Service.
+PVs have their lifecycle independent of any Pod, they can be backed by AWS EBS,
+NFS, a local disk, etc. They also survive PVC deletions (although you can
+configure this to be diffferent). In production you rarely create PVs manually
+instead you dynamically provision them using StorageClasses.
 
-**NodePort** Exposes a Service by defining a static port to it (30000-32767).
-The NodePort Service can be accessed using **node-ip:port**.
+**StorageClass** Allows a PV to be dynamically provisioned instead of the
+cluster's admin having to manually create it. Usually setted up when using cloud
+storage such as AWS EBS. Check [this](../../cloud-native/kubernetes/manif-storageclass-01.yaml) important example (specially the 
+**volumeBindingMode** field).
 
-**LoadBalancer** Extends on NodePort by requesting an external load balancer
-from the cloud provider. The cloud controller provisions the LB and distributes
-traffic across NodePort Services (see [this](../../labs/lab02/k8s/service.yaml) for an example manifest). Assigning a
-LoadBalancer Service for each of your apps can become expensive since a LB is
-provisioned for each, a better pattern when you have a lot of microservices is
-to place an Ingress in front or API Gateway to distribute traffic.
+If a StorageClass has **allowStorageExpansion: true** you can resize (you can
+only increase the size tho never reduce it) the PVC by **editing
+spec.resources.requests.storage**.
+
+| Binding mode         | Decription                                                   | Use case                                |
+| -------------------- | ------------------------------------------------------------- | --------------------------------------- |
+| Immediate            | PV is provisioned as soon as the PVC is created.              | Storage that is not specific to any AZ. |
+| WaitForFirstConsumer | PV is provisioned only when a Pod using the PVC is scheduled. | AZ specific storage (AWS EBS).          |
+
+**Access Mode** Defines how a PersistentVolume is mounted.
+
+| Access mode             | Description                                                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| ReadWriteOnce (RWO)     | Mounted as read write by a single node (only that node can read write to the PV). Multiple Pods on the same node share it. |
+| ReadOnlyMany (ROX)      | Mounted as read only cluster wide.                                                                                         |
+| ReadWriteMany (RWX)     | Mounted as read write cluster wide.                                                                                        |
+| ReadWriteOncePod (RWOP) | Mounted as read write for a specific Pod.                                                                                  |
+
+Not all storage backends support all access modes, EBS only supports RWO, NFS
+and EFS supports RWX.
+
+**Reclaim Policy** Defines what happens to the PV when it's corresponding PVC is
+deleted. The reclaim policy is defined in the PV (under
+spec.persistentVolumeReclaimPolicy).
+
+| Policy | Description                              | Use case                                  |
+| ------ | ---------------------------------------- | ----------------------------------------- |
+| Retain | Retains the PV after the PVC is deleted. | Databases, critical data.                 |
+| Delete | Deletes the PV after the PVC is deleted. | Ephemeral data, development environments. |
+
+When a PVC is deleted and the corresponding PV has a Retain policy, the PV goes
+into **Released** status and cannot be bound to a new PVC while the
+**spec.claimRef** field isn't cleared.
 
 ## DameonSets
 
@@ -138,32 +220,3 @@ plugins (Calico, Cilium, Weave Net); Security agents (Falco, Sysdig).
 If you want DaemonSets to run on the Control Plane Node you must explicitally
 add the tolerations for it on the DaemonSet's manifest (see
 manif-daemonset-02.yaml).
-
-## ConfigMaps
-
-ConfigMaps are mainly created to store non sensitive environment variables, or
-configuration files that are later mounted as volumes in the necessary
-Deployments/Pods.
-
-If a ConfigMap that is consumed as an environment is updated it has no effect on
-running Pods. If the ConfigMap is consumed as a volume mount then the update is
-eventually consistent. The same applies for Secrets. You need to restart or
-recreate the Pods in order for them to pickup the updated values.
-
-A common production pattern is to version ConfigMaps and reference specific
-versions in Deployments (see [this](../../cloud-native/kubernetes/manif-configmap-03.yaml)).
-
-## Secrets
-
-By default they are not encrypted at rest, they are stored in etcd encoded in
-base 64 only. You should either set appropriate RBAC policies in your cluster or  
-encrypt the secrets at rest.
-
-**Opaque** Default value, user defined key value pairs.
-
-**kubernetes.io/dockerconfigjson** Docker Hub registry credentials for pulling private images.
-
-**kubernetes.io/tls** For TLS certificates.
-
-**kubernetes.io/basic-auth** For username password authentication.
-
