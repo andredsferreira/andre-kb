@@ -38,8 +38,8 @@ for the app takes time and is done concurrently which means your app can
 terminate earlier by way of the SIGTERM signal. In these cases you should strive
 to have a preStop hook (which also runs concurrently) that sleeps for a bit in
 order to prevent this. Also every production app should handle SIGTERM cleanly
-here is a Go [example](../../programming/go/go-handling-sigterm/main.go). For this to work tho always define your app in the Dockerfile 
-with CMD ["cmd", "args"].
+here is a Go [example](../../programming/go/go-handling-sigterm/main.go). For this to work tho always define your app in the Dockerfile
+with CMD \["cmd", "args"\].
 
 The kubelet uses exponential restarts (10s, 20s, 40s, ... up to 5 minutes). The
 **CrashLoopBackOff** status means kubelet is waiting before restarting the Pod
@@ -50,7 +50,7 @@ Every Pod can communicate with every other Pod on the cluster using it's IP
 the kubelet) can communicate with all Pods within that Node at minimum.
 
 You should declare for every Pod it's resources requests (minimum resources) and
-limits (maximum resources). 
+limits (maximum resources).
 
 If your Pod is stuck on Pending, or ContainerCreating check the history of
 events with kubectl describe.
@@ -110,10 +110,8 @@ versions in Deployments (see [this](../../cloud-native/kubernetes/manif-configma
 ## Secrets
 
 By default they are not encrypted at rest, they are stored in etcd encoded in
-base 64 only. You should either set appropriate RBAC policies in your cluster or  
+base 64 only. You should either set appropriate RBAC policies in your cluster or
 encrypt the secrets at rest.
-
-*Secret types*
 
 | Type                           | Description                                  |
 | ------------------------------ | -------------------------------------------- |
@@ -172,14 +170,14 @@ instead you dynamically provision them using StorageClasses.
 
 **StorageClass** Allows a PV to be dynamically provisioned instead of the
 cluster's admin having to manually create it. Usually setted up when using cloud
-storage such as AWS EBS. Check [this](../../cloud-native/kubernetes/manif-storageclass-01.yaml) important example (specially the 
+storage such as AWS EBS. Check [this](../../cloud-native/kubernetes/manif-storageclass-01.yaml) important example (specially the
 **volumeBindingMode** field).
 
 If a StorageClass has **allowStorageExpansion: true** you can resize (you can
-only increase the size tho never reduce it) the PVC by **editing
-spec.resources.requests.storage**.
+only increase the size tho never reduce it) the PVC by **editing**
+**spec.resources.requests.storage**.
 
-| Binding mode         | Decription                                                   | Use case                                |
+| Binding mode         | Decription                                                    | Use case                                |
 | -------------------- | ------------------------------------------------------------- | --------------------------------------- |
 | Immediate            | PV is provisioned as soon as the PVC is created.              | Storage that is not specific to any AZ. |
 | WaitForFirstConsumer | PV is provisioned only when a Pod using the PVC is scheduled. | AZ specific storage (AWS EBS).          |
@@ -209,12 +207,16 @@ When a PVC is deleted and the corresponding PV has a Retain policy, the PV goes
 into **Released** status and cannot be bound to a new PVC while the
 **spec.claimRef** field isn't cleared.
 
+Set a default storage class with: metadata > annotations
+storageclass.kubernetes.io/is-default-class: "true". This ensures PVs without a
+storage class still get provisioned.
+
 ## DameonSets
 
 DaemonSets ensure all cluster Nodes (or some) run one copy of a Pod. The main
 use cases for DaemonSets are deploying infrastructure-level agents. Logging
 agents (fluentd, fluent-bit, filebeat) to collect container's logs; Node
-monitoring for metrics (Prometheus Node Exporter, collectd, Datadog agent); CNI 
+monitoring for metrics (Prometheus Node Exporter, collectd, Datadog agent); CNI
 plugins (Calico, Cilium, Weave Net); Security agents (Falco, Sysdig).
 
 If you want DaemonSets to run on the Control Plane Node you must explicitally

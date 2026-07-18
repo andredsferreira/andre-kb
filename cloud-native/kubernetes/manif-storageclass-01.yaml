@@ -5,6 +5,7 @@ kind: StorageClass
 metadata:
   name: gp3-encrypted
   annotations:
+    # Good practice to mark a default StorageClass so PVs without one still get provisioned.
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: ebs.csi.aws.com       # Always use the CSI driver!
 # Specific to the provisioner (in this case AWS EBS parameters).
@@ -16,9 +17,11 @@ parameters:
 # What happens to the PV when the PVC is deleted.
 reclaimPolicy: Delete # or Retain 
 allowVolumeExpansion: true
+
 # Only provision PV when a Pod using the PVC is scheduled. This is crucial for
 # resources that are zone specific (such as EBS). If you set to Immediate then the
 # PV gets created as soon as possible in a random AZ which can be different from
 # the Pod's AZ (PV is created in us-east-1a and Pod gets scheduled in us-east-1b
 # this causes a failure).
+
 volumeBindingMode: WaitForFirstConsumer
