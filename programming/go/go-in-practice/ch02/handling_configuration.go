@@ -14,18 +14,19 @@ import (
 
 // Handling configuration in JSON files.
 
-// Same structure as the JSON.
+// Same structure as the JSON:
 type configuration struct {
 	Enabled bool
 	Path    string
 }
 
 func loadJSONConfig() {
-	file, err := os.Open("config.json")
+	file, err := os.Open("config/config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
+	
 	decoder := json.NewDecoder(file)
 	conf := configuration{}
 	if err := decoder.Decode(&conf); err != nil {
@@ -39,7 +40,7 @@ func loadJSONConfig() {
 // Handling configuration in YAML files.
 
 func loadYAMLConfig() {
-	file, err := os.Open("config.yaml")
+	file, err := os.Open("config/config.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
