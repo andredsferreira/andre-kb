@@ -37,7 +37,7 @@ services:
       - CRDB_DATABASE=lab02-db
       - CRDB_SSLMODE=disable
     profiles:
-      - test # only started when --profile test is passed
+      - test # only started when "--profile test" is passed
 
   roach-db:
     image: cockroachdb/cockroach:latest-v25.4

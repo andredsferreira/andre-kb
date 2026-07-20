@@ -1,6 +1,13 @@
 package main
 
 import (
+	"context"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 
 	"andrekb/lab02/db"
@@ -19,6 +26,25 @@ func main() {
 
 	app.Get("/users", handler.GetUsers)
 
-	app.Listen(":8080")
+	go func() {
+		log.Println("listening on :8080...")
+		if err := app.Listen(":8080"); err != nil {
+			log.Fatalf("server error: %v", err)
+		}
+	}()
 
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	<-stop
+	log.Println("shutting down...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := app.ShutdownWithContext(ctx); err != nil {
+		log.Fatalf("forced shutdown: %v", err)
+	}
+
+	log.Println("server stopped")
 }
