@@ -83,10 +83,28 @@ spec:
       # receive requests.
       readinessProbe:
         httpGet:
-          # Assuming this path exists.
-          path: /ready
+          path: /
           port: 80
         initialDelaySeconds: 30
         timeoutSeconds: 1
         periodSeconds: 10
         failureThreshold: 3
+
+      # Since readOnlyRootFileystem is set to true Nginx needs these volume
+      # mounts to create the necessary resources to function.
+      volumeMounts:
+        - name: nginx-cache
+          mountPath: /var/cache/nginx
+        - name: nginx-run
+          mountPath: /var/run
+        - name: nginx-etc
+          mountPath: /etc/nginx/conf.d
+
+# Specific volumes needed by Nginx.
+  volumes:
+    - name: nginx-cache
+      emptyDir: {}
+    - name: nginx-run
+      emptyDir: {}
+    - name: nginx-etc
+      emptyDir: {}
