@@ -39,7 +39,7 @@ terminate earlier by way of the SIGTERM signal. In these cases you should strive
 to have a preStop hook (which also runs concurrently) that sleeps for a bit in
 order to prevent this. Also every production app should handle SIGTERM cleanly
 here is a Go [example](../../programming/go/go-handling-sigterm/main.go). For this to work tho always define your app in the Dockerfile
-with CMD \["cmd", "args"\].
+with CMD ["cmd", "args"].
 
 The kubelet uses exponential restarts (10s, 20s, 40s, ... up to 5 minutes). The
 **CrashLoopBackOff** status means kubelet is waiting before restarting the Pod
