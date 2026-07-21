@@ -11,8 +11,8 @@ reconciliation loop. A Pod created manually is the main example of this
 (ConfigMaps and Secrets are other examples). So if you delete this Pod it's
 gone.
 
-All Kubernetes objects are deployed into Kubernetes Namespaces, this means
-that you may have the same objects but in different namespaces. In other others,
+All Kubernetes objects are deployed into Kubernetes Namespaces, this means that
+you may have the same objects but in different namespaces. In other words,
 Namespaces isolate resources.
 
 Containers use different Linux kernel features. **Namespaces** (linux namespaces
@@ -52,14 +52,16 @@ the kubelet) can communicate with all Pods within that Node at minimum.
 You should declare for every Pod it's resources requests (minimum resources) and
 limits (maximum resources).
 
-If your Pod is stuck on Pending, or ContainerCreating check the history of
-events with kubectl describe.
+If your Pod is stuck on Pending (the Node may not have sufficient resources for
+example), or ContainerCreating (could be an error pulling the image) check the
+history of events with kubectl describe.
 
 ## Deployments
 
-A Deployment manages a ReplicaSet underneath, with more added capabilities.
-ReplicaSets in turn manage the Pods. You should almost always prefer Deployments
-over manually handling ReplicaSets. Both are Pod controllers.
+A Deployment manages a ReplicaSet (manages several replicas of the same Pod)
+underneath, with more added capabilities. ReplicaSets in turn manage the Pods.
+You should almost always prefer Deployments over manually handling ReplicaSets.
+Both are Pod controllers.
 
 RollingUpdate and Recreate are the two available deployment types. RollingUpdate
 has no downtime, killing and creating Pods simultaneously. Recreate strategy
@@ -125,7 +127,8 @@ encrypt the secrets at rest.
 StatefulSets should only be used when your application / service requires stable
 storage and can't be replaced. They are mainly used for databases (PostgreSQL,
 MongoDB), distributed systems (Kafka, Zookeeper), message queues (RabbitMQ, NATS
-with Jetstream).
+with Jetstream). You can think of them like the Deployments for datbases or
+other stateful workloads.
 
 Pods created with a StatefulSet are stable with unique identifiers (pgdb-01,
 pgdb-02, pgdb-03, etc). By default each Pod is created sequentially in order and
@@ -139,13 +142,13 @@ PersistentVolumes are the storage resource pointing at real storage (NFS, AWS
 EBS, etc) and they are **cluster-scoped** (independent of namespaces). A
 PersistentVolumeClaim (not independent of namespace) is a claim on a
 PersistentVolume, i.e, a claim on storage (i want to use this PV as storage).
-The relationship between them is exclusive one on one.
+The relationship between them is **exclusive one on one**.
 
 StatefulSets create PVCs (PersistentVolumeClaim) for each Pod based on a
 volumeClaimTemplate indicated in the StatefulSet manifest. When any Pod dies and
 is rescheduled it reuses the previous PVC that was attached to it.
 
-Even if you delete a StatefulSet (or the PODS) the underlying PVCs that were
+Even if you delete a StatefulSet (or the Pods) the underlying PVCs that were
 created remain, this is by design to protect accidental data losts.
 
 volumeClaimTemplates cannot be deleted or changed once a StatefulSet is created.
@@ -222,3 +225,43 @@ plugins (Calico, Cilium, Weave Net); Security agents (Falco, Sysdig).
 If you want DaemonSets to run on the Control Plane Node you must explicitally
 add the tolerations for it on the DaemonSet's manifest (see
 manif-daemonset-02.yaml).
+
+## Service Discovery & DNS
+
+Kubernetes has it's own DNS service running in clusters: CoreDNS. Every
+ClusterIP get's a DNS record associated A for IPv4 and AAAA for IPv6. The format
+is service.namespace.svc.cluster.local.
+
+The "ndots:5" setting means if the name has fewer than five dots try appending
+each search domain before querying the name as is. If you query api.example.com
+(2 dots), Kubernetes will run 3 extra searches:
+api.example.com.default.svc.cluster.local; api.example.com.svc.cluster.local;
+api.example.com.cluster.local. Finally the fourth attempt api.example.com
+succeeds. It's common to reduce the "ndots" value as shown in
+manif-deployment-01.yaml.
+
+Always use trailing dot (a dot at the end: api.external.com.) when reaching
+external services, this prevents unnecessary search domain expansion.
+
+## Resource Management
+
+If a Pod exceeds the CPU limits Kubernetes just throttles the CPU (compresses)
+meaning the application may experience increased latency. However, if the Pod
+(container in the Pod) exceeds the memory limits Kubernetes will send an OOMKill
+to the Pod thus terminating it.
+
+You should almost always set memory limits for your Pod's container's. You may
+opt to leave the CPU limits out since it's compressable.
+
+Kubernetes evicts (terminates) Pods depending on their QoS (Quality of Service)
+class. The QoS class in turn depends on how the resources requests and limits
+are setted up. If the Node runs out of memory then the QoS class determines
+which Pods get terminated first.
+
+| QoS Class  | Resources         | Eviction                                          |
+| ---------- | ----------------- | ------------------------------------------------- |
+| Guaranteed | requests = limits | Last to be evicted.                               |
+| Burstable  | requests < limits | Evicted if the bursts demand to much of the Node. |
+| BestEffort | nothing set       | First to be evited.                               |
+
+Never use BestEffort Pods in production.

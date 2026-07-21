@@ -27,5 +27,6 @@ kubectl describe [resource_name]
 
 # Gets cluster events
 kubectl get events
-
 ```
+
+
