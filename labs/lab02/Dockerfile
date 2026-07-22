@@ -17,6 +17,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 
 FROM build AS test
 
+# CMD instead of Run so it runs cleanly on Docker compose
 CMD ["go", "test", "./..."]
 
 FROM gcr.io/distroless/static-debian12 AS final

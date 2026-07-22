@@ -23,7 +23,7 @@ func Test_bite(t *testing.T) {
 		friendly: false,
 	}
 	biteForce := a.bite()
-	// Cannot do this:
+	// Cannot do this (method is specific to dog not animal interface):
 	// a.turnFriendly()
 
 	d := dog{
