@@ -180,6 +180,8 @@ If a StorageClass has **allowStorageExpansion: true** you can resize (you can
 only increase the size tho never reduce it) the PVC by **editing**
 **spec.resources.requests.storage**.
 
+Binding modes for StorageClass:
+
 | Binding mode         | Decription                                                    | Use case                                |
 | -------------------- | ------------------------------------------------------------- | --------------------------------------- |
 | Immediate            | PV is provisioned as soon as the PVC is created.              | Storage that is not specific to any AZ. |
@@ -251,7 +253,8 @@ meaning the application may experience increased latency. However, if the Pod
 to the Pod thus terminating it.
 
 You should almost always set memory limits for your Pod's container's. You may
-opt to leave the CPU limits out since it's compressable.
+opt to leave the CPU limits (not the requests though) out since it's
+compressable.
 
 Kubernetes evicts (terminates) Pods depending on their QoS (Quality of Service)
 class. The QoS class in turn depends on how the resources requests and limits
@@ -265,3 +268,20 @@ which Pods get terminated first.
 | BestEffort | nothing set       | First to be evited.                               |
 
 Never use BestEffort Pods in production.
+
+**Horizontal Pod Autoscaling (HPA)** Automatically scales Pods up or down based
+on resource usage. The metrics-server must be enabled on the cluster.
+
+HPA v2 (since Kubernetes 1.23) supports four types of metrics to scale:
+
+| Type     | Description                              | Example                      |
+| -------- | ---------------------------------------- | ---------------------------- |
+| Resource | CPU or memory usage from metrics-server. | avg CPU at 50%.              |
+| Pod      | Custom metric defined in the app         | Queue depth per Pod.         |
+| Object   | Metric from a Kubernetes object.         | Ingress requests-per-second. |
+| External | External metric from an external system. | AWS SQS queue length.        |
+
+Defining the scale behaviour on HPA manifests is very important, specially the
+scaleDown.stabilizationWindowSeconds. This ensures that only after a certain
+period of calm and low requests the Pods are scaled down, preventing prematurely
+scaling up or down, creating a flapping cycle.

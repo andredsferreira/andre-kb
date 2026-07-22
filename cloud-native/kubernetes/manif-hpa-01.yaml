@@ -1,5 +1,5 @@
 # Example of an HorizontalPodAutoscaler object associated with a
-# Deployment object (can also be assocaited with a ReplicaSet for
+# Deployment object (can also be associated with a ReplicaSet for
 # example). It's very important to note that once the HPA is
 # created it takes over the replicas field on the Deployment object,
 # meaning it can scale to numbers beyond the minimum and maximum defined
