@@ -1,0 +1,53 @@
+services:
+  api:
+    container_name: lab03
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lab03:latest
+    ports:
+      - 8080:8080
+    networks:
+      - go-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+      
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.55.0
+    volumes:
+      # MUST BE .YML and NOT .YAML FOR PROMETHEUS!
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yaml
+    ports:
+      - 9090:9090
+    networks:
+      - go-network
+  
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:11.3.0
+    volumes:
+      # MUST BE .YML and NOT .YAML FOR GRAFANA!
+      - ./docker/grafana.yml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - go-network
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+
+volumes:
+  grafana-data:
+
+networks:
+  go-network:
+    driver: bridge

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"andrekb/lab03/handler"
+	"andrekb/lab03/middleware"
 	"context"
 	"log/slog"
 	"os"
@@ -11,12 +13,30 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Register metrics with custom registry.
+func init() {
+	handler.CustomRegistry.MustRegister(handler.HttpRequestTotal)
+}
+
 func main() {
 	app := fiber.New()
 
+	// Register before middleware so it's excluded from tracking.
+	app.Get("/metrics", handler.PrometheusHandler())
+
+	app.Use(middleware.RequestMetricsMiddleware())
+
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("LAB03: Fiber Service")
+		return c.SendString("LAB03: Fiber Service with Prometheus and Grafana")
 	})
+
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"status": "ok",
+		})
+	})
+
+	// Other routes...
 
 	go func() {
 		slog.Info("listening on port 8080")
