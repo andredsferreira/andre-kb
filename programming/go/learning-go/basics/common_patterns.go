@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// Eventhough go is a garbage collected language having a slice as a buffer to store the
+// Even though go is a garbage collected language having a slice as a buffer to store the
 // readed data is the way to go! This avoids new memory allocations each time we are
 // processing a piece of data. Instead, we have one buffer that stores that data and
 // only process the readed bytes each time (remember count is the number of bytes

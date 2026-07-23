@@ -42,7 +42,7 @@ func main() {
 		slog.Info("listening on port 8080")
 		if err := app.Listen(":8080"); err != nil {
 			slog.Error("server error", "error", err)
-			os.Exit(1)
+			return
 		}
 	}()
 
