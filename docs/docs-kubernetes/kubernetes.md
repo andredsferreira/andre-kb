@@ -1,5 +1,8 @@
 ## Foundations
 
+Kubernetes nature is to have state in a declarative fashion. All of your desired
+state should be represented in manifests (yaml files).
+
 Kubernetes runs **Reconciliation Loops** it's always checking the desired state
 (declared on manifests) of the resources that have controllers behind them, and
 matching it with the actual state. If you shut down a Pod belonging to a
@@ -94,6 +97,10 @@ traffic across NodePort Services (see [this](../../labs/lab02/k8s/service.yaml) 
 LoadBalancer Service for each of your apps can become expensive since a LB is
 provisioned for each, a better pattern when you have a lot of microservices is
 to place an Ingress in front or API Gateway to distribute traffic.
+
+## Ingress
+
+
 
 ## ConfigMaps
 
@@ -284,4 +291,5 @@ HPA v2 (since Kubernetes 1.23) supports four types of metrics to scale:
 Defining the scale behaviour on HPA manifests is very important, specially the
 scaleDown.stabilizationWindowSeconds. This ensures that only after a certain
 period of calm and low requests the Pods are scaled down, preventing prematurely
-scaling up or down, creating a flapping cycle.
+scaling up or down, creating a flapping cycle (see [this](../../cloud-native/kubernetes/manif-hpa-02.yaml) as an example).
+
