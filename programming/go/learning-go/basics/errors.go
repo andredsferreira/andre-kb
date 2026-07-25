@@ -21,3 +21,18 @@ func evenPowerWithErrofHandling(num int) (int, error) {
 	}
 	return num * num, nil
 }
+
+// Unrwaping errors automatically with errors.Is()
+
+var myCustomError = errors.New("my custom error indicating number is 2")
+
+func doSomething(num int) error {
+	switch num {
+	case 0:
+		return errors.New("num is 0")
+	case 2:
+		return myCustomError
+	default:
+		return nil
+	}
+}

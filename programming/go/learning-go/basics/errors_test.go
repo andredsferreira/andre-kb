@@ -2,8 +2,10 @@ package basics
 
 import (
 	"crypto/rsa"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"testing"
 )
 
@@ -33,4 +35,16 @@ func TestEvenPowerWithErrorfHandling(t *testing.T) {
 func TestSentinelErrors(t *testing.T) {
 	fmt.Println(io.EOF)
 	fmt.Println(rsa.ErrMessageTooLong)
+}
+
+func Test_doSomething(t *testing.T) {
+    if err := doSomething(2); err != nil {
+        if errors.Is(err, myCustomError) {
+            t.Logf("custom error %v", err) // Or t.Errorf if this should fail the test.
+        } else {
+            t.Errorf("another error %v", err)
+        }
+        return // Avoid falling through to "no errors" when there was one.
+    }
+    log.Println("no errors")
 }

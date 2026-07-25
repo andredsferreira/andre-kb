@@ -28,6 +28,9 @@ helm install external-secrets external-secrets/external-secrets \
   
 ### 3. Create IAM Policy
 
+Skip this step if you already created a Policy for a previous cluster on EKS
+(just reuse it).
+
 Policy:
 
 ```json
@@ -55,6 +58,9 @@ aws iam create-policy \
 ```
 
 ### 4. Create IAM Role
+
+Skip this step if you already created an IAM Role for a previous EKS cluster
+(just reuse it).
 
 Role's trust policy: 
 
