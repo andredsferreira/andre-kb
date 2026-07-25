@@ -9,12 +9,19 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/gofiber/fiber/v3/middleware/static"
 )
 
 func main() {
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ServerHeader: "Fiber",
+		AppName:      "Learning Go Fiber",
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+	})
 
 	/********************************************************************************/
 	// Start server concurrently on a go routine so it doesn't block main.
@@ -59,6 +66,10 @@ func main() {
 
 	// Serving static files (like images, scripts, etc).
 	app.Use("/", static.New("./public"))
+
+	// Fiber does not recover from panics automatically add this middleware to do
+	// so.
+	app.Use(recover.New())
 
 	/********************************************************************************/
 	// Setup endpoints (with HTTP Method and a path).
@@ -133,6 +144,31 @@ func main() {
 			"ping_method": method,
 		})
 	})
+
+	// Route chaining exampple
+
+	handleGetOrders := func(c fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"get": "orders",
+		})
+	}
+
+	handlePostOrders := func(c fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"post": "orders",
+		})
+	}
+
+	handleDeleteOrders := func(c fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"delete": "orders",
+		})
+	}
+
+	app.RouteChain("/orders").
+		Get(handleGetOrders).
+		Post(handlePostOrders).
+		Delete(handleDeleteOrders)
 
 	/********************************************************************************/
 	// Setup signal handling.
