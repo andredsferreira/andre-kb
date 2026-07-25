@@ -48,9 +48,12 @@ func main() {
 
 	// Simple logger middleware example.
 	app.Use(func(c fiber.Ctx) error {
-		slog.Info("runs before request:", "", c.Method())
+		start := time.Now()
+		// Everything before Next runs before the request reaches the endpoint.
+		slog.Info("new request", "method", c.Method(), "path", c.Path(), "headers", c.GetHeaders())
 		err := c.Next()
-		slog.Info("runs after request", "", c.MediaType())
+		// Everything after Next runs after the response reaches the client.
+		slog.Info("", "time", time.Since(start))
 		return err
 	})
 
