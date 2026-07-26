@@ -1,0 +1,31 @@
+# Example of Ingress manifest for path based routing.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: production
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Strip the path prefix
+spec:
+  ingressClassName: nginx                           # Which controller handles this
+  rules:
+  - host: myapp.example.com
+    http:
+      paths:
+      # Requests to /api/* go to the API service
+      - path: /api
+        pathType: Prefix                            # Matches /api, /api/users, /api/v2/items
+        backend:
+          service:
+            name: api-service
+            port:
+              number: 80
+      # All other requests go to the frontend
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80

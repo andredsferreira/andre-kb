@@ -1,5 +1,9 @@
 ## Foundations
 
+Kubernetes functions on a client-server basis through HTTP APIs (kubectl is the
+client and makes requests to the API Server that lives on the control
+plane/master node).
+
 Kubernetes nature is to have state in a declarative fashion. All of your desired
 state should be represented in manifests (yaml files).
 
@@ -100,7 +104,23 @@ to place an Ingress in front or API Gateway to distribute traffic.
 
 ## Ingress
 
+**Ingress** Allows multiple Service (of type ClusterIP) to be hosted under one
+IP and thus you only need to provision one load balancer to expose your services
+(if you'd setup one Service object per Deployment then you would need to
+provision one load balancer per Service which can get very expensive). It routes
+requests to the appropriate services based on rules.
 
+The Ingress object by itself just declares the routing rules you need an
+underlying **Controller** to actually implement the routing and request a load
+balancer from the cloud. The Controller continuously watches for updates on
+Ingress objects (or new Ingress objects) and updates the routing rules.
+
+Analogy: Ingress is the routing table, the Controller is the router itself.
+
+Always use **cert-manager** to manager TLS certificates in Kubernetes
+(optionally for a full AWS ecosystem you can use the AWS LB Controller for
+Ingress which provisions certificates automatically with AWS Certificate
+Manager).
 
 ## ConfigMaps
 
@@ -128,6 +148,25 @@ encrypt the secrets at rest.
 | kubernetes.io/dockerconfigjson | Docker Hub registry credentials.             |
 | kuberentes.io/tls              | For TLS certificates.                        |
 | kubernetes.io/basic-auth       | For username and password authentication.    |
+
+## Secure Secrets Management
+
+By default secret are stored in etcd unencrypted (only base64 enocded). Anyone
+with read access in the cluster can view them. In production cluster you should
+never rely on this default, it's a huge security compromise and does not allow
+Gitops workflows (secrets are commited encoded not encrypted).
+
+For production clusters its better to store secrets in an external management
+system (Hashicorp Vault, AWS Secret Manager, etc), and use an ESO to fetch them.
+
+**External Secrets Operator (ESO)** Creates a bridge between secrets on an
+external system and native Kubernetes secrets (the most widely adopted solution
+for safe secret management in production clusters). It introduces two important
+objects SecretStore/ClusterSecretStore and ExternalSecret.
+
+ESO can re-fetch secrets periodically, if a new secret is detected (because the
+external secret manager, AWS SM for example, rotated it) running Pods must
+be restarted in order to pick the new secret up.
 
 ## StatefulSets
 
@@ -181,7 +220,10 @@ instead you dynamically provision them using StorageClasses.
 **StorageClass** Allows a PV to be dynamically provisioned instead of the
 cluster's admin having to manually create it. Usually setted up when using cloud
 storage such as AWS EBS. Check [this](../../cloud-native/kubernetes/manif-storageclass-01.yaml) important example (specially the
-**volumeBindingMode** field).
+**volumeBindingMode** field). The StorageClass is cluster scoped (not attached
+to a particular namespace).
+
+Gateway -> Controller
 
 If a StorageClass has **allowStorageExpansion: true** you can resize (you can
 only increase the size tho never reduce it) the PVC by **editing**
