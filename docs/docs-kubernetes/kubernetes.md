@@ -269,7 +269,7 @@ storage class still get provisioned.
 
 DaemonSets ensure all cluster Nodes (or some) run one copy of a Pod. The main
 use cases for DaemonSets are deploying infrastructure-level agents. Logging
-agents (fluentd, fluent-bit, filebeat) to collect container's logs; Node
+agents (fluentd, fluent-bit, filebeat) to collect container's logs; Node and Pod
 monitoring for metrics (Prometheus Node Exporter, collectd, Datadog agent); CNI
 plugins (Calico, Cilium, Weave Net); Security agents (Falco, Sysdig).
 
@@ -335,3 +335,16 @@ scaleDown.stabilizationWindowSeconds. This ensures that only after a certain
 period of calm and low requests the Pods are scaled down, preventing prematurely
 scaling up or down, creating a flapping cycle (see [this](../../cloud-native/kubernetes/manif-hpa-02.yaml) as an example).
 
+## Monitoring & Logging
+
+Kubernetes does not store logs permanently when Pods are deleted or restarted
+the logs are gone. You should set up a DaemonSet that runs log collectors on
+every Node and sends them to a backend. Another pattern is the SideCar pattern
+that runs a log collector Pod alongside every app Pod, this is more expensive in
+terms of resources and should only be used if the app really needs it.
+
+Always emit logs as structured JSON (log/slog package in go), its easier for log
+backends (such as LOKI) to parse them.
+
+As a starting point its highly recommended that you deploy kube-prometheus-stack
+on your cluster.

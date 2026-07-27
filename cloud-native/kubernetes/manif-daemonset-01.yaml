@@ -26,9 +26,14 @@ spec:
             cpu: 100m
             memory: 200Mi
         volumeMounts:
+        # Logs for the Nodes.
         - name: varlog
           mountPath: /var/log
+        # Logs for the Pods (applications).
         - name: varlibdockercontainers
+          # Assumes the container engine is Docker. Different paths are used for
+          # different engines: containerd (/var/log/pods) or CRI-O
+          # (/var/log/containers)
           mountPath: /var/lib/docker/containers
           readOnly: true
       terminationGracePeri$odSeconds: 30
