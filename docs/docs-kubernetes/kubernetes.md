@@ -1,4 +1,4 @@
-## Foundations
+## Kubernetes
 
 Kubernetes functions on a client-server basis through HTTP APIs (kubectl is the
 client and makes requests to the API Server that lives on the control
@@ -213,8 +213,8 @@ requesting the storage (PVC). Their relationship is strictly **one to one**: a
 PVC binds to only one PV if that PV meets the required storage capacity.
 
 PVs have their lifecycle independent of any Pod, they can be backed by AWS EBS,
-NFS, a local disk, etc. They also survive PVC deletions (although you can
-configure this to be diffferent). In production you rarely create PVs manually
+NFS, a local disk, etc. They can also survive PVC deletions (although this
+depends on the retention policy). In production you rarely create PVs manually
 instead you dynamically provision them using StorageClasses.
 
 **StorageClass** Allows a PV to be dynamically provisioned instead of the
@@ -250,7 +250,8 @@ and EFS supports RWX.
 
 **Reclaim Policy** Defines what happens to the PV when it's corresponding PVC is
 deleted. The reclaim policy is defined in the PV (under
-spec.persistentVolumeReclaimPolicy).
+spec.persistentVolumeReclaimPolicy). Most dynamically provisioned PVs (through a
+StorageClass) have Delete policy by default.
 
 | Policy | Description                              | Use case                                  |
 | ------ | ---------------------------------------- | ----------------------------------------- |

@@ -6,7 +6,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  # Must match the PV storage class.
+  # Must match the PV storage class (or the StorageClass name if dynamically
+  # provisioned PVs are in place).
   storageClassName: gp3-encrypted
   resources:
     requests:

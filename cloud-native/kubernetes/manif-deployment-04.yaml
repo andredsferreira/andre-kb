@@ -1,0 +1,27 @@
+# Example of an OTel Deployment (Gateway mode).
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector-gateway
+  namespace: monitoring
+spec:
+  replicas: 3                          # Scale based on telemetry volume
+  selector:
+    matchLabels:
+      app: otel-collector-gateway
+  template:
+    metadata:
+      labels:
+        app: otel-collector-gateway
+    spec:
+      containers:
+      - name: collector
+        image: otel/opentelemetry-collector-contrib:0.96.0
+        args: ["--config=/conf/otel-collector-config.yaml"]
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            memory: 2Gi

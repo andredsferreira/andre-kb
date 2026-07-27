@@ -1,0 +1,67 @@
+# Example of a production ready OTel configuration.
+
+receivers:
+
+  # Standard receiver using the OTLP protocol. Almost all OTel configs include
+  # this.
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317       # gRPC receiver
+      http:
+        endpoint: 0.0.0.0:4318       # HTTP receiver
+
+  # Prometheus receiver for apps that expose /metrics endpoint and don't use
+  # OTel. The prometheus.config accepts the same parameters as the actual
+  # Prometheus config. OTel Collector runs the Prometheus scraping engine inside.
+  prometheus:
+    config:
+      scrape_configs:
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+        - role: pod
+
+processors:
+  batch:
+    timeout: 5s                       # Flush every 5 seconds
+    send_batch_size: 1024             # Or when batch reaches 1024 items
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512                    # Hard limit
+    spike_limit_mib: 128              # Spike allowance
+  k8sattributes:
+    extract:
+      metadata:
+      - k8s.namespace.name
+      - k8s.pod.name
+      - k8s.deployment.name
+      - k8s.node.name
+  filter:
+    traces:
+      span:
+      - 'attributes["http.route"] == "/healthz"'   # Drop health checks
+
+exporters:
+  otlphttp:
+    endpoint: http://tempo.monitoring:4318     # Traces to Grafana Tempo
+  prometheusremotewrite:
+    endpoint: http://mimir.monitoring/api/v1/push  # Metrics to Mimir
+  loki:
+    endpoint: http://loki.monitoring:3100/loki/api/v1/push  # Logs to Loki
+
+# Pipelines that wire everything together.
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, k8sattributes, filter, batch]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [memory_limiter, k8sattributes, batch]
+      exporters: [prometheusremotewrite]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, k8sattributes, batch]
+      exporters: [loki]

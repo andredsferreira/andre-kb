@@ -1,0 +1,36 @@
+# Example manifest of OpenTelemetry Collector as a DaemonSet (Agent mode).
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: otel-collector-agent
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: otel-collector-agent
+  template:
+    metadata:
+      labels:
+        app: otel-collector-agent
+    spec:
+      containers:
+      - name: collector
+        image: otel/opentelemetry-collector-contrib:0.96.0
+        args: ["--config=/conf/otel-collector-config.yaml"]
+        ports:
+        - containerPort: 4317          # gRPC OTLP
+        - containerPort: 4318          # HTTP OTLP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+        volumeMounts:
+        - name: config
+          mountPath: /conf
+      volumes:
+      - name: config
+        configMap:
+          name: otel-collector-config
