@@ -1,12 +1,25 @@
-# Very simple example of a Role object. Keep in mind that Kubernetes
-# already comes with a bunch of default roles.
+# Example of a Role manifest.
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: role-01
-  namespace: default
+  name: developer
+  namespace: team-frontend       # This Role only applies in this namespace
 rules:
+# Allow full CRUD on pods
+- apiGroups: [""]                # "" is the core API group
+  resources: ["pods", "pods/log", "pods/exec"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+
+# Allow managing services and deployments
 - apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get"]
+  resources: ["services"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+# Allow read-only access to configmaps and secrets
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]

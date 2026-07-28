@@ -63,6 +63,8 @@ If your Pod is stuck on Pending (the Node may not have sufficient resources for
 example), or ContainerCreating (could be an error pulling the image) check the
 history of events with kubectl describe.
 
+Every Pod runs as a ServiceAccount that define the Pod's permissions.
+
 ## Deployments
 
 A Deployment manages a ReplicaSet (manages several replicas of the same Pod)
@@ -349,3 +351,24 @@ backends (such as LOKI) to parse them.
 
 As a starting point its highly recommended that you deploy kube-prometheus-stack
 on your cluster.
+
+## RBAC (Role Based Access Control)
+
+RBAC is additive only in Kubernetes. Permissions start at zero and are granted
+through Roles. This is the default deny philosophy. 
+
+If two Roles conflict de more permissive one wins.
+
+Roles are binded to a Subject through a RoleBinding. Three types of Subjects
+exist: Users (managed externally), Groups (connected to an IDP) and
+ServiceAccounts (managed by Kubernetes for Pod to API communication).
+
+ServiceAccounts are namespace scoped.
+
+Roles and RoleBindings are namespace scoped. ClusterRoles and ClusterRoleBinding
+are cluster scoped.
+
+Kubernetes comes with some useful ClusterRoles (cluster-admin, admin, edit and
+view) use these as building blocks instead of reinventing everything.
+
+Every Pod runs as a ServiceAccount.
