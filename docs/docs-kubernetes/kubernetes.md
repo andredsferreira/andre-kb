@@ -255,7 +255,7 @@ StorageClass) have Delete policy by default.
 
 | Policy | Description                              | Use case                                  |
 | ------ | ---------------------------------------- | ----------------------------------------- |
-| Retain | Retains the PV after the PVC is deleted. | Databases, critical data.                 |
+| Retain | Retains the PV after the is deleted. | Databases, critical data.                 |
 | Delete | Deletes the PV after the PVC is deleted. | Ephemeral data, development environments. |
 
 When a PVC is deleted and the corresponding PV has a Retain policy, the PV goes
