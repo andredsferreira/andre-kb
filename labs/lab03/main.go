@@ -19,12 +19,26 @@ func init() {
 }
 
 func main() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ServerHeader: "Fiber",
+		AppName:      "LAB03",
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+	})
 
 	// Register before middleware so it's excluded from tracking.
 	app.Get("/metrics", handler.PrometheusHandler())
 
+	/********************************************************************************/
+	/* Middleware
+	/********************************************************************************/
+
 	app.Use(middleware.RequestMetricsMiddleware())
+
+	/********************************************************************************/
+	/* Routes
+	/********************************************************************************/
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("LAB03: Fiber Service with Prometheus and Grafana")
@@ -36,7 +50,9 @@ func main() {
 		})
 	})
 
-	// Other routes...
+	/********************************************************************************/
+	/* Server process
+	/********************************************************************************/
 
 	go func() {
 		slog.Info("listening on port 8080")

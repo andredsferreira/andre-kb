@@ -11,9 +11,17 @@ func RequestMetricsMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		err := c.Next()
 
-		path := c.Route().Path
+		path := c.Path()
 		method := c.Method()
-		status := strconv.Itoa(c.Response().StatusCode())
+
+		code := c.Response().StatusCode()
+		if err != nil {
+			code = fiber.StatusInternalServerError
+			if fe, ok := err.(*fiber.Error); ok {
+				code = fe.Code
+			}
+		}
+		status := strconv.Itoa(code)
 
 		handler.HttpRequestTotal.WithLabelValues(path, method, status).Inc()
 
