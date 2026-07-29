@@ -1,0 +1,25 @@
+# ML training Job (Pod underneath) that tolerates the GPU taint.
+# By combining both the tolerations and nodeSelector this Job's Pod will only
+# land on GPU Nodes.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: model-training
+spec:
+  template:
+    spec:
+      tolerations:
+      - key: "hardware"
+        operator: "Equal"
+        value: "gpu"
+        effect: "NoSchedule"
+      nodeSelector:
+        hardware: gpu           # Also ensure we land on GPU nodes (Nodes with a "gpu" label).
+      containers:
+      - name: trainer
+        image: training-pipeline:v2.1
+        resources:
+          limits:
+            nvidia.com/gpu: 2
+      restartPolicy: Never

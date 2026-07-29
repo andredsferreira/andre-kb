@@ -372,3 +372,33 @@ are cluster scoped.
 
 Kubernetes comes with some useful ClusterRoles (cluster-admin, admin, edit and
 view) use these as building blocks instead of reinventing everything.
+
+## Taints & Tolerations
+
+Scheduling Pods to Nodes can be modified on Kubernetes through the use of Taints
+and Tolerations.
+
+**Taint** Applied to a Node, it says "Do not schedule any Pod here unless it has
+a matching toleration." For example, a Node that has a Taint "blue" will only
+allow (if the Taint effect is NoSchedule) Pods with the Toleration "blue".
+
+**Toleration** Applied to a Pod, it says "I'm allowed to be scheduled onto any
+Node that has this Taints". A Pod that has toleration blue can be scheduled onto
+Nodes with no Taints but also Nodes with the Taint blue.
+
+Even if a Pod has a Toleration for a Node's Taint it doesn't mean it will get
+automatically scheduled there. Kubernetes scheduler also considers resources,
+affinity rules, etc.
+
+| Taint Effect     | Description                                                                                                                                                            | Use Case                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| NoSchedule       | Will not schedule any Pod (new Pods only) unless it has a matching Toleration.                                                                                         | A Node with strong GPU that must be reserved for ML workloads (see [this](../../cloud-native/kubernetes/manifests/job-04.yaml) as example).                         |
+| PreferNoSchedule | Will try to not schedule Pods (new Pods only) that don't have the matching Toleration.                                                                                 | Preferential use, for example keeping test workloads out of specific production Nodes. |
+| NoExecute        | Will not schedule any Pod unless it has a matching Toleration. Will also evict current Pods that don't the Toleration. Applies to both new and already scheduled Pods. | For Node maintenance, when you need to drain all Pods from it.                         |
+
+By default Kubernetes control plane Nodes carry the following Taint:
+node-role.kubernetes.io/control-plane:NoSchedule
+
+Always label a Node with the same Taint value name. This keeps things simple by
+allowing Pods to tolerate and node select with the same name.
+
