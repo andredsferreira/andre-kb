@@ -45,5 +45,13 @@ kubectl rollout undo [resource_type]/[resource_name]
 kubectl rollout undo [resource_type]/[resource_name] --to-revision=[specific_revision_number]
 ```
 
+## RBAC
 
+```bash
+# Checking permissions
+kubectl auth can-i [verb] [resource_type]
+kubectl auth can-i [verb] [resource_type] --as [username] --namespace [namespace]
+kubectl auth can-i [verb] [resource_type] --as system:serviceaccount:[namespace]:[account_name] --namespace [namespace]
+kubectl auth can-i --list [user] --namespace [namespace]
+```
 

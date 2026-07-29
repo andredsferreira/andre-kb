@@ -365,10 +365,10 @@ ServiceAccounts (managed by Kubernetes for Pod to API communication).
 
 ServiceAccounts are namespace scoped.
 
+Every Pod runs as a ServiceAccount.
+
 Roles and RoleBindings are namespace scoped. ClusterRoles and ClusterRoleBinding
 are cluster scoped.
 
 Kubernetes comes with some useful ClusterRoles (cluster-admin, admin, edit and
 view) use these as building blocks instead of reinventing everything.
-
-Every Pod runs as a ServiceAccount.
