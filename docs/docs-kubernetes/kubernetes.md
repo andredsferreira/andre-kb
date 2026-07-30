@@ -18,7 +18,7 @@ reconciliation loop. A Pod created manually is the main example of this
 (ConfigMaps and Secrets are other examples). So if you delete this Pod it's
 gone.
 
-All Kubernetes objects are deployed into Kubernetes Namespaces, this means that
+Most Kubernetes objects are deployed into Kubernetes Namespaces, this means that
 you may have the same objects but in different namespaces. In other words,
 Namespaces isolate resources.
 
@@ -39,14 +39,14 @@ Init containers (defined in manifests under spec.initContainers) start before
 the main app container runs. Mostly used in sidecar pattern.
 
 Kubernetes terminates Pods in a graceful shutdown way (sending the **SIGTERM**
-signal). The removing of endpoints (the endpoint controller removes the Pod's IP
-from all the Services and the kube-api updates the iptables rules on all nodes)
-for the app takes time and is done concurrently which means your app can
-terminate earlier by way of the SIGTERM signal. In these cases you should strive
-to have a preStop hook (which also runs concurrently) that sleeps for a bit in
-order to prevent this. Also every production app should handle SIGTERM cleanly
-here is a Go [example](../../programming/go/go-handling-sigterm/main.go). For this to work tho always define your app in the Dockerfile
-with CMD ["cmd", "args"].
+signal). The removing of endpoints for the app takes time and is done
+concurrently which means your app can terminate earlier by way of the SIGTERM
+signal (the endpoint controller removes the Pod's IP from all the Services and
+the kube-api updates the iptables rules on all nodes). In these cases you should
+strive to have a preStop hook (which also runs concurrently) that sleeps for a
+bit in order to prevent this. Also every production app should handle SIGTERM
+cleanly here is a Go [example](../../programming/go/go-handling-sigterm/main.go). For this to work tho always define your app in the
+Dockerfile with CMD ["cmd", "args"].
 
 The kubelet uses exponential restarts (10s, 20s, 40s, ... up to 5 minutes). The
 **CrashLoopBackOff** status means kubelet is waiting before restarting the Pod
@@ -102,7 +102,7 @@ from the cloud provider. The cloud controller provisions the LB and distributes
 traffic across NodePort Services (see [this](../../labs/lab02/k8s/service.yaml) for an example manifest). Assigning a
 LoadBalancer Service for each of your apps can become expensive since a LB is
 provisioned for each, a better pattern when you have a lot of microservices is
-to place an Ingress in front or API Gateway to distribute traffic.
+to place an Ingress or API gateway in front to distribute traffic.
 
 ## Ingress
 
@@ -119,7 +119,7 @@ Ingress objects (or new Ingress objects) and updates the routing rules.
 
 Analogy: Ingress is the routing table, the Controller is the router itself.
 
-Always use **cert-manager** to manager TLS certificates in Kubernetes
+Always use **cert-manager** to manage TLS certificates in Kubernetes
 (optionally for a full AWS ecosystem you can use the AWS LB Controller for
 Ingress which provisions certificates automatically with AWS Certificate
 Manager).
@@ -131,12 +131,12 @@ configuration files that are later mounted as volumes in the necessary
 Deployments/Pods.
 
 If a ConfigMap that is consumed as an environment is updated it has no effect on
-running Pods. If the ConfigMap is consumed as a volume mount then the update is
-eventually consistent. The same applies for Secrets. You need to restart or
-recreate the Pods in order for them to pickup the updated values.
+running Pods, you need to restart or recreate the Pods in order for them to
+pickup the updated values. If the ConfigMap is consumed as a volume mount then
+the update is eventually consistent. The same applies for Secrets.
 
 A common production pattern is to version ConfigMaps and reference specific
-versions in Deployments (see [this](../../cloud-native/kubernetes/manif-configmap-03.yaml)).
+versions in Deployments (see [this](../../cloud-native/kubernetes/manifests/configmap-03.yaml)).
 
 ## Secrets
 
@@ -153,10 +153,11 @@ encrypt the secrets at rest.
 
 ## Secure Secrets Management
 
-By default secret are stored in etcd unencrypted (only base64 enocded). Anyone
-with read access in the cluster can view them. In production cluster you should
-never rely on this default, it's a huge security compromise and does not allow
-Gitops workflows (secrets are commited encoded not encrypted).
+Never rely on Kubernetes defaults for secrets, they are stored unecrypted (only
+base64 encoded).
+
+If you want to manage Secrets through manifests and commit them to a repo use
+the Bitnami's Sealed Secrets Controller.
 
 For production clusters its better to store secrets in an external management
 system (Hashicorp Vault, AWS Secret Manager, etc), and use an ESO to fetch them.
@@ -164,7 +165,8 @@ system (Hashicorp Vault, AWS Secret Manager, etc), and use an ESO to fetch them.
 **External Secrets Operator (ESO)** Creates a bridge between secrets on an
 external system and native Kubernetes secrets (the most widely adopted solution
 for safe secret management in production clusters). It introduces two important
-objects SecretStore/ClusterSecretStore and ExternalSecret.
+objects SecretStore/ClusterSecretStore and ExternalSecret (see lab03 for
+example).
 
 ESO can re-fetch secrets periodically, if a new secret is detected (because the
 external secret manager, AWS SM for example, rotated it) running Pods must
@@ -175,7 +177,7 @@ be restarted in order to pick the new secret up.
 StatefulSets should only be used when your application / service requires stable
 storage and can't be replaced. They are mainly used for databases (PostgreSQL,
 MongoDB), distributed systems (Kafka, Zookeeper), message queues (RabbitMQ, NATS
-with Jetstream). You can think of them like the Deployments for datbases or
+with Jetstream). You can think of them like the Deployments for databases or
 other stateful workloads.
 
 Pods created with a StatefulSet are stable with unique identifiers (pgdb-01,
@@ -185,12 +187,6 @@ not at the same time.
 Requires a Headless Service (A regular Kubernetes Services with ClusterIP set to
 none). This provides the DNS names needed for each Pod, i.e, their stable
 network identifier.
-
-PersistentVolumes are the storage resource pointing at real storage (NFS, AWS
-EBS, etc) and they are **cluster-scoped** (independent of namespaces). A
-PersistentVolumeClaim (not independent of namespace) is a claim on a
-PersistentVolume, i.e, a claim on storage (i want to use this PV as storage).
-The relationship between them is **exclusive one on one**.
 
 StatefulSets create PVCs (PersistentVolumeClaim) for each Pod based on a
 volumeClaimTemplate indicated in the StatefulSet manifest. When any Pod dies and
@@ -210,9 +206,14 @@ PostgresSQL you can maybe create a CronJob to run pgdump on a schedule).
 PVs and PVCs are the main storage mechanism in Kubernetes, needed when data must
 be persisted (mainly databases and queues).
 
-PVs and PVCs seperate the physical storage mechanism (PV) from the user
-requesting the storage (PVC). Their relationship is strictly **one to one**: a
-PVC binds to only one PV if that PV meets the required storage capacity.
+**PersistentVolume** Cluster scoped, physical storage mechanism (implements the
+actual storage).
+
+**PersistentVolumeClaim** Namespace scoped, a request on storage (binds to a PV
+that fulfills the PVCs request: size, access mode, storage class, etc).
+
+The relationship between a PV and a PVC is strictly **one to one**. A PVC cannot
+bind to multiple PVs and a PV cannot be bound to multiple PVCs.
 
 PVs have their lifecycle independent of any Pod, they can be backed by AWS EBS,
 NFS, a local disk, etc. They can also survive PVC deletions (although this
@@ -221,11 +222,9 @@ instead you dynamically provision them using StorageClasses.
 
 **StorageClass** Allows a PV to be dynamically provisioned instead of the
 cluster's admin having to manually create it. Usually setted up when using cloud
-storage such as AWS EBS. Check [this](../../cloud-native/kubernetes/manif-storageclass-01.yaml) important example (specially the
+storage such as AWS EBS. Check [this](../../cloud-native/kubernetes/manifests/storageclass-01.yaml) important example (specially the
 **volumeBindingMode** field). The StorageClass is cluster scoped (not attached
 to a particular namespace).
-
-Gateway -> Controller
 
 If a StorageClass has **allowStorageExpansion: true** you can resize (you can
 only increase the size tho never reduce it) the PVC by **editing**
@@ -278,7 +277,7 @@ plugins (Calico, Cilium, Weave Net); Security agents (Falco, Sysdig).
 
 If you want DaemonSets to run on the Control Plane Node you must explicitally
 add the tolerations for it on the DaemonSet's manifest (see
-manif-daemonset-02.yaml).
+manifests/daemonset-02.yaml).
 
 ## Service Discovery & DNS
 
@@ -292,7 +291,7 @@ each search domain before querying the name as is. If you query api.example.com
 api.example.com.default.svc.cluster.local; api.example.com.svc.cluster.local;
 api.example.com.cluster.local. Finally the fourth attempt api.example.com
 succeeds. It's common to reduce the "ndots" value as shown in
-manif-deployment-01.yaml.
+manifests/deployment-01.yaml.
 
 Always use trailing dot (a dot at the end: api.external.com.) when reaching
 external services, this prevents unnecessary search domain expansion.
@@ -336,7 +335,7 @@ HPA v2 (since Kubernetes 1.23) supports four types of metrics to scale:
 Defining the scale behaviour on HPA manifests is very important, specially the
 scaleDown.stabilizationWindowSeconds. This ensures that only after a certain
 period of calm and low requests the Pods are scaled down, preventing prematurely
-scaling up or down, creating a flapping cycle (see [this](../../cloud-native/kubernetes/manif-hpa-02.yaml) as an example).
+scaling up or down, creating a flapping cycle (see [this](../../cloud-native/kubernetes/manifests/hpa-02.yaml) as an example).
 
 ## Monitoring & Logging
 
@@ -357,11 +356,13 @@ on your cluster.
 RBAC is additive only in Kubernetes. Permissions start at zero and are granted
 through Roles. This is the default deny philosophy. 
 
-If two Roles conflict de more permissive one wins.
+If two Roles conflict the more permissive one wins.
 
 Roles are binded to a Subject through a RoleBinding. Three types of Subjects
-exist: Users (managed externally), Groups (connected to an IDP) and
-ServiceAccounts (managed by Kubernetes for Pod to API communication).
+exist: Users (managed externally by an OIDC provider, for example Okta or
+Google), Groups (connected to an IDP) and ServiceAccounts (managed by Kubernetes
+for Pod to API communication). The only object that exists in Kubernetes API is
+the ServiceAccount, the others are managed externally.
 
 ServiceAccounts are namespace scoped.
 
@@ -390,11 +391,11 @@ Even if a Pod has a Toleration for a Node's Taint it doesn't mean it will get
 automatically scheduled there. Kubernetes scheduler also considers resources,
 affinity rules, etc.
 
-| Taint Effect     | Description                                                                                                                                                            | Use Case                                                                               |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| NoSchedule       | Will not schedule any Pod (new Pods only) unless it has a matching Toleration.                                                                                         | A Node with strong GPU that must be reserved for ML workloads (see [this](../../cloud-native/kubernetes/manifests/job-04.yaml) as example).                         |
-| PreferNoSchedule | Will try to not schedule Pods (new Pods only) that don't have the matching Toleration.                                                                                 | Preferential use, for example keeping test workloads out of specific production Nodes. |
-| NoExecute        | Will not schedule any Pod unless it has a matching Toleration. Will also evict current Pods that don't the Toleration. Applies to both new and already scheduled Pods. | For Node maintenance, when you need to drain all Pods from it.                         |
+| Taint Effect     | Description                                                                                                                                                 | Use Case                                                                                                                                    |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| NoSchedule       | Will not schedule any **new** Pod unless it has a matching Toleration.                                                                                      | A Node with strong GPU that must be reserved for ML workloads (see [this](../../cloud-native/kubernetes/manifests/job-04.yaml) as example). |
+| PreferNoSchedule | Will try to not schedule **new** Pods that don't have the matching Toleration.                                                                              | Preferential use, for example keeping test workloads out of specific production Nodes.                                                      |
+| NoExecute        | Will not schedule **any** (new and already scheduled ones) Pod unless it has a matching Toleration. Will also evict current Pods that don't the Toleration. | For Node maintenance, when you need to drain all Pods from it.                                                                              |
 
 By default Kubernetes control plane Nodes carry the following Taint:
 node-role.kubernetes.io/control-plane:NoSchedule
