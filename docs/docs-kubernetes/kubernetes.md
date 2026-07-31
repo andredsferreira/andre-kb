@@ -106,6 +106,8 @@ to place an Ingress or API gateway in front to distribute traffic.
 
 ## Ingress
 
+NOTE: Always prefer Gateway API over Ingress.
+
 **Ingress** Allows multiple Service (of type ClusterIP) to be hosted under one
 IP and thus you only need to provision one load balancer to expose your services
 (if you'd setup one Service object per Deployment then you would need to
@@ -123,6 +125,9 @@ Always use **cert-manager** to manage TLS certificates in Kubernetes
 (optionally for a full AWS ecosystem you can use the AWS LB Controller for
 Ingress which provisions certificates automatically with AWS Certificate
 Manager).
+
+## Gateway API
+
 
 ## ConfigMaps
 
