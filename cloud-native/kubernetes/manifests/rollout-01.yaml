@@ -1,0 +1,78 @@
+# Example of an Argo Rollout manifest. ArgoRollout controller must be installed
+# on the cluster. The purpose of the Rollout object is to be a replacement for
+# Deployment object. It offers way more capabilities in terms of deployment
+# strategies (for example canary deployments). This manifest is an example of a
+# canary deployment.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: store-api
+  namespace: production
+spec:
+  replicas: 10
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: store-api
+  template:
+    metadata:
+      labels:
+        app: store-api
+    spec:
+      containers:
+        - name: store-api
+          image: registry.example.com/store-api:v2.3.1
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+  strategy:
+    canary:
+      # Traffic management via Istio.
+      trafficRouting:
+        istio:
+          virtualServices:
+            - name: store-api-vsvc
+              routes:
+                - primary
+          destinationRule:
+            name: store-api-destrule
+            canarySubsetName: canary
+            stableSubsetName: stable
+      steps:
+        # Step 1: 5% traffic to canary.
+        - setWeight: 5
+        # Step 2: Run analysis for 5 minutes.
+        - analysis:
+            templates:
+              - templateName: success-rate-and-latency
+            args:
+              - name: service-name
+                value: store-api-canary
+        # Step 3: Increase to 25%
+        - setWeight: 25
+        - pause: { duration: 3m }       # soak time
+        # Step 4: Manual gate — human must approve
+        - pause: {}                       # indefinite pause until promoted
+        # Step 5: 50% traffic
+        - setWeight: 50
+        - analysis:
+            templates:
+              # Matches the analysis-template-01.yaml name.
+              - templateName: success-rate-and-latency
+            args:
+              - name: service-name
+                value: store-api-canary
+        # Step 6: Full rollout
+        - setWeight: 100
+      # Automatic rollback on analysis failure.
+      abortScaleDownDelaySeconds: 30
+      # Anti-affinity to spread canary and stable across nodes.
+      antiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          weight: 100

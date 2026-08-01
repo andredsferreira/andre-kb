@@ -1,0 +1,44 @@
+# Defines the metrics that should be considered success or failure ofr an Argo
+# Rollout (check rollout-01.yaml)
+
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate-and-latency
+  namespace: production
+spec:
+  args:
+    - name: service-name
+  metrics:
+    # Metric 1: HTTP success rate must be >= 99%.
+    - name: success-rate
+      interval: 60s            # check every 60 seconds
+      count: 5                 # run 5 measurements total
+      failureLimit: 1          # allow at most 1 failure
+      successCondition: result[0] >= 0.99
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring:9090
+          query: |
+            sum(rate(http_requests_total{
+              service="{{args.service-name}}",
+              status=~"2..|3.."
+            }[2m])) /
+            sum(rate(http_requests_total{
+              service="{{args.service-name}}"
+            }[2m]))
+    # Metric 2: p99 latency must be < 500ms.
+    - name: p99-latency
+      interval: 60s
+      count: 5
+      failureLimit: 1
+      successCondition: result[0] < 500
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring:9090
+          query: |
+            histogram_quantile(0.99,
+              sum(rate(http_request_duration_ms_bucket{
+                service="{{args.service-name}}"
+              }[2m])) by (le)
+            )
