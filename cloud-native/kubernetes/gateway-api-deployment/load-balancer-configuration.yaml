@@ -1,0 +1,8 @@
+apiVersion: gateway.k8s.aws/v1beta1
+kind: LoadBalancerConfiguration
+metadata:
+  name: my-app-lb-config
+  namespace: gwad
+spec:
+  scheme: internet-facing
+

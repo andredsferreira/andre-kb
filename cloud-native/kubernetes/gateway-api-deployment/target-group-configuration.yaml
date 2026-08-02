@@ -1,0 +1,10 @@
+apiVersion: gateway.k8s.aws/v1beta1
+kind: TargetGroupConfiguration
+metadata:
+  name: my-app-service-tgc
+  namespace: gwad
+spec:
+  targetReference:
+    name: my-app-service
+  defaultConfiguration:
+    targetType: ip

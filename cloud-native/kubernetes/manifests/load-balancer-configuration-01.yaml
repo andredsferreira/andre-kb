@@ -1,0 +1,10 @@
+# LoadBalancerConfiguration manifest (assumes AWS ALB controller is installed on
+# the cluster).
+apiVersion: gateway.k8s.aws/v1beta1
+kind: LoadBalancerConfiguration
+metadata:
+  name: my-app-lb-config
+  namespace: test
+spec:
+  scheme: internet-facing
+
