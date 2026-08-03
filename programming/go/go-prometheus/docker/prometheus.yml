@@ -9,7 +9,7 @@ scrape_configs:
       - targets: ["localhost:9090"]
 
   # Scrape metrics for the app.
-  - job_name: lab03
+  - job_name: go-prometheus
     static_configs:
       - targets: ["api:8080"]
       

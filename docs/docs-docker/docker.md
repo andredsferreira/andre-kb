@@ -1,6 +1,6 @@
 ## Building & Dockerfiles
 
-Buildx (client) ----> BuildKit (server)
+Buildx (client) --> BuildKit (server)
 
 When writing Dockerfiles place instructions that are not changed frequently
 first. Docker uses a cache and reuses layers that did not change. If it hits an

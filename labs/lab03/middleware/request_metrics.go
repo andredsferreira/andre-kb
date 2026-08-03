@@ -11,7 +11,7 @@ func RequestMetricsMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		err := c.Next()
 
-		path := c.Path()
+		path := c.Route().Path
 		method := c.Method()
 
 		code := c.Response().StatusCode()

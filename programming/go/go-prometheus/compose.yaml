@@ -1,0 +1,31 @@
+services:
+  api:
+    container_name: go-prometheus
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: go-prometheus:latest
+    ports:
+      - 8080:8080
+    networks:
+      - go-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+      
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.55.0
+    volumes:
+      # MUST BE .YML and NOT .YAML FOR PROMETHEUS!
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - go-network

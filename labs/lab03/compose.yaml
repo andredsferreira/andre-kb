@@ -29,7 +29,24 @@ services:
       - 9090:9090
     networks:
       - go-network
-  
+
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:v1.8.2
+    pid: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - 9100:9100
+    networks:
+      - go-network
   grafana:
     container_name: grafana
     image: grafana/grafana:11.3.0
