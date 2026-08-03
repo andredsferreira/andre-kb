@@ -1,5 +1,5 @@
 services:
-  api:
+  lab03:
     container_name: lab03
     build:
       context: .

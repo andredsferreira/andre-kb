@@ -21,6 +21,14 @@ func main() {
 		IdleTimeout:  120 * time.Second,
 	})
 
+	prom := fiberprometheus.New("go_prometheus")
+	prom.RegisterAt(app, "/metrics")
+	app.Use(prom.Middleware)
+
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusOK)
+	})
+
 	/********************************************************************************/
 	/* Start server
 	/********************************************************************************/
@@ -32,10 +40,6 @@ func main() {
 			return
 		}
 	}()
-
-	prom := fiberprometheus.New("go_prometheus")
-	prom.RegisterAt(app, "/metrics")
-	app.Use(prom.Middleware)
 
 	/********************************************************************************/
 	/* Setup signal handling

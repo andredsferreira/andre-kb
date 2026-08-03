@@ -1,5 +1,10 @@
 services:
-  api:
+
+################################################################################
+# Go application
+################################################################################
+
+  go-prometheus:
     container_name: go-prometheus
     build:
       context: .
@@ -18,7 +23,11 @@ services:
       watch:
         - path: .
           action: rebuild
-      
+          
+################################################################################
+# Prometheus server
+################################################################################
+
   prometheus:
     container_name: prometheus
     image: prom/prometheus:v2.55.0
