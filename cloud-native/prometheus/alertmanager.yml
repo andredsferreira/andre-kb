@@ -1,0 +1,20 @@
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'andredsferreira1@gmail.com'
+  smtp_auth_username: 'andredsferreira1@gmail.com'
+  # Check Google App paswords and generate one to test.
+  smtp_auth_password: ''
+  smtp_require_tls: true
+
+route:
+  receiver: 'email-me'
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 1h
+
+receivers:
+  - name: 'email-me'
+    email_configs:
+      - to: 'andredsferreira1@gmail.com'
