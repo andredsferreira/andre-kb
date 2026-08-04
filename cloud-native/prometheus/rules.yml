@@ -1,0 +1,10 @@
+# Simple rule example that fires alert when an instance is down for more than
+# 1m (evaluating according to "evaluation_interval", so if the evaluation
+# interval is 10 s then after 6 times (60s=1m) it will trigger an alert).
+
+groups:
+  - name: instance-down-example
+    rules:
+    - alert: InstanceDown
+      expr: up == 0
+      for: 1m
