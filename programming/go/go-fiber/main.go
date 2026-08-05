@@ -24,18 +24,6 @@ func main() {
 	})
 
 	/********************************************************************************/
-	// Start server concurrently on a go routine so it doesn't block main.
-	/********************************************************************************/
-
-	go func() {
-		slog.Info("listening on port 8080")
-		if err := app.Listen(":8080"); err != nil {
-			slog.Error("server error", "error", err)
-			return
-		}
-	}()
-
-	/********************************************************************************/
 	// Setup middleware (with Use method).
 	/********************************************************************************/
 
@@ -169,6 +157,18 @@ func main() {
 		Get(handleGetOrders).
 		Post(handlePostOrders).
 		Delete(handleDeleteOrders)
+
+	/********************************************************************************/
+	// Start server concurrently on a go routine so it doesn't block main.
+	/********************************************************************************/
+
+	go func() {
+		slog.Info("listening on port 8080")
+		if err := app.Listen(":8080"); err != nil {
+			slog.Error("server error", "error", err)
+			return
+		}
+	}()
 
 	/********************************************************************************/
 	// Setup signal handling.

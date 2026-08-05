@@ -1,19 +1,22 @@
+networks:
+  go-fiber-prometheus:
+
 services:
 
 ################################################################################
 # Go application
 ################################################################################
 
-  go-prometheus:
-    container_name: go-prometheus
+  go-app:
+    container_name: go-app
     build:
       context: .
       dockerfile: Dockerfile
-    image: go-prometheus:latest
+    image: go-app:latest
     ports:
       - 8080:8080
     networks:
-      - go-network
+      - go-fiber-prometheus
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
@@ -37,4 +40,4 @@ services:
     ports:
       - 9090:9090
     networks:
-      - go-network
+      - go-fiber-prometheus

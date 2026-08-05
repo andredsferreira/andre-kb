@@ -342,7 +342,7 @@ scaleDown.stabilizationWindowSeconds. This ensures that only after a certain
 period of calm and low requests the Pods are scaled down, preventing prematurely
 scaling up or down, creating a flapping cycle (see [this](../../cloud-native/kubernetes/manifests/hpa-02.yaml) as an example).
 
-## Monitoring & Logging
+## Logging && Sidecar
 
 Kubernetes does not store logs permanently when Pods are deleted or restarted
 the logs are gone. You should set up a DaemonSet that runs log collectors on
