@@ -12,7 +12,6 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -65,10 +64,6 @@ func metricsMiddleware(c fiber.Ctx) error {
 
 func init() {
 	reg.MustRegister(httpRequestsTotal, httpRequestDuration)
-	// These are added by the default registry, but since im using a custom one i
-	// explictily code them here:
-	reg.MustRegister(collectors.NewGoCollector())
-	reg.MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
 }
 
 func main() {
