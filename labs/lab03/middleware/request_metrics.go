@@ -3,12 +3,14 @@ package middleware
 import (
 	"andrekb/lab03/handler"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func RequestMetricsMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		start := time.Now()
 		err := c.Next()
 
 		path := c.Route().Path
@@ -24,6 +26,7 @@ func RequestMetricsMiddleware() fiber.Handler {
 		status := strconv.Itoa(code)
 
 		handler.HttpRequestTotal.WithLabelValues(path, method, status).Inc()
+		handler.HttpRequestDuration.WithLabelValues(c.Method(), c.Route().Path).Observe(time.Since(start).Seconds())
 
 		return err
 	}

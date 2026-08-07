@@ -131,8 +131,8 @@ Manager).
 
 ## ConfigMaps
 
-ConfigMaps are mainly created to store non sensitive environment variables, or
-configuration files that are later mounted as volumes in the necessary
+ConfigMaps are mainly created to store non sensitive **environment variables** (see [this](../../cloud-native/kubernetes/manifests/configmap-01.yaml)), 
+or **configuration files** (see [this](../../cloud-native/kubernetes/manifests/configmap-02.yaml)) that are later mounted as volumes in the necessary
 Deployments/Pods.
 
 If a ConfigMap that is consumed as an environment is updated it has no effect on
@@ -342,7 +342,10 @@ scaleDown.stabilizationWindowSeconds. This ensures that only after a certain
 period of calm and low requests the Pods are scaled down, preventing prematurely
 scaling up or down, creating a flapping cycle (see [this](../../cloud-native/kubernetes/manifests/hpa-02.yaml) as an example).
 
-## Logging && Sidecar
+## Observability
+
+If the application writes logs to stdout/stder, **containerd** caputres the logs
+and stores them as JSON under /var/log/pods/namespace_pod_uid/container/0.log
 
 Kubernetes does not store logs permanently when Pods are deleted or restarted
 the logs are gone. You should set up a DaemonSet that runs log collectors on
@@ -354,7 +357,7 @@ Always emit logs as structured JSON (log/slog package in go), its easier for log
 backends (such as LOKI) to parse them.
 
 As a starting point its highly recommended that you deploy kube-prometheus-stack
-on your cluster.
+on your cluster for observability.
 
 ## RBAC (Role Based Access Control)
 

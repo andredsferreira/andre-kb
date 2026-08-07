@@ -12,6 +12,15 @@ var (
 		Name: "api_http_requests_total",
 		Help: "Total number of requests processed by the API",
 	}, []string{"path", "method", "status"})
+
+	HttpRequestDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "api_http_request_duration_seconds",
+			Help:    "HTTP request duration in seconds",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"method", "path"},
+	)
 )
 
 // Custom registry (without default Go metrics).

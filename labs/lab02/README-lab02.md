@@ -1,21 +1,30 @@
-### LAB02: Containerizing Go Application
+## LAB02: Containerizing Go Application
 
-**Description**
+### Description
 
-The main purpose of this lab is to properly setup a containerized
-(using Docker) application written in Go. Thus, the focus is on
-guaranteeing that there is a good setup of DEV environment (using
-Docker Compose) and there is a production ready (or as close as
-possible) CI/CD pipeline. This means the Go code itself it's not
-production ready and may not follow the best patterns for a production
-use case, or a particular use case.
+The main purpose of this lab is to properly setup a containerized (using Docker)
+application written in Go. Thus, the focus is on guaranteeing that there is a
+good setup of DEV environment (using Docker Compose) and there is a production
+ready (or as close as possible) CI pipeline. This means the Go code itself it's
+not production ready and may not follow the best patterns for a production use
+case, or a particular use case.
+
+### Architecture
+
+![Architecture Diagram](arch.png)
+
+Containerized API monolith (Go with Fiber framework) with a single CockroachDB
+deployed on CockroachDB cloud (free trial). The API is deployed on an EKS (free
+tier) cluster. The deployment is very simple but it requires some manual
+imperative commands see the [setup for deployment](#setup-for-deployment) section.
+
+### Local Development
 
 **Running**
 
 This command runs the application and also rebuilds (remove the
 --build flag if you don't want to rebuild, just remember that any
-modifications to the source code will need to be rebuilt in order to
-be seen).
+modifications to the source code will need to be rebuilt in order to be seen).
 
 NOTE: Run the command on this directory.
 
@@ -39,10 +48,11 @@ This will also remove the named volumes and thus the DB data.
 docker compose down -v
 ```
 
-**Setup for deployment**
+### Setup for deployment
 
 This were necessary steps that were ran in order to have a correct deployment of
-the app (omitting sensitive information).
+the app (omitting sensitive information). If they are not executed the CI
+pipeline will fail.
 
 Create a secret for docker hub credentials:
 

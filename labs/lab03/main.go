@@ -13,12 +13,23 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+
+// Setup default logger to output JSON (aswell as extra field service).
+func init() {
+	logHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	})
+	logger := slog.New(logHandler).With("service", "lab03")
+	slog.SetDefault(logger)
+}
+
 // Register metrics with custom registry.
 func init() {
 	handler.CustomRegistry.MustRegister(handler.HttpRequestTotal)
 }
 
 func main() {
+
 	app := fiber.New(fiber.Config{
 		ServerHeader: "Fiber",
 		AppName:      "LAB03",

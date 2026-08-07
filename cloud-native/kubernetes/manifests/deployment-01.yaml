@@ -25,6 +25,8 @@ spec:
       # How many unavailable during deployment.
       maxUnavailable: 1
   selector:
+    # Tells which Pods the deployment is reponsible for (Pods with the nginx
+    # label).
     matchLabels:
       app: nginx
   template:

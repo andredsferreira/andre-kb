@@ -3,7 +3,7 @@
 **Summary** Small lab that demonstrates how to deploy a service behind Gateway
 API on EKS.
 
-All the resources are created under the "gwad" namesapce so deletion is easier.
+All the resources are created under the "gwad" namespace so deletion is easier.
 
 ```bash
 kubectl delete namespace gwad
@@ -90,4 +90,8 @@ Confirm version is >= 2.14.0 for Gateway API support.
 ```bash
 helm search repo eks/aws-load-balancer-controller --versions | head
 ```
+
+### Request Flow
+
+![Request flow](diag.png)
 
