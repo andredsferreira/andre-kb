@@ -344,6 +344,8 @@ scaling up or down, creating a flapping cycle (see [this](../../cloud-native/kub
 
 ## Observability
 
+Logging is often the second or third largest infrastructure cost, after compute.
+
 If the application writes logs to stdout/stder, **containerd** caputres the logs
 and stores them as JSON under /var/log/pods/namespace_pod_uid/container/0.log
 
