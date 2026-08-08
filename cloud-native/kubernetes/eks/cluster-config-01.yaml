@@ -1,0 +1,95 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: managednodes-quickstart
+  region: us-east-2
+  version: "1.32"
+  tags:
+    # Add more cloud tags if needed for billing
+    environment: managednodes-quickstarts
+
+# The IAM section is for how EKS Pod Identity grants pods access to AWS services for your cluster.
+iam:
+  withOIDC: true
+  podIdentityAssociations: 
+  - namespace: kube-system
+    serviceAccountName: aws-load-balancer-controller
+    roleName: pod-identity-role-alb
+    wellKnownPolicies:
+      awsLoadBalancerController: true
+
+  - namespace: kube-system
+    serviceAccountName: efs-csi-controller-sa
+    roleName: pod-identity-role-efs
+    wellKnownPolicies:
+      efsCSIController: true      
+
+  - namespace: kube-system
+    serviceAccountName: external-dns
+    roleName: pod-identity-role-external-dns
+    wellKnownPolicies:
+      externalDNS: true          
+
+  - namespace: cert-manager
+    serviceAccountName: cert-manager
+    roleName: pod-identity-role-cert-manager
+    wellKnownPolicies:
+      certManager: true         
+
+  - namespace: kube-system
+    serviceAccountName: cluster-autoscaler
+    roleName: pod-identity-role-cluster-autoscaler
+    wellKnownPolicies:
+      autoScaler: true  
+
+  - namespace: amazon-cloudwatch
+    serviceAccountName: aws-node
+    roleName: pod-identity-role-cloudwatch-agent
+    permissionPolicyARNs: ["arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
+
+managedNodeGroups:
+  - name: managed-ng
+    instanceType: m5.large
+    minSize: 2
+    desiredCapacity: 3
+    maxSize: 5
+    # launch nodegroup in private subnets
+    privateNetworking: true
+    volumeSize: 100
+    volumeType: gp3
+    # Encrypt Worker Nodes Amazon EBS Volumes by default
+    volumeEncrypted: true
+    labels: 
+      node-class: "production-workload" 
+      role: "worker"   
+    tags:
+      nodegroup-role: worker
+      env: prod     
+      # EC2 tags required for cluster-autoscaler auto-discovery - these tags are automatically applied to a managed nodegroup autoscaling group
+      k8s.io/cluster-autoscaler/enabled: "true"
+      k8s.io/cluster-autoscaler/managednodes-quickstart: "owned"      
+
+addonsConfig:
+# automatically resolve (and apply) the recommended pod identity configuration
+  autoApplyPodIdentityAssociations: true
+
+addons:
+  - name: eks-pod-identity-agent # required for `iam.podIdentityAssociations`
+    tags:
+      team: eks
+  - name: vpc-cni
+    version: latest  
+  - name: aws-ebs-csi-driver
+    version: latest  
+  - name: coredns
+    version: latest # auto discovers the latest available
+  - name: kube-proxy
+    version: latest
+
+cloudWatch:
+ clusterLogging:
+   enableTypes: ["*"]
+    # Sets the number of days to retain the logs for (see [CloudWatch docs](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutRetentionPolicy.html#API_PutRetentionPolicy_RequestSyntax)).
+    # By default, log data is stored in CloudWatch Logs indefinitely.
+   logRetentionInDays: 60
