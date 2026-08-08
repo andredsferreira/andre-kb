@@ -1,0 +1,22 @@
+# ResourceQuota for a namespace (team-payments).
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: tenant-quota
+  namespace: team-payments
+spec:
+  hard:
+    # Compute limits
+    requests.cpu: "16"                # 16 CPU cores total
+    requests.memory: 32Gi             # 32 GiB memory total
+    limits.cpu: "32"
+    limits.memory: 64Gi
+    # Object count limits
+    pods: "50"                        # max 50 pods
+    services: "20"                    # max 20 services
+    services.loadbalancers: "2"       # max 2 load balancers (cost control)
+    persistentvolumeclaims: "10"      # max 10 PVCs
+    secrets: "50"                     # max 50 secrets
+    configmaps: "50"                  # max 50 configmaps
+    count/deployments.apps: "20"      # max 20 deployments

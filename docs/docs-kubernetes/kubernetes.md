@@ -361,29 +361,6 @@ backends (such as LOKI) to parse them.
 As a starting point its highly recommended that you deploy kube-prometheus-stack
 on your cluster for observability.
 
-## RBAC (Role Based Access Control)
-
-RBAC is additive only in Kubernetes. Permissions start at zero and are granted
-through Roles. This is the default deny philosophy. 
-
-If two Roles conflict the more permissive one wins.
-
-Roles are binded to a Subject through a RoleBinding. Three types of Subjects
-exist: Users (managed externally by an OIDC provider, for example Okta or
-Google), Groups (connected to an IDP) and ServiceAccounts (managed by Kubernetes
-for Pod to API communication). The only object that exists in Kubernetes API is
-the ServiceAccount, the others are managed externally.
-
-ServiceAccounts are namespace scoped.
-
-Every Pod runs as a ServiceAccount.
-
-Roles and RoleBindings are namespace scoped. ClusterRoles and ClusterRoleBinding
-are cluster scoped.
-
-Kubernetes comes with some useful ClusterRoles (cluster-admin, admin, edit and
-view) use these as building blocks instead of reinventing everything.
-
 ## Taints & Tolerations
 
 Scheduling Pods to Nodes can be modified on Kubernetes through the use of Taints
@@ -412,4 +389,36 @@ node-role.kubernetes.io/control-plane:NoSchedule
 
 Always label a Node with the same Taint value name. This keeps things simple by
 allowing Pods to tolerate and node select with the same name.
+
+## RBAC (Role Based Access Control)
+
+RBAC is additive only in Kubernetes. Permissions start at zero and are granted
+through Roles. This is the default deny philosophy. 
+
+If two Roles conflict the more permissive one wins.
+
+Roles are binded to a Subject through a RoleBinding. Three types of Subjects
+exist: Users (managed externally by an OIDC provider, for example Okta or
+Google), Groups (connected to an IDP) and ServiceAccounts (managed by Kubernetes
+for Pod to API communication). The only object that exists in Kubernetes API is
+the ServiceAccount, the others are managed externally.
+
+ServiceAccounts are namespace scoped.
+
+Every Pod runs as a ServiceAccount.
+
+Roles and RoleBindings are namespace scoped. ClusterRoles and ClusterRoleBinding
+are cluster scoped.
+
+Kubernetes comes with some useful ClusterRoles (cluster-admin, admin, edit and
+view) use these as building blocks instead of reinventing everything.
+
+## Multi-Tenancy
+
+When dealing with multiple teams on one cluster set up ResourceQuotas and
+LimitRanges to control resource usage.
+
+By default all Pods in the cluster can communicate between them regardless of
+namespace. Setup NetworkPolicies to restrict this behaviour and define stricter
+networking rules. Start with deny all policies and then allow what you need.
 

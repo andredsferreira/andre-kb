@@ -1,0 +1,30 @@
+# A LimitRange is necessary when ResourceQuotas are in place. LimitRange
+# prevents certain objects (Pods, PVCs, etc) from bypassing ResourceQuotas by
+# for example not specifying resource requests or passing the ResourceQuota's
+# limit.
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+  namespace: team-payments
+spec:
+  limits:
+    - type: Container
+      default:                       # Default limits if developer omits them.
+        cpu: 500m
+        memory: 512Mi
+      defaultRequest:                # Default requests if developer omits them.
+        cpu: 100m
+        memory: 128Mi
+      max:                           # Maximum any single container can request.
+        cpu: 4
+        memory: 8Gi
+      min:                           # Minimum (prevents trivially small pods).
+        cpu: 10m
+        memory: 16Mi
+    - type: PersistentVolumeClaim
+      max:
+        storage: 100Gi               # Max PVC size.
+      min:
+        storage: 1Gi
