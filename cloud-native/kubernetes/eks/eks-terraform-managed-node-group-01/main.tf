@@ -1,3 +1,9 @@
+################################################################################
+# Example of an EKS cluster configured using Terraform. The type of compute is
+# EKS managed node groups (most common and recommended). Authentication is done
+# via access entries (also the recommended approach).
+################################################################################
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 21.0"
