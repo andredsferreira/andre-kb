@@ -8,16 +8,16 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 21.0"
 
-  name               = "my-cluster"
+  name               = "akb"
   kubernetes_version = "1.33"
 
-  vpc_id     = "vpc-1234556abcdef"
-  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = concat(module.vpc.private_subnets, module.vpc.public_subnets)
 
   enable_cluster_creator_admin_permissions = true
   endpoint_public_access                   = true
 
-  # Needed to disable EKS Auto Mode
+  # Needed to disable EKS Auto Mode.
   compute_config = {
     enabled = false
   }
@@ -44,11 +44,12 @@ module "eks" {
   eks_managed_node_groups = {
     general = {
       ami_type       = "AL2023_x86_64_STANDARD"
-      instance_types = ["t3.medium"]
-      min_size       = 1
-      max_size       = 3
+      instance_types = ["m7i-flex.large"]
+      min_size       = 2
+      max_size       = 2
       desired_size   = 2
     }
+    subnet_ids = { for i, az in module.vpc.azs : az => module.vpc.private_subnets[i] }
   }
 
   ######################################################################
@@ -62,7 +63,7 @@ module "eks" {
 
     # Grant an IAM role cluster-wide admin access via AWS managed policy.
     platform_admin = {
-      principal_arn = "arn:aws:iam::123456789012:role/platform-admin"
+      principal_arn = "arn:aws:iam::565105396926:role/platform-admin"
 
       policy_associations = {
         admin = {
@@ -76,7 +77,7 @@ module "eks" {
 
     # Grant an IAM role edit access to a specific namespace.
     ci_deployer = {
-      principal_arn = "arn:aws:iam::123456789012:role/ci-deploy-role"
+      principal_arn = "arn:aws:iam::565105396926:role/ci-deploy-role"
 
       policy_associations = {
         edit = {
@@ -97,7 +98,7 @@ module "eks" {
     # the cluster admin to verify that the RoleBinding or ClusterRoleBinding
     # objects exist, aswell as the correct group name in those manifests.
     sre_viewer = {
-      principal_arn     = "arn:aws:iam::123456789012:role/sre-viewer-role"
+      principal_arn     = "arn:aws:iam::565105396926:role/sre-viewer-role"
       kubernetes_groups = ["platform-viewers"]
     }
   }
