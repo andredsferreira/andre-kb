@@ -49,8 +49,12 @@ module "eks" {
   # Access entries
   ######################################################################
 
+  # More info on permissions of access policies here:
+  # https://docs.aws.amazon.com/eks/latest/userguide/access-policy-permissions.html
+
   access_entries = {
-    # Grant an IAM role cluster-wide admin access
+
+    # Grant an IAM role cluster-wide admin access via AWS managed policy.
     platform_admin = {
       principal_arn = "arn:aws:iam::123456789012:role/platform-admin"
 
@@ -64,22 +68,7 @@ module "eks" {
       }
     }
 
-    # Grant an IAM user view-only access, scoped to a single namespace
-    dev_viewer = {
-      principal_arn = "arn:aws:iam::123456789012:user/dev-user"
-
-      policy_associations = {
-        view = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-          access_scope = {
-            type       = "namespace"
-            namespaces = ["default"]
-          }
-        }
-      }
-    }
-
-    # Grant an IAM role edit access to a specific namespace
+    # Grant an IAM role edit access to a specific namespace.
     ci_deployer = {
       principal_arn = "arn:aws:iam::123456789012:role/ci-deploy-role"
 
@@ -94,6 +83,17 @@ module "eks" {
       }
     }
 
+    # Grant an IAM role membership in a Kubernetes RBAC group. No AWS managed
+    # policy here — permissions come entirely from whatever ClusterRole(s) you
+    # bind to "platform-viewers" in k8s.
+    # NOTE: AWS does not check if the RoleBinding related to the
+    # platform-viewers group exists. AWS API calls will return no error, is up to
+    # the cluster admin to verify that the RoleBinding or ClusterRoleBinding
+    # objects exist, aswell as the correct group name in those manifests.
+    sre_viewer = {
+      principal_arn     = "arn:aws:iam::123456789012:role/sre-viewer-role"
+      kubernetes_groups = ["platform-viewers"]
+    }
   }
 
   tags = {
