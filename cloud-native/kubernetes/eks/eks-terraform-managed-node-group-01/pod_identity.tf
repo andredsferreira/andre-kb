@@ -4,6 +4,9 @@
 # Example of an use case for the Pod Identity addon: the AWS ALB Controller is
 # installed on the cluster and needs permissions to call the AWS ALB API so it
 # can provision ALBs.
+# Official docs for the Terraform module:
+# https://registry.terraform.io/modules/terraform-aws-modules/eks-pod-identity/aws/latest
+#
 ################################################################################
 
 module "aws_lb_controller_pod_identity" {
