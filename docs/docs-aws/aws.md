@@ -24,3 +24,24 @@ AWS reserves 5 IP addresses per subnet, for example for 10.0.0.0/16:
 
 Subnets can communicate with each other cross AZ (there is a cost associated
 however).
+
+If a route table has multiple rules the most specific one wins (the one with the
+longest prefix).
+
+NACLs are attached to subnets. Security Groups are attached to EC2 and Netowork
+Interfaces.
+
+Security Groups implicitly deny by default (you only write allow rules).
+
+In Security Groups you can reference another Security Group ID in the source
+rule (instead of manually managing IPs). This is a good practice at scale.
+
+Once a DHCP Option is created it *cannot be modified*.
+
+Peering VPCs cannot have overlapping CIDRs.
+
+Peering connections are initiated by a **requester VPC** and received by a
+**receiver VPC**. The receiver can accept or deny the request.
+
+Since NAT gateways only are deployed to one AZ, for true resiliency you should
+deploy different NAT gateways on different AZs.

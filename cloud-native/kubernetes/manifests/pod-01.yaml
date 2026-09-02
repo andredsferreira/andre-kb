@@ -80,7 +80,7 @@ spec:
         failureThreshold: 3
 
       # Readiness probe to check if the container is ready to
-      # receive requests.
+      # receive requests.  
       readinessProbe:
         httpGet:
           path: /

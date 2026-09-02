@@ -1,3 +1,9 @@
+################################################################################
+# Example of a VPC with the main resources it needs to work. This VPC has four
+# subnets, two public and two private. It sets up a IGW and NAT gateway. For 
+# security it also sets up NACLs and SGs.
+################################################################################
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -172,4 +178,88 @@ resource "aws_route_table_association" "db_rt_association_01" {
 resource "aws_route_table_association" "db_rt_association_02" {
   subnet_id      = aws_subnet.db_subnet_02.id
   route_table_id = aws_route_table.db_rt_02.id
+}
+
+################################################################################
+# NACLs
+################################################################################
+
+# NACL to only allow servers on public_subnet_01 to receive HTTP and respond.
+
+resource "aws_network_acl" "public_subnet_01_acl" {
+  vpc_id = aws_vpc.this.id
+  # Can add multiple subnets if needed.
+  subnet_ids = [aws_subnet.public_subnet_01.id]
+
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+
+  egress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  tags = {
+    Name = "public-subnet-01-acl"
+  }
+}
+
+################################################################################
+# Security Groups
+################################################################################
+
+resource "aws_security_group" "sg_allow_http" {
+  name        = "allow-http"
+  description = "Allow HTTP inbound traffic from anywhere"
+  vpc_id      = aws_vpc.this.id
+
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow all outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow-http"
+  }
+}
+
+################################################################################
+# DHCP Option Set
+################################################################################
+
+# Example of a DHCP Option Set (with fictional domain name).
+
+resource "aws_vpc_dhcp_options" "this" {
+  domain_name         = "andrekb.com"
+  domain_name_servers = ["1.1.1.1", "8.8.8.8"]
+
+  tags = {
+    Name = "custom-dhcp-options"
+  }
+}
+
+resource "aws_vpc_dhcp_options_association" "custom" {
+  vpc_id          = aws_vpc.this.id
+  dhcp_options_id = aws_vpc_dhcp_options.this.id
 }

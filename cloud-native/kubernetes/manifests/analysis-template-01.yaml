@@ -1,4 +1,4 @@
-# Defines the metrics that should be considered success or failure ofr an Argo
+# Defines the metrics that should be considered success or failure of an Argo
 # Rollout (check rollout-01.yaml)
 
 apiVersion: argoproj.io/v1alpha1
