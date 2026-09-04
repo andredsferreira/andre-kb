@@ -28,8 +28,8 @@ however).
 If a route table has multiple rules the most specific one wins (the one with the
 longest prefix).
 
-NACLs are attached to subnets. Security Groups are attached to EC2 and Netowork
-Interfaces.
+NACLs are attached to subnets. Security Groups are attached to ENIs (Elastic
+Network Interfaces).
 
 Security Groups implicitly deny by default (you only write allow rules).
 
@@ -45,3 +45,39 @@ Peering connections are initiated by a **requester VPC** and received by a
 
 Since NAT gateways only are deployed to one AZ, for true resiliency you should
 deploy different NAT gateways on different AZs.
+
+**VPC Gateway Endpoints** are used to establish a private connection from a
+private subnet to either DynamoDB or S3. Very secure (free).
+
+**VPC Interface Endpoints** are used to establish private connections to other
+AWS services, for example SSM (costs money). Interface endpoints deploy an ENI
+on the VPC which can have an SG attached.
+
+## EC2
+
+| Instance Family       | Description | Prefix  |
+| --------------------- | ----------- | ------- |
+| General Purpose       |             | M, T    |
+| Compute Optimized     |             | C       |
+| Memory Optimized      |             | X, R, Z |
+| Accelerated Computing |             | G, P    |
+| Storage Optimized     |             | I       |
+| HPC Workloads         |             |         |
+
+AWS uses the APIPA address: 169.254.169.254 for EC2 instance metadata. You can
+easily see with, for example: curl http://169.254.169.254/latest/meta-data/instance-id
+
+## EBS
+
+EBS volumes can only be bound to a single EC2 instance at a time (unless it's a
+multi-attach volume). Also only bound to a single AZ (but they are automatically
+replicated within the AZ).
+
+By default the root volume is deleted by default if you terminate (delete) an
+EC2 instance.
+
+You can't directly encrypt an unencrypted EBS volume or EBS volume snapshot, you
+must create a new one and ecrypt it.
+
+EBS snapshots are stored in S3 but you can't directly access the S3 buckets, you
+manage through the EBS service.
