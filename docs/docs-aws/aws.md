@@ -73,6 +73,9 @@ EBS volumes can only be bound to a single EC2 instance at a time (unless it's a
 multi-attach volume). Also only bound to a single AZ (but they are automatically
 replicated within the AZ).
 
+Multi-attached volumes are limited to the same AZ and 16 max instances, they
+also need a cluster wide file system.
+
 By default the root volume is deleted by default if you terminate (delete) an
 EC2 instance.
 
