@@ -1,5 +1,5 @@
 ################################################################################
-# Example of an ARM EC2 instance.
+# Example of an x86_64 EC2 instance, with the metadata service options.
 ################################################################################
 
 provider "aws" {
@@ -12,12 +12,10 @@ provider "aws" {
 
 resource "aws_instance" "ec2_instance" {
   ami           = data.aws_ssm_parameter.al2023_ami.value
-  instance_type = "t4g.micro"
+  instance_type = "t3.micro"
   key_name      = ""
 
   iam_instance_profile = aws_iam_instance_profile.ssm_instance_profile.name
-
-  user_data = templatefile("${path.module}/bootstrap.sh", {})
 
   root_block_device {
     volume_size           = 8
@@ -25,8 +23,15 @@ resource "aws_instance" "ec2_instance" {
     delete_on_termination = true
   }
 
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required" # enforces IMDSv2
+    http_put_response_hop_limit = 1
+    instance_metadata_tags      = "enabled"
+  }
+
   tags = {
-    Name = "aml-arm-micro-01"
+    Name = "aml-x86-micro-01"
   }
 }
 
