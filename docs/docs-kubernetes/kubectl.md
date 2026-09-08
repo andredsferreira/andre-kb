@@ -31,7 +31,7 @@ kubectl describe [resource_name]
 kubectl get events
 ```
 
-## Deployment status and undoing
+## Deployments
 
 NOTE: The rollout command can be applied to other resources aswell besides
 Deployments (StatefulSets and DaemonSets).

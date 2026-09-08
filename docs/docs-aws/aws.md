@@ -67,6 +67,18 @@ on the VPC which can have an SG attached.
 AWS uses the APIPA address: 169.254.169.254 for EC2 instance metadata. You can
 easily see with, for example: curl http://169.254.169.254/latest/meta-data/instance-id
 
+| Instance Pricing  | Description                                                                         |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| On Demand         | Default, pay by the hour.                                                           |
+| Spot Instances    | Up to 90% discount on regular instances. May be shutted down whenever AWS needs to. |
+| Reserved Capacity | Reserve capacity for 1-3 years and save (being replaced by savings plans).          |
+
+| Tenancy            | Description                                                                               |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| Shared             | Default, your instance shares the hardware with other AWS accounts.                       |
+| Dedicated Instance | Hardware is assigned only to your account. Instances on your account share that hardware. |
+| Dedicated Host     | You get separate hardware to run your instances.                                          |
+
 ## EBS
 
 EBS volumes can only be bound to a single EC2 instance at a time (unless it's a

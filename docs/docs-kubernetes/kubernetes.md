@@ -1,8 +1,8 @@
 ## Kubernetes
 
 Kubernetes functions on a client-server basis through HTTP APIs (kubectl is the
-client and makes requests to the API Server that lives on the control
-plane/master node).
+client and makes requests to the API Server that lives on the control plane /
+master node).
 
 Kubernetes nature is to have state in a declarative fashion. All of your desired
 state should be represented in manifests (yaml files).
@@ -49,8 +49,12 @@ cleanly here is a Go [example](../../programming/go/go-handling-sigterm/main.go)
 Dockerfile with CMD ["cmd", "args"].
 
 The kubelet uses exponential restarts (10s, 20s, 40s, ... up to 5 minutes). The
-**CrashLoopBackOff** status means kubelet is waiting before restarting the Pod
-again (after 10 minutes of successful running the timer resets).
+**CrashLoopBackOff** status means the container crashed and exited now the
+kubelet is waiting before restarting the Pod again (after 10 minutes of
+successful running the timer resets).
+
+**ImagePullBackOff** is a state that happens when the kubelet tried to pull the
+container image but it can't.
 
 Every Pod can communicate with every other Pod on the cluster using it's IP
 (regardless of namespace). Every Pod gets a unique IP. Agents on a Node (like
