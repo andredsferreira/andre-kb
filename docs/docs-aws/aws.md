@@ -96,3 +96,49 @@ must create a new one and ecrypt it.
 
 EBS snapshots are stored in S3 but you can't directly access the S3 buckets, you
 manage through the EBS service.
+
+## S3
+
+S3 is a global service but the resources it creates are **regional**.
+
+Bucket names must be globally unique.
+
+**Read after write**: you see the object immediatelly after writes.
+
+When you upload a file with success you get a HTTP 200 response (It's a REST
+API).
+
+**S3 Multipart Upload**: Uploads large objects (recommended over 5GB or
+unnstable network connections) by parts.
+
+Storage classes are associated with objects not with buckets. So you set the
+storage class in objects.
+
+| Storage Class                          | Description                                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| S3 Standard                            |                                                                                                              |
+| S3 Express One Zone                    | Locked to a single AZ, single digit ms reads and writes.                                                     |
+| S3 Standard Infrequent Access          | Cheaper storage cost, retrieval fee. Storage across multiple AZs. Good for backups.                          |
+| S3 Standard One Zone Infrequent Access | Cheapest storage cost, retrieval fee. Storage only across one AZ. Good for backups.                          |
+| S3 Glacier Instant Retrieval           | Very rarely accessed data but with almost instant retrieval. Allows real time access.                        |
+| S3 Glacier Flexible Archive            | Used for archives, data might be retrieved in minutes. Does not allow real time access.                      |
+| S3 Glacier Deep Archive                | Used for archives that are very rarely accessed, data might take up to 48h. Does not allow real time access. |
+
+**S3 Intelligent Tiering**: Moves data to the most effective storage class
+according to access patterns. Good when you don't know the type of access. It
+starts on Frequent Access tier moves to Infrequent Access if the data is not
+touched for more than 30 days, and moves to Archive Instant Access if it's not
+touched for 90 days.
+
+Once bucket versioning is setted, you cannot turn it off, only suspend it. Once
+versioning is on you really never delete an object but place a **deletion
+marker** that hides the object. To restore the object you simply delete the
+marker (if you toggle the "show versions" on the console and select an object
+and delete it there, it will actually **permanently delete ** the object).
+
+**Amazon S3 Lifecycle Rules**: Rules you place **on buckets** to automatically
+manage the lifecycle of your objects, they can be filtered according to object
+prefixes (folders), or tags. You can apply these rules to object versions
+(previous versions). The rules can be classified under **transition rules**:
+transitioning from one storage class to another; and **expire rules**: for
+example expiring objects (deleting them) after a period of time.
