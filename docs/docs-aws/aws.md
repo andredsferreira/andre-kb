@@ -108,6 +108,9 @@ Bucket names must be globally unique.
 When you upload a file with success you get a HTTP 200 response (It's a REST
 API).
 
+S3 does not have real folders it has prefixes. Example of a s3 object:
+s3//bucket-name/prefix_a/prefix_b/my_image.png
+
 **S3 Multipart Upload**: Uploads large objects (recommended over 5GB or
 unnstable network connections) by parts.
 
@@ -130,11 +133,12 @@ starts on Frequent Access tier moves to Infrequent Access if the data is not
 touched for more than 30 days, and moves to Archive Instant Access if it's not
 touched for 90 days.
 
-Once bucket versioning is setted, you cannot turn it off, only suspend it. Once
-versioning is on you really never delete an object but place a **deletion
-marker** that hides the object. To restore the object you simply delete the
-marker (if you toggle the "show versions" on the console and select an object
-and delete it there, it will actually **permanently delete ** the object).
+**Versioning**: Once bucket versioning is setted, you cannot turn it off, only
+suspend it. Once versioning is on you really never delete an object but place a
+**deletion marker** that hides the object. To restore the object you simply
+delete the marker (if you toggle the "show versions" on the console and select
+an object and delete it there, it will actually **permanently delete ** the
+object).
 
 **Amazon S3 Lifecycle Rules**: Rules you place **on buckets** to automatically
 manage the lifecycle of your objects, they can be filtered according to object
@@ -142,3 +146,13 @@ prefixes (folders), or tags. You can apply these rules to object versions
 (previous versions). The rules can be classified under **transition rules**:
 transitioning from one storage class to another; and **expire rules**: for
 example expiring objects (deleting them) after a period of time.
+
+**S3 Replication**: You can enable replication to replicate objects between
+buckets (its asynchronous the objects takes time to replicate). Versioning must
+be enabled in both buckets; existing objects don't get replicated automatically
+(only updated and created ones); deletion of version or delete markers are not
+replicated; replication can be enabled cross region and even cross accounts (an
+IAM Role is needed).
+
+S3 Select and S3 Glacier Select should be only used for simple queries on single
+objects not on large amounts of data.
