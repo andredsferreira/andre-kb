@@ -141,7 +141,7 @@ an object and delete it there, it will actually **permanently delete ** the
 object).
 
 **Amazon S3 Lifecycle Rules**: Rules you place **on buckets** to automatically
-manage the lifecycle of your objects, they can be filtered according to object
+manage the **lifecycle** of your objects, they can be filtered according to object
 prefixes (folders), or tags. You can apply these rules to object versions
 (previous versions). The rules can be classified under **transition rules**:
 transitioning from one storage class to another; and **expire rules**: for
@@ -155,4 +155,9 @@ replicated; replication can be enabled cross region and even cross accounts (an
 IAM Role is needed).
 
 S3 Select and S3 Glacier Select should be only used for simple queries on single
-objects not on large amounts of data.
+objects **content** not on large amounts of objects/data.
+
+**S3 Transfer Acceleration**: Speeds up PUT and GET from buckets all around the
+world (uses POIs as the network infrastructure). It's useful if you have
+customers spread arround the globe. In some regions however it can be slower
+than standard S3.
