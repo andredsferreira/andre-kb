@@ -44,7 +44,8 @@ Peering connections are initiated by a **requester VPC** and received by a
 **receiver VPC**. The receiver can accept or deny the request.
 
 Since NAT gateways only are deployed to one AZ, for true resiliency you should
-deploy different NAT gateways on different AZs.
+deploy different NAT gateways on different AZs (this can become expensive
+though).
 
 **VPC Gateway Endpoints** are used to establish a private connection from a
 private subnet to either DynamoDB or S3. Very secure (free).
@@ -161,3 +162,17 @@ objects **content** not on large amounts of objects/data.
 world (uses POIs as the network infrastructure). It's useful if you have
 customers spread arround the globe. In some regions however it can be slower
 than standard S3.
+
+New S3 buckets (for newer accounts) have encryption at rest enabled by default.
+
+| Encryption Type        | Description                                                                                                                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Amazon SSE-S3          | Server side encryption at rest for S3 buckets (uses S3 managed keys); default setting in new buckets; no extra costs or performance costs.                                                 |
+| Amazon SSE-KMS         | Same as SS3-S3 but using AWS KMS keys (keys must be in the same region). Additional charges for every call to KMS for encrypting and decrypting. User needs permissions for using the key. |
+| Amazon SSE-C           | You provide the keys and need to setup appropriate headers on a HTTPS request. No charges.                                                                                                 |
+| Client-side Encryption | You encrypt and decrypt before sending to S3.                                                                                                                                              |
+
+**AWS S3 Bucket Keys**: Should always be enabled  when using SSE-KMS. It allows
+the same encryption and decryption mechanisms but with fewer calls to KMS.
+
+

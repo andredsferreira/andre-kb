@@ -21,11 +21,16 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
         Principal = "*"
         Action    = "s3:*"
         Resource = [
+          # Bucket policy
           aws_s3_bucket.bucket_01.arn,
+          # Objects policy
           "${aws_s3_bucket.bucket_01.arn}/*"
         ]
+        # Enforce HTTPS: If the user doesn't have secure transport (it's false)
+        # the request it's deniyed.
         Condition = {
           Bool = {
+            # 
             "aws:SecureTransport" = "false"
           }
         }
