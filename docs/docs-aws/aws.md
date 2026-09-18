@@ -175,4 +175,3 @@ New S3 buckets (for newer accounts) have encryption at rest enabled by default.
 **AWS S3 Bucket Keys**: Should always be enabled  when using SSE-KMS. It allows
 the same encryption and decryption mechanisms but with fewer calls to KMS.
 
-
