@@ -160,7 +160,6 @@ resource "aws_route53_record" "primary_failover" {
   }
 }
 
-
 resource "aws_route53_record" "secondary_failover" {
   zone_id = aws_route53_zone.pub_zone.zone_id
   name    = "app.example.com"

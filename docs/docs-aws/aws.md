@@ -1,5 +1,18 @@
 ## IAM
 
+[Terraform examples](../../cloud-native/aws/aws-core-services/aws-iam/)
+
+**Principal**: An entity that can perform actions on AWS resources (who is
+making a request). The most common use case is specifying principals in an
+assume role policy, i.e, who can assume that role.
+
+Principals in AWS:
+
+- IAM users, IAM roles (assumed roles), and IAM groups.
+- AWS accounts (cross-account entities).
+- AWS services (such as EC2, and S3).
+- The root account.
+
 IAM Roles have a **permission policy** (what permissions are associated with the
 role) and a **trust policy** (which principal can assume the role).
 
@@ -9,6 +22,8 @@ credentials.
 Assuming and using a role requires a **session token** to be present.
 
 ## VPC
+
+[Terraform examples](../../cloud-native/aws/aws-core-services/aws-vpc/)
 
 By default a VPC comes with a **default route table** that allows traffic
 between every node in the VPC.
@@ -55,6 +70,8 @@ AWS services, for example SSM (costs money). Interface endpoints deploy an ENI
 on the VPC which can have an SG attached.
 
 ## EC2
+
+[Terraform examples](../../cloud-native/aws/aws-core-services/aws-ec2/)
 
 | Instance Family       | Description | Prefix  |
 | --------------------- | ----------- | ------- |
@@ -175,3 +192,5 @@ New S3 buckets (for newer accounts) have encryption at rest enabled by default.
 **AWS S3 Bucket Keys**: Should always be enabled  when using SSE-KMS. It allows
 the same encryption and decryption mechanisms but with fewer calls to KMS.
 
+You should leverage **S3 Access Points** to customize at a granular level access
+to objects.
