@@ -194,3 +194,13 @@ the same encryption and decryption mechanisms but with fewer calls to KMS.
 
 You should leverage **S3 Access Points** to customize at a granular level access
 to objects.
+
+## Route 53 
+
+AWS Route 53 is a **global service**. Hosted zones are a global resoruce.
+
+**Alias records** are specific to Route 53; They can only be used on AWS
+Resources; The main use case is to point them to resources that have rotating
+IPs (Internet Facing ELBs, EC2 Instances, etc).
+
+**Routing Policy**: Configures how Route 53 responds to DNS queries.
