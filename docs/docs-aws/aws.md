@@ -204,3 +204,29 @@ Resources; The main use case is to point them to resources that have rotating
 IPs (Internet Facing ELBs, EC2 Instances, etc).
 
 **Routing Policy**: Configures how Route 53 responds to DNS queries.
+
+| Policy            | Description                                                                                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Simple            | Default for every record. One to one mapping.                                                                                 |
+| Weighted          | You define a weight (from 0-255) for your targets; they get traffic according to percentage of their weight divided by total. |
+| Failover          | Has a main target and a secondary target. Maps to the secondary once main fails.                                              |
+| Latency Based     | Based on latency of requests.                                                                                                 |
+| Geolocation Based | Based on the actual geographical location of the request.                                                                     |
+
+## Elastic Load Balancing (ELB)
+
+ELB scales automatically according to the volume traffic; ELB is scoped to a
+region (one or more AZs). For ALBs and NLBs you must have them in at least 2
+AZs.
+
+ALBs are by far the most commonly used type of ELB. They should sit in front of
+any type of workload that requires redundancy (EC2 auto-scale groups; container
+workloads; etc).
+
+**Cross-zone load balancing**: If enabled allows an ALB in one AZ to route
+traffic to targets in a different AZ besides the one he lives in (enabled in
+ALBs by default). Example: LB-A and LB-B live in two different AZs. With targets
+in AZ-A and AZ-B. With cross-zone load balancing enabled for both LB-A can route
+to targets in AZ-B; and LB-B can route to targets in AZ-A. They can also route
+to their own AZ of course.
+
