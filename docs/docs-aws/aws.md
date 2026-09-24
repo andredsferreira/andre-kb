@@ -197,11 +197,21 @@ to objects.
 
 ## Route 53 
 
-AWS Route 53 is a **global service**. Hosted zones are a global resoruce.
+AWS Route 53 is a **global service**. Hosted zones are a global resource.
+
+Route 53 also provides health checking for resources (monitoring an endpoint;
+monitoring another health check; monitoring via CloudWatch Alarm).
+
+**Public Hosted Zones**: Contain records (A, AAAA, MX, etc) for the Internet to
+use. Has a domain associated (you need to control the domain in order to work).
+
+**Private Hosted Zones**: Sames as public hosted zone but for private resources
+in a VPC (the VPC must have DNS hosting and resolution support enabled, which
+comes by default).
 
 **Alias records** are specific to Route 53; They can only be used on AWS
 Resources; The main use case is to point them to resources that have rotating
-IPs (Internet Facing ELBs, EC2 Instances, etc).
+IPs (Internet Facing ELBs/ALBs, EC2 Instances, CloudFront Distributions, etc).
 
 **Routing Policy**: Configures how Route 53 responds to DNS queries.
 
@@ -212,6 +222,7 @@ IPs (Internet Facing ELBs, EC2 Instances, etc).
 | Failover          | Has a main target and a secondary target. Maps to the secondary once main fails.                                              |
 | Latency Based     | Based on latency of requests.                                                                                                 |
 | Geolocation Based | Based on the actual geographical location of the request.                                                                     |
+
 
 ## Elastic Load Balancing (ELB)
 
