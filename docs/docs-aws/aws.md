@@ -69,6 +69,20 @@ private subnet to either DynamoDB or S3. Very secure (free).
 AWS services, for example SSM (costs money). Interface endpoints deploy an ENI
 on the VPC which can have an SG attached.
 
+### VPN
+
+Different types of VPN exist: Site-to-Site; AWS Client VPN (managed OpenVPN).
+
+**Virtual Gateway (VGW)**: A resource on AWS (attached to a VPC) that represents
+the AWS VPN managed endpoint. Handles the traffic between the VPC and on
+premises network.
+
+**Customer Gateway (CGW)**: A resource on AWS (attached to a VPC) that
+represents the on premises VPN device (router; firewall; software appliance).
+
+IPSec VPN connections are done via **Site-to-Site VPN**. You must also enable
+route propagation on the route tables of the VPC.
+
 ## EC2
 
 [Terraform examples](../../cloud-native/aws/aws-core-services/aws-ec2/)
