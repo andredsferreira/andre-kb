@@ -72,26 +72,6 @@ resource "aws_iam_role_policy_attachment" "role_03_pa_01" {
   policy_arn = each.value
 }
 
-resource "aws_iam_role" "role_04" {
-  name        = "role-04"
-  description = "Example role assumable by a group of users"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          AWS = [
-            "arn:aws:iam::youraccountid:group/YourIamGroup"
-          ]
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
 resource "aws_iam_role_policy_attachment" "role_04_pa_01" {
   role       = aws_iam_role.role_04.name
   for_each   = toset(local.iam_group_policies)
