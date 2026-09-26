@@ -44,7 +44,12 @@ If a route table has multiple rules the most specific one wins (the one with the
 longest prefix).
 
 NACLs are attached to subnets. Security Groups are attached to ENIs (Elastic
-Network Interfaces).
+Network Interfaces), but they are created in the VPC (different machines can use
+the same SGs that lives in the same VPC).
+
+Each NACL rule has a priority number. AWS evaluates form lowest number to higher
+and stops in the first match: this means even if later rules would match for the
+traffic (for example denying it) they won't be evaluated.
 
 Security Groups implicitly deny by default (you only write allow rules).
 
@@ -69,6 +74,12 @@ private subnet to either DynamoDB or S3. Very secure (free).
 AWS services, for example SSM (costs money). Interface endpoints deploy an ENI
 on the VPC which can have an SG attached.
 
+**VPC Flow Logs**: Register logs of network traffic in a VPC or Subnet or
+specific ENI. The logs can be stored in CloudWatch, S3, or streamed through
+Amazon Data Firehose You can use **Amazon Athena** to perform queries and
+analitics on the logs. Once created you cannot modify a VPC Flow Log, you must
+recreate.
+
 ### VPN
 
 Different types of VPN exist: Site-to-Site; AWS Client VPN (managed OpenVPN).
@@ -82,6 +93,12 @@ represents the on premises VPN device (router; firewall; software appliance).
 
 IPSec VPN connections are done via **Site-to-Site VPN**. You must also enable
 route propagation on the route tables of the VPC.
+
+**AWS Direct Connect**: Physical private (not encrypted) connection between AWS
+and your on premises data center/servers.
+
+**Transit Gateways**: Simplifies connections between VPCs, VPNs, on premises, or
+even other transit gateways. Very useful for complex routing scenarios.
 
 ## EC2
 

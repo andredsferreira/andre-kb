@@ -1,4 +1,4 @@
-## Important commands
+# Important commands
 
 | Command                   | Description               |
 | ------------------------- | ------------------------- |
