@@ -1,3 +1,100 @@
+## AWS Global Infrastructure
+
+**Regions** are geographic locations that contain multiple redundant data
+centers (AZs) within.
+
+**Availability Zones (AZs)** are fully connected to each other with optic fiber
+cables. They are redundant and failt tolerant. The traffic between AZs is fully
+encrypted and stays within the AWS network (unless you address a public IP of
+for example an EC2 machine in another AZ).
+
+## VPC
+
+[Terraform examples](../../cloud-native/aws/aws-core-services/aws-vpc/)
+
+There is a maximum of 5 VPCs per region you can create.
+
+By default a VPC comes with a **default route table** that allows traffic
+between every node in the VPC. If a route table has multiple rules the most
+specific one wins (the one with the longest prefix).
+
+Subnets can communicate with each other cross AZ: there is a cost associated
+however.
+
+AWS reserves 5 IP addresses per subnet, for example considering the CIDR block
+10.0.0.0/16:
+
+- Network address: 10.0.0.0
+- VPC Router: 10.0.0.1
+- VPC DNS Server: 10.0.0.2
+- Future use: 10.0.0.3
+- Broadcast: 10.0.0.255 (subnets do not support broadcasting but AWS reserves
+  this address)
+
+**NACLs**: Are attached at the subnet level; They are stateless meaning you need
+to have rules for ingress **and** egress traffic. For the NACL rules you specify
+IP address or IP address ranges. Each NACL rule has a priority number. AWS
+evaluates form lowest number to higher and stops in the first match: this means
+even if later rules would match for the traffic (for example denying it) they
+won't be evaluated.
+
+**Security Groups**: Are attached to ENIs but are created in the VPC; meaning
+you can attach the same SG to different ENIs. Everything is denyied by default
+and you only specify allowed traffic; the rules apply automatically but to
+ingress and egress (aka stateful). For the SG rules you can specify IP
+addresses, IP address ranges, or other SGs (this means you only allow traffic
+from nodes that have that SG group attached to it).
+
+**DHCP Option Set**: Once created cannot be modified.
+
+Peering VPCs cannot have overlapping CIDRs.
+
+Peering connections are initiated by a **requester VPC** and received by a
+**receiver VPC**. The receiver can accept or deny the request.
+
+Since NAT gateways only are deployed to one AZ, for true resiliency you should
+deploy different NAT gateways on different AZs (this can become expensive
+though).
+
+**VPC Gateway Endpoints** are used to establish a private connection from a
+private subnet to either DynamoDB or S3. Very secure (free).
+
+**VPC Interface Endpoints** are used to establish private connections to other
+AWS services, for example SSM (costs money). Interface endpoints deploy an ENI
+on the VPC which can have an SG attached. Interface endpoints use Private Link
+as the underlying mechanism.
+
+**VPC Private Link**: Allows you to connect to a service (for example AWS KMS,
+or a third-party service from AWS Marketplace) without going trough the
+Internet, and without needing full network connectivity (like VPC peering or
+TGWs).
+
+**VPC Flow Logs**: Register logs of network traffic in a VPC or Subnet or
+specific ENI. The logs can be stored in CloudWatch, S3, or streamed through
+Amazon Data Firehose You can use **Amazon Athena** to perform queries and
+analitics on the logs. Once created you cannot modify a VPC Flow Log, you must
+recreate.
+
+### VPN
+
+Different types of VPN exist: Site-to-Site; AWS Client VPN (managed OpenVPN).
+
+**Virtual Gateway (VGW)**: A resource on AWS (attached to a VPC) that represents
+the AWS VPN managed endpoint. Handles the traffic between the VPC and on
+premises network.
+
+**Customer Gateway (CGW)**: A resource on AWS (attached to a VPC) that
+represents the on premises VPN device (router; firewall; software appliance).
+
+IPSec VPN connections are done via **Site-to-Site VPN**. You must also enable
+route propagation on the route tables of the VPC.
+
+**AWS Direct Connect**: Physical private (not encrypted) connection between AWS
+and your on premises data center/servers.
+
+**Transit Gateways**: Simplifies connections between VPCs, VPNs, on premises, or
+even other transit gateways. Very useful for complex routing scenarios.
+
 ## IAM
 
 [Terraform examples](../../cloud-native/aws/aws-core-services/aws-iam/)
@@ -28,85 +125,6 @@ is, the user assumes a completly new identity under the IAM Role.
 In order for an IAM User to be able to even assume a role he must have a policy
 with the permission sts:AssumeRole for that specific role.
 
-## VPC
-
-[Terraform examples](../../cloud-native/aws/aws-core-services/aws-vpc/)
-
-By default a VPC comes with a **default route table** that allows traffic
-between every node in the VPC.
-
-AWS reserves 5 IP addresses per subnet, for example for 10.0.0.0/16:
-
-- Network address: 10.0.0.0
-- VPC Router: 10.0.0.1
-- VPC DNS Server: 10.0.0.2
-- Future use: 10.0.0.3
-- Broadcast: 10.0.0.255 (subnets do not support broadcasting but AWS reserves
-  this address)
-
-Subnets can communicate with each other cross AZ (there is a cost associated
-however).
-
-If a route table has multiple rules the most specific one wins (the one with the
-longest prefix).
-
-NACLs are attached to subnets. Security Groups are attached to ENIs (Elastic
-Network Interfaces), but they are created in the VPC (different machines can use
-the same SGs that lives in the same VPC).
-
-Each NACL rule has a priority number. AWS evaluates form lowest number to higher
-and stops in the first match: this means even if later rules would match for the
-traffic (for example denying it) they won't be evaluated.
-
-Security Groups implicitly deny by default (you only write allow rules).
-
-In Security Groups you can reference another Security Group ID in the source
-rule (instead of manually managing IPs). This is a good practice at scale.
-
-Once a DHCP Option is created it *cannot be modified*.
-
-Peering VPCs cannot have overlapping CIDRs.
-
-Peering connections are initiated by a **requester VPC** and received by a
-**receiver VPC**. The receiver can accept or deny the request.
-
-Since NAT gateways only are deployed to one AZ, for true resiliency you should
-deploy different NAT gateways on different AZs (this can become expensive
-though).
-
-**VPC Gateway Endpoints** are used to establish a private connection from a
-private subnet to either DynamoDB or S3. Very secure (free).
-
-**VPC Interface Endpoints** are used to establish private connections to other
-AWS services, for example SSM (costs money). Interface endpoints deploy an ENI
-on the VPC which can have an SG attached.
-
-**VPC Flow Logs**: Register logs of network traffic in a VPC or Subnet or
-specific ENI. The logs can be stored in CloudWatch, S3, or streamed through
-Amazon Data Firehose You can use **Amazon Athena** to perform queries and
-analitics on the logs. Once created you cannot modify a VPC Flow Log, you must
-recreate.
-
-### VPN
-
-Different types of VPN exist: Site-to-Site; AWS Client VPN (managed OpenVPN).
-
-**Virtual Gateway (VGW)**: A resource on AWS (attached to a VPC) that represents
-the AWS VPN managed endpoint. Handles the traffic between the VPC and on
-premises network.
-
-**Customer Gateway (CGW)**: A resource on AWS (attached to a VPC) that
-represents the on premises VPN device (router; firewall; software appliance).
-
-IPSec VPN connections are done via **Site-to-Site VPN**. You must also enable
-route propagation on the route tables of the VPC.
-
-**AWS Direct Connect**: Physical private (not encrypted) connection between AWS
-and your on premises data center/servers.
-
-**Transit Gateways**: Simplifies connections between VPCs, VPNs, on premises, or
-even other transit gateways. Very useful for complex routing scenarios.
-
 ## EC2
 
 [Terraform examples](../../cloud-native/aws/aws-core-services/aws-ec2/)
@@ -135,7 +153,7 @@ easily see with, for example: curl http://169.254.169.254/latest/meta-data/insta
 | Dedicated Instance | Hardware is assigned only to your account. Instances on your account share that hardware. |
 | Dedicated Host     | You get separate hardware to run your instances.                                          |
 
-## EBS
+### EBS
 
 EBS volumes can only be bound to a single EC2 instance at a time (unless it's a
 multi-attach volume). Also only bound to a single AZ (but they are automatically
