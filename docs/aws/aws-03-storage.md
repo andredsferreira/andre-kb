@@ -80,17 +80,44 @@ EBS volumes can only be bound to a single EC2 instance at a time (unless it's a
 multi-attach volume). Also only bound to a single AZ (but they are automatically
 replicated within the AZ).
 
+EBS volumes are AZ scoped, meaning they are bound to a single AZ (they are
+automatically replicated within the AZ though). If you want to migrate an EBS
+volume to a different AZ you must first create a snapshot and create a new EBS
+volume on the new AZ from the snapshot.
+
 Multi-attached volumes are limited to the same AZ and 16 max instances, they
 also need a cluster wide file system.
-
-By default the root volume is deleted by default if you terminate (delete) an
-EC2 instance.
 
 You can't directly encrypt an unencrypted EBS volume or EBS volume snapshot, you
 must create a new one and ecrypt it.
 
 EBS snapshots are stored in S3 but you can't directly access the S3 buckets, you
 manage through the EBS service.
+
+In a EC2 instance the root volume (containing the OS) is an EBS backed volume.
+By default the root volume is deleted if you terminate (delete) an EC2 instance
+(you can change this behaviour by altering DeleteOnTermination parameter).
+
+**Instance Storage**: It's storage physically attached to an EC2 host. It
+provides the lowest latency possible but it's volatile (does not save if the EC2
+is stopped or deleted). Only instances belonging to the family with the "d"
+suffix have instance storage (for example m5d, r5d).
+
+## Elastic File System (EFS)
+
+It's a managed NFS. Perfect for sharing application data, or data accessed by
+teams in general. Supports thousands of concurrent connections from EC2, AWS
+Lambda functions, and containers.
+
+FSx extends EFS providing different features for specific use cases.
+
+| File System     | Use Cases                                         | Protocol        | Max Throughput |
+| --------------- | ------------------------------------------------- | --------------- | -------------- |
+| Amazon EFS      | Shared application data and CMSs.                 | NFSv4           | 10 GB/s        |
+| FSx for Lustre  | HPC workloads, ML training, and video processing. | Lustre          | 1 TB/s         |
+| FSx for Windows | Windows servers.                                  | SMB             | 2 GB/s         |
+| FSx for OpenZFS | Development, analytics, and databases.            | NFSv3, NFSv4    | 12.5 GB/s      |
+| FSx for ONTAP   | Enterprise workloads and VMware.                  | NFS, SMB, iSCSI | 4 GB/s         |
 
 ## Relational Database Service (RDS)
 

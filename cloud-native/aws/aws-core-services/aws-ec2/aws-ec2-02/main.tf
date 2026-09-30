@@ -1,5 +1,10 @@
 ################################################################################
-# Example of an x86_64 EC2 instance, with the metadata service options.
+# Example of an x86_64 EC2 instance, with the metadata service options and more
+# than one ENI attached (the primary ENI already is attached and counts).
+# Since we don't specify the security groups for both the primary interface
+# (which is created in the background and doesn't even appear here), and the
+# secondary interface, they both get attached to the default SG of the VPC (which
+# allows traffic between the instances in the VPC).
 ################################################################################
 
 provider "aws" {
@@ -36,7 +41,27 @@ resource "aws_instance" "ec2_instance" {
 }
 
 ################################################################################
-# Resources for SSM access to the instance.
+# ENI setup
+################################################################################
+
+resource "aws_network_interface" "eni" {
+  subnet_id       = "your-subnet-id"
+  description = "Secondary ENI for app instance"
+
+  tags = {
+    Name = "secondary-eni"
+  }
+}
+
+resource "aws_network_interface_attachment" "eni_attachment" {
+  instance_id          = aws_instance.ec2_instance.id
+  network_interface_id = aws_network_interface.eni.id
+  device_index         = 1 # index 0 is the primary ENI
+}
+
+
+################################################################################
+# SSM setup
 ################################################################################
 
 resource "aws_iam_role" "ssm_role" {

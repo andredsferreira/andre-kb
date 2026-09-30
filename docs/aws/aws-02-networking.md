@@ -5,8 +5,8 @@
 There is a maximum of 5 VPCs per region you can create.
 
 By default a VPC comes with a **default route table** that allows traffic
-between every node in the VPC. If a route table has multiple rules the most
-specific one wins (the one with the longest prefix).
+between every node in the VPC (but SGs can still block this). If a route table
+has multiple rules the most specific one wins (the one with the longest prefix).
 
 Subnets can communicate with each other cross AZ: there is a cost associated
 however.
@@ -28,12 +28,17 @@ evaluates form lowest number to higher and stops in the first match: this means
 even if later rules would match for the traffic (for example denying it) they
 won't be evaluated.
 
-**Security Groups**: Are attached to ENIs but are created in the VPC; meaning
-you can attach the same SG to different ENIs. Everything is denyied by default
-and you only specify allowed traffic; the rules apply automatically but to
-ingress and egress (aka stateful). For the SG rules you can specify IP
-addresses, IP address ranges, or other SGs (this means you only allow traffic
-from nodes that have that SG group attached to it).
+**Security Groups**: Function like firewalls. Are attached to ENIs but are
+created in the VPC. You can attach the same SG to different ENIs. You can also
+attach multiple different SGs to the same ENI (the rules are additive).
+Everything is denyied by default and you only specify allowed traffic. The rules
+apply automatically to ingress and egress (aka stateful). For the SG rules you
+can specify IP addresses, IP address ranges, or other SGs (this means you only
+allow traffic from nodes that have that SG group attached to it).
+
+Every VPC comes with a Default SG that allows traffic between every ENI that has
+it attached. By default **primary ENI** of every instance gets the Default SG
+attached to it.
 
 **DHCP Option Set**: Once created cannot be modified.
 
@@ -64,6 +69,39 @@ specific ENI. The logs can be stored in CloudWatch, S3, or streamed through
 Amazon Data Firehose You can use **Amazon Athena** to perform queries and
 analitics on the logs. Once created you cannot modify a VPC Flow Log, you must
 recreate.
+
+### Elastic Networking Interface (ENI)
+
+**Elastic Networking Interface (ENI)**: Is what gives an EC2 instance it's
+network identity in a VPC. The **private IP** of an instance is always
+associated with the attached ENI (never the instance directly). Think of it as
+the NIC of an EC2 machine.
+
+Each EC2 instance you launch comes with a **primary ENI** (the eth0 interface)
+attached to it that was automatically created by AWS. When the EC2 instance
+terminates the eth0 ENI is also deleted (you can change this default behaviour
+by setting DeleteOnTermination to false).
+
+A created ENI can be dettached and attached to other EC2 instances. Created ENIs
+survive instance deletes by default. An EC2 instance can have more than one ENI
+attached. The maximum number of attached ENIs (including the primary ENI) and
+associated IPs with the ENI depends on the instance type. For example a t3.micro
+can have a maximum of 2 ENIs with each ENI having a maximum of 2 IP addresses;
+An m5.24xlarge can have a maximum of 15 ENIs with each ENI having a maximum of
+40 IP addresses.
+
+You can create an ENI and attach it as the **primary ENI** to an instance (by
+setting the network interface device index to 0 on the EC2 instance network
+configurations). The use case is when you want the network configurations
+(private IP and EIP if attached) to survive the instance delete or if you plan
+to reboot with a different AMI. If the MAC address is important for some reason
+this may also be a good reason to create and keep an ENI as eth0.
+
+### Elastic IPs (EIPs)
+
+**Elastic IP**: Are public IP addresses that you can map to a specific private
+IP address of an ENI. When ingress traffic hits the public IP (EIP) it gets
+redirected to the private IP of the ENI (the IGW takes care of all this).
 
 ## Route 53 (DNS) 
 

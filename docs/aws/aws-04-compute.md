@@ -19,6 +19,7 @@ easily see with, for example: curl http://169.254.169.254/latest/meta-data/insta
 | On Demand         | Default, pay by the hour.                                                           |
 | Spot Instances    | Up to 90% discount on regular instances. May be shutted down whenever AWS needs to. |
 | Reserved Capacity | Reserve capacity for 1-3 years and save (being replaced by savings plans).          |
+| Savings Plans     | Similar to reserved capacity but more flexible, opt for this one.                   |
 
 | Tenancy            | Description                                                                               |
 | ------------------ | ----------------------------------------------------------------------------------------- |
