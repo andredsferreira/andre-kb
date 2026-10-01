@@ -31,10 +31,10 @@ won't be evaluated.
 **Security Groups**: Function like firewalls. Are attached to ENIs but are
 created in the VPC. You can attach the same SG to different ENIs. You can also
 attach multiple different SGs to the same ENI (the rules are additive).
-Everything is denyied by default and you only specify allowed traffic. The rules
-apply automatically to ingress and egress (aka stateful). For the SG rules you
-can specify IP addresses, IP address ranges, or other SGs (this means you only
-allow traffic from nodes that have that SG group attached to it).
+*Everything is denyied by default and you only specify allowed traffic*. The
+rules apply automatically to ingress and egress (aka stateful). For the SG rules
+you can specify IP addresses, IP address ranges, or other SGs (this means you
+only allow traffic from nodes that have that SG group attached to it).
 
 Every VPC comes with a Default SG that allows traffic between every ENI that has
 it attached. By default **primary ENI** of every instance gets the Default SG
@@ -80,9 +80,10 @@ the NIC of an EC2 machine.
 Each EC2 instance you launch comes with a **primary ENI** (the eth0 interface)
 attached to it that was automatically created by AWS. When the EC2 instance
 terminates the eth0 ENI is also deleted (you can change this default behaviour
-by setting DeleteOnTermination to false).
+by setting DeleteOnTermination to false). To the primary ENI itself also comes
+the default SG attached.
 
-A created ENI can be dettached and attached to other EC2 instances. Created ENIs
+A **created ENI** can be dettached and attached to other EC2 instances. Created ENIs
 survive instance deletes by default. An EC2 instance can have more than one ENI
 attached. The maximum number of attached ENIs (including the primary ENI) and
 associated IPs with the ENI depends on the instance type. For example a t3.micro

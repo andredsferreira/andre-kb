@@ -121,15 +121,9 @@ FSx extends EFS providing different features for specific use cases.
 
 ## Relational Database Service (RDS)
 
-**Community DBMSs**: Basic community edition DBMSs such has PostgresSQL and
-MySQL community editions.
-
-**Amazon Aurora**: Enhanced editions of PostgresSQL and MySQL providing more
-failover and availability capabilities.
-
 **Multi AZ Deployments**: You have a standby database with the replicated data.
-RDS takes care of automatic failover if the AZ of your database fails. You can
-also switch to **Single AZ Deployment** at any time.
+RDS takes care of **automatic failover** (60 to 120 seconds) if the AZ of your
+database fails. You can also switch to **Single AZ Deployment** at any time.
 
 **Read Replicas**: You can have a main database and several read
 replicas deployed (PostgreSQL, MySQL, and MariaDB engines). This can work in
@@ -143,4 +137,10 @@ Deployment, in which case the backup is performed on the standby database.
 **Snapshots**: RDS supports full Database snapshots to S3. You can perform them
 manually whenever you want and you can create DBs from them whenever you want.
 
-RDS uses **EBS** for storage under the hood.
+RDS uses **EBS** for storage under the hood (except the Aurora engine which has
+it's own distributed storage system).
+
+**DB Subnet Group**: Just a wrapper arround two (or more) VPC subnets that
+indicates where the DB instance(s) can be placed. Even if the RDS instance is a
+single AZ deployment, the DB subnets under the DB subnet group must be in
+different AZs.
