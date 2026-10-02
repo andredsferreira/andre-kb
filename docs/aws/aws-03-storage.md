@@ -138,9 +138,30 @@ Deployment, in which case the backup is performed on the standby database.
 manually whenever you want and you can create DBs from them whenever you want.
 
 RDS uses **EBS** for storage under the hood (except the Aurora engine which has
-it's own distributed storage system).
+it's own distributed storage system), and **EC2** for the DBMS (the compute
+layer / database instance). You can enable **enhanced monitoring** for an extra
+cost.
+
+By default RDS publishes some free metrics to CloudWatch for you to monitor
+(CPUUtilization, FreeableMemory, FreeStorageSpace, DatabaseConnections,
+ReadIOPS, WriteIOPS, etc).
 
 **DB Subnet Group**: Just a wrapper arround two (or more) VPC subnets that
 indicates where the DB instance(s) can be placed. Even if the RDS instance is a
 single AZ deployment, the DB subnets under the DB subnet group must be in
 different AZs.
+
+**AWS Aurora**: DBMS that provides enhancements to RDS for MySQL or Postgres
+engines. It offers better performance (sub milisecond reads); better resiliency
+(six way replication across 3 AZs); better availability (30 second failover);
+better backups with no impact performance.
+
+**RDS Custom**: Provides an hybrid environment for SQL Server and Oracle
+databases where you have access to the OS where the databases live. AWS manages
+the underlying infrastrcuture and network layers but you are responsible for
+patching the OS and database.
+
+
+**Aurora Global Database**: Provides regional resiliance with read replicas
+across different regions. The replicas are warm standby that can get promoted
+during regional disasters (RPO usually under 1 second).
