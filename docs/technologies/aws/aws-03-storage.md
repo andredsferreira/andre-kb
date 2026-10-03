@@ -156,12 +156,11 @@ engines. It offers better performance (sub milisecond reads); better resiliency
 (six way replication across 3 AZs); better availability (30 second failover);
 better backups with no impact performance.
 
+**Aurora Global Database**: Provides regional resiliance with read replicas
+across different regions. The replicas are warm standby that can get promoted
+during regional disasters (RPO usually under 1 second).
+
 **RDS Custom**: Provides an hybrid environment for SQL Server and Oracle
 databases where you have access to the OS where the databases live. AWS manages
 the underlying infrastrcuture and network layers but you are responsible for
 patching the OS and database.
-
-
-**Aurora Global Database**: Provides regional resiliance with read replicas
-across different regions. The replicas are warm standby that can get promoted
-during regional disasters (RPO usually under 1 second).
