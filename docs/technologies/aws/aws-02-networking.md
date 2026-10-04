@@ -36,9 +36,10 @@ rules apply automatically to ingress and egress (aka stateful). For the SG rules
 you can specify IP addresses, IP address ranges, or other SGs (this means you
 only allow traffic from nodes that have that SG group attached to it).
 
-Every VPC comes with a Default SG that allows traffic between every ENI that has
-it attached. By default **primary ENI** of every instance gets the Default SG
-attached to it.
+Every VPC comes with a Default SG that allows inbound traffic between every ENI
+that has it attached, and outbound to anywhere. By default **primary ENI** of
+every instance gets the Default SG attached to it (if no other SG is specified
+when creating the EC2 instance).
 
 **DHCP Option Set**: Once created cannot be modified.
 
@@ -168,3 +169,25 @@ in AZ-A and AZ-B. With cross-zone load balancing enabled for both LB-A can route
 to targets in AZ-B; and LB-B can route to targets in AZ-A. They can also route
 to their own AZ of course.
 
+## AWS Shield
+
+**AWS Shield**: It's an edge located service that provides protection against
+DDoS attacks. It has two flavours: standard and advanced.
+
+**AWS Shield Standard**: Provides basic DDoS protection for common layer 3 and 4
+attacks at each edge location. Free and provided by AWS.
+
+**AWS Shield Advanced**: Provides advanced DDoS protection for up to layer 7
+attacks from a dedicated AWS team with an SLA of less than 15 minutes. It also
+provides **cost protection** for any additional costs that were caused by the
+attack (the money is refunded). Costs arround 3000$ per month with a minimum of
+1 year. Includes WAF usage.
+
+## AWS Web Application Firewall (WAF)
+
+**AWS WAF**: It's an edge located service that provides compreehensive
+protection specifically for web apps (HTTP/HTTPS) and common exploits on them.
+You can create rules for specific requests based on certain conditions.
+
+**AWS Firewall Manager**: Allows for the management of multiple WAF rules across
+different AWS accounts.
