@@ -20,8 +20,22 @@ Two questions define every frontend architecture:
 | Server Side Rendered Application (SSR) | SSRs are greate for SEO apps. The HTML is rendered and served by a server to the browser, usually with minimal javascript.                                                                                                                 |
 | Static Sites (SSG)                     | Completly static files HTML are served to the browser which reads them.                                                                                                                                                                    |
 
-## Example Architectures
+## Architectures
 
-### SPA + Seperate API
+### SPA + Separate API
 
+This example architecture demonstrates two separate applications deployed as two
+separate artifacts. The SPA or frontend is served by some web servers behind a
+load balancer and typically written with frameworks like React, Angular, Vue,
+etc. The backend API is called by the SPA itself to seperate servers behind a
+load balancer. The backend is usually written with frameworks like
+Spring/SpringBoot (Java), Go, FastAPI (Python).
+
+The purple lines represent the first request the client/browser makes to get the
+frontend app (SPA). The blue lines are made from the already builded SPA to the
+backend API.
+
+![SPA + Separate API](web-arch-01.png)
+
+![SPA + Separate API](web-arch-02.png)
 

@@ -1,10 +1,17 @@
 ## Simple Storage Service (S3)
 
+### Notes
+
 S3 is a global service but the resources it creates are **regional**. Objects
 within S3 are accessed via REST API (unlike traditional filesystems it doesn't
 need to be mounted and shared).
 
 Bucket names must be globally unique.
+
+Always enable **block all public access** on an S3 bucket. Even if the bucket
+would serve a public front end app you should put it behind a CloudFront
+distrbution where CloudFront reads from the bucket using **Origin Access Control
+(OAC)**. The bucket should stay interly private.
 
 **Read after write**: you see the object immediatelly after writes.
 
@@ -72,7 +79,9 @@ New S3 buckets (for newer accounts) have encryption at rest enabled by default.
 the same encryption and decryption mechanisms but with fewer calls to KMS.
 
 You should leverage **S3 Access Points** to customize at a granular level access
-to objects.
+to objects. This is useful when several teams need access with different
+permissiosn on the bucket; cross account access is another common use case. It
+prevents a very complex and large bucket access policy.
 
 ## Elastic Block System (EBS)
 
