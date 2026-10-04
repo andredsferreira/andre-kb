@@ -27,3 +27,23 @@ is, the user assumes a completly new identity under the IAM Role.
 
 In order for an IAM User to be able to even assume a role he must have a policy
 with the permission sts:AssumeRole for that specific role.
+
+## Extra Security Features
+
+**Amazon Guard Duty**: A service that helps with **threat detection** by
+scanning data sources on your account. Uses ML under the hood. The main sources
+that come by default are CloudTrail Logs, VPC Flow Logs, and DNS Query Logs. You
+can also enable extra ones like S3 events and EKS audit logs.
+
+**Amazon Inspector**: A service that's a **vulnerability** scanner. Helps
+identifiy CVEs and unintended network exposure. It automatically scans EC2
+instances but works with ECR images and Lambda Functions.
+
+**Amazon Macie**: A service that inspects S3 buckets for possible sensistive
+data that may be exposed. For example PII, or credentials.
+
+**AWS Config**: A service that records the configuration of your resources
+(mainly EC2, IAM, VPC, and S3 resources) in the account and changes made to
+them. It helps you understand if the resources obey rules or compliance you
+define (for example defining that every resource must have an environment tag).
+

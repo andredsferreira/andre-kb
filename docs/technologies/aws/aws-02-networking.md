@@ -66,8 +66,10 @@ Internet, and without needing full network connectivity (like VPC peering or
 TGWs).
 
 **VPC Flow Logs**: Register logs of network traffic in a VPC or Subnet or
-specific ENI. The logs can be stored in CloudWatch, S3, or streamed through
-Amazon Data Firehose You can use **Amazon Athena** to perform queries and
+specific ENI. Enabling VPC Flow Logs themselves is **free** but you pay for the
+destination you are sending the,. The logs can be sent to CloudWatch, S3, or
+streamed through Amazon Data Firehose, in these cases you pay different amounts,
+S3 being the cheapest. You can use **Amazon Athena** to perform queries and
 analitics on the logs. Once created you cannot modify a VPC Flow Log, you must
 recreate.
 
