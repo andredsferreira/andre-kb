@@ -73,6 +73,12 @@ S3 being the cheapest. You can use **Amazon Athena** to perform queries and
 analitics on the logs. Once created you cannot modify a VPC Flow Log, you must
 recreate.
 
+**Gateway Load Balancer GWLB**: A resource that specifically routes traffic to a
+**virtual appliance**, mainly firewalls (running on an EC2 for example). So the
+main use case for an GWLB is to have traffic be distributed to your virtual
+appliances, then the traffic gets inspected there, returned to the GWLB and only
+then routed to your targets.
+
 ### Elastic Networking Interface (ENI)
 
 **Elastic Networking Interface (ENI)**: Is what gives an EC2 instance it's
