@@ -147,13 +147,24 @@ Deployment, in which case the backup is performed on the standby database.
 manually whenever you want and you can create DBs from them whenever you want.
 
 RDS uses **EBS** for storage under the hood (except the Aurora engine which has
-it's own distributed storage system), and **EC2** for the DBMS (the compute
-layer / database instance). You can enable **enhanced monitoring** for an extra
-cost.
+it's own distributed storage system); and **EC2** for the DBMS (the compute
+layer / database instance). The EBS volumes can be SSD, provisioned IOPS SSD, or
+magnetic hard drives.
+
+For production Databases you should leverage multi-az deployments and
+provisioned IOPS SSD as storage.
+
+After a RDS instance is created you can increase the compute size (requires a
+reboot, small downtime). You can also increase the storage but never decrease
+it. If you have a multi AZ deployment the downtime is even smaller because AWS
+failsover to the standby while the primary is updating.
 
 By default RDS publishes some free metrics to CloudWatch for you to monitor
 (CPUUtilization, FreeableMemory, FreeStorageSpace, DatabaseConnections,
-ReadIOPS, WriteIOPS, etc).
+ReadIOPS, WriteIOPS, etc). You can enable **enhanced monitoring** for an extra
+cost.
+
+There are three **instance classes**: standard, memory optimized, and burstable.
 
 **DB Subnet Group**: Just a wrapper arround two (or more) VPC subnets that
 indicates where the DB instance(s) can be placed. Even if the RDS instance is a
