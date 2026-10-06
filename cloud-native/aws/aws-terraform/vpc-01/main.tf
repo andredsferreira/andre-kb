@@ -117,6 +117,14 @@ resource "aws_security_group" "sg_ssm" {
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.vpc.cidr_block]
   }
+
+  egress {
+    description = "Allow endpoint response traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_vpc_endpoint" "ssm" {

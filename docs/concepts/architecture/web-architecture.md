@@ -24,16 +24,24 @@ Two questions define every frontend architecture:
 
 ### SPA + Separate API
 
-This example architecture demonstrates two separate applications deployed as two
-separate artifacts. The SPA or frontend is served by some web servers behind a
-load balancer and typically written with frameworks like React, Angular, Vue,
-etc. The backend API is called by the SPA itself to seperate servers behind a
-load balancer. The backend is usually written with frameworks like
-Spring/SpringBoot (Java), Go, FastAPI (Python).
+This is one of the most common types of architecture when building a web
+application, an SPA plus a seperate API. Here the SPA represents the frontend
+application that get's delivered to your browser. It's commonly built using
+frameworks like React or Angular. So initially the client (your browser)
+requests this SPA application (which is just static files) from somewhere, then
+the JavaScript side of things takes care of making requests for data to your
+backend API. Backend APIs are commonly built using frameworks like Spring or FastAPI.
 
-The purple lines represent the first request the client/browser makes to get the
-frontend app (SPA). The blue lines are made from the already builded SPA to the
-backend API.
+So there are usually two request flows, one for the SPA and several for the API
+calls that your SPA may make. Commonly the frontend and backend are deployed as
+separate artifacts and handled by different teams.
+
+The following diagrams represent different ways you can deploy the frontend SPA
+and the backend API. The first one represents a very common approach by using a
+cloud provider (in this case AWS). The second approach assumes you manage
+everything yourself. The purple lines represent the first request the
+client/browser makes to get the frontend app (SPA). The blue lines are made from
+the already builded SPA to the backend API.
 
 ![SPA + Separate API](web-arch-01.png)
 

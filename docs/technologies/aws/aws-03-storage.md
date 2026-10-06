@@ -1,7 +1,5 @@
 ## Simple Storage Service (S3)
 
-### Notes
-
 S3 is a global service but the resources it creates are **regional**. Objects
 within S3 are accessed via REST API (unlike traditional filesystems it doesn't
 need to be mounted and shared).
@@ -24,21 +22,7 @@ s3//bucket-name/prefix_a/prefix_b/my_image.png
 **S3 Multipart Upload**: Uploads large objects (recommended over 5GB or
 unnstable network connections) by parts.
 
-Storage classes are associated with objects not with buckets. So you set the
-storage class in objects.
-
-| Storage Class                          | Description                                                                                                                                                                                                                                                                                                   |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| S3 Standard                            |                                                                                                                                                                                                                                                                                                               |
-| S3 Express One Zone                    | Locked to a single AZ, single digit ms reads and writes.                                                                                                                                                                                                                                                      |
-| S3 Standard Infrequent Access          | Cheaper storage cost, retrieval fee. Storage across multiple AZs. Good for backups.                                                                                                                                                                                                                           |
-| S3 Standard One Zone Infrequent Access | Cheapest storage cost, retrieval fee. Storage only across one AZ. Good for backups.                                                                                                                                                                                                                           |
-| S3 Glacier Instant Retrieval           | Very rarely accessed data but with almost instant retrieval. Allows real time access.                                                                                                                                                                                                                         |
-| S3 Glacier Flexible Archive            | Used for archives, data might be retrieved in minutes. Does not allow real time access.                                                                                                                                                                                                                       |
-| S3 Glacier Deep Archive                | Used for archives that are very rarely accessed, data might take up to 48h. Does not allow real time access.                                                                                                                                                                                                  |
-| S3 Intelligent Tiering                 | Moves data to the most effective storage class according to access patterns. Good when you don't know the type of access. It starts on Frequent Access tier moves to Infrequent Access if the data is not touched for more than 30 days, and moves to Archive Instant Access if it's not touched for 90 days. |
-
-**Versioning**: Once bucket versioning is setted, you cannot turn it off, only
+**Versioning**: Once bucket versioning is set, you cannot turn it off, only
 suspend it. Once versioning is on you really never delete an object but place a
 **deletion marker** that hides the object. To restore the object you simply
 delete the marker (if you toggle the "show versions" on the console and select
@@ -66,6 +50,29 @@ world (uses POIs as the network infrastructure). It's useful if you have
 customers spread arround the globe. In some regions however it can be slower
 than standard S3.
 
+You should leverage **S3 Access Points** to customize at a granular level access
+to objects. This is useful when several teams need access with different
+permissiosn on the bucket; cross account access is another common use case. It
+prevents a very complex and large bucket access policy.
+
+### S3 Storage Classes
+
+Storage classes are associated with objects not with buckets. So you set the
+storage class in objects.
+
+| Storage Class                          | Description                                                                                                                                                                                                                                                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S3 Standard                            |                                                                                                                                                                                                                                                                                                               |
+| S3 Express One Zone                    | Locked to a single AZ, single digit ms reads and writes.                                                                                                                                                                                                                                                      |
+| S3 Standard Infrequent Access          | Cheaper storage cost, retrieval fee. Storage across multiple AZs. Good for backups.                                                                                                                                                                                                                           |
+| S3 Standard One Zone Infrequent Access | Cheapest storage cost, retrieval fee. Storage only across one AZ. Good for backups.                                                                                                                                                                                                                           |
+| S3 Glacier Instant Retrieval           | Very rarely accessed data but with almost instant retrieval. Allows real time access.                                                                                                                                                                                                                         |
+| S3 Glacier Flexible Archive            | Used for archives, data might be retrieved in minutes. Does not allow real time access.                                                                                                                                                                                                                       |
+| S3 Glacier Deep Archive                | Used for archives that are very rarely accessed, data might take up to 48h. Does not allow real time access.                                                                                                                                                                                                  |
+| S3 Intelligent Tiering                 | Moves data to the most effective storage class according to access patterns. Good when you don't know the type of access. It starts on Frequent Access tier moves to Infrequent Access if the data is not touched for more than 30 days, and moves to Archive Instant Access if it's not touched for 90 days. |
+
+### S3 Encryption
+
 New S3 buckets (for newer accounts) have encryption at rest enabled by default.
 
 | Encryption Type        | Description                                                                                                                                                                                |
@@ -77,11 +84,6 @@ New S3 buckets (for newer accounts) have encryption at rest enabled by default.
 
 **AWS S3 Bucket Keys**: Should always be enabled  when using SSE-KMS. It allows
 the same encryption and decryption mechanisms but with fewer calls to KMS.
-
-You should leverage **S3 Access Points** to customize at a granular level access
-to objects. This is useful when several teams need access with different
-permissiosn on the bucket; cross account access is another common use case. It
-prevents a very complex and large bucket access policy.
 
 ## Elastic Block System (EBS)
 
@@ -146,12 +148,14 @@ Deployment, in which case the backup is performed on the standby database.
 **Snapshots**: RDS supports full Database snapshots to S3. You can perform them
 manually whenever you want and you can create DBs from them whenever you want.
 
+**Instance classes**: standard, memory optimized, and burstable.
+
 RDS uses **EBS** for storage under the hood (except the Aurora engine which has
 it's own distributed storage system); and **EC2** for the DBMS (the compute
 layer / database instance). The EBS volumes can be SSD, provisioned IOPS SSD, or
 magnetic hard drives.
 
-For production Databases you should leverage multi-az deployments and
+For production databases you should leverage multi-az deployments and
 provisioned IOPS SSD as storage.
 
 After a RDS instance is created you can increase the compute size (requires a
@@ -164,23 +168,29 @@ By default RDS publishes some free metrics to CloudWatch for you to monitor
 ReadIOPS, WriteIOPS, etc). You can enable **enhanced monitoring** for an extra
 cost.
 
-There are three **instance classes**: standard, memory optimized, and burstable.
-
 **DB Subnet Group**: Just a wrapper arround two (or more) VPC subnets that
 indicates where the DB instance(s) can be placed. Even if the RDS instance is a
 single AZ deployment, the DB subnets under the DB subnet group must be in
 different AZs.
 
+**RDS Custom**: Provides an hybrid environment for SQL Server and Oracle
+databases where you have access to the OS where the databases live. AWS manages
+the underlying infrastrcuture and network layers but you are responsible for
+patching the OS and database.
+
+### AWS Aurora
+
 **AWS Aurora**: DBMS that provides enhancements to RDS for MySQL or Postgres
 engines. It offers better performance (sub milisecond reads); better resiliency
 (six way replication across 3 AZs); better availability (30 second failover);
-better backups with no impact performance.
+better backups with no impact performance; automatic storage scalability (up to
+64TB in increments of 10GB).
 
 **Aurora Global Database**: Provides regional resiliance with read replicas
 across different regions. The replicas are warm standby that can get promoted
 during regional disasters (RPO usually under 1 second).
 
-**RDS Custom**: Provides an hybrid environment for SQL Server and Oracle
-databases where you have access to the OS where the databases live. AWS manages
-the underlying infrastrcuture and network layers but you are responsible for
-patching the OS and database.
+**Aurora Serverless**: Automatic start up, shutdown and scale capacity according
+to app needs. You set a minimum and maximum capacity required.
+
+## DynamoDB

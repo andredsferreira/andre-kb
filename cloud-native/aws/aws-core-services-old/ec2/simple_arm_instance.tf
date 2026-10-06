@@ -36,6 +36,31 @@ output "instance_id" {
 
 ##########################################################################################
 
+resource "aws_security_group" "instance_sg" {
+  name        = "ec2-ssm-instance-sg"
+  description = "Security group for an SSM-managed EC2 instance"
+  vpc_id      = aws_vpc.vpc.id
+
+  tags = {
+    Name = "ec2-ssm-instance-sg"
+  }
+}
+
+# Allow the instance to connect to the SSM interface endpoints over HTTPS.
+resource "aws_vpc_security_group_egress_rule" "instance_to_ssm" {
+  security_group_id            = aws_security_group.instance_sg.id
+  # This is the security group attached to the VPC endpoint and already created
+  # (you should reference with a data block. Its only like this for learning
+  # purposes)
+  referenced_security_group_id = aws_security_group.sg_ssm.id
+
+  ip_protocol = "tcp"
+  from_port   = 443
+  to_port     = 443
+}
+
+##########################################################################################
+
 # Creating the necessary resources for the instance to be acessible by SSM. We
 # need an IAM role; the policy that allows SSM attached to it; and the instance
 # profile for the instance to be able to assume the role.

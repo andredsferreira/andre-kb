@@ -7,6 +7,3 @@ centers (AZs) within.
 cables. They are redundant and failt tolerant. The traffic between AZs is fully
 encrypted and stays within the AWS network (unless you address a public IP of
 for example an EC2 machine in another AZ).
-
-
-
