@@ -194,3 +194,21 @@ during regional disasters (RPO usually under 1 second).
 to app needs. You set a minimum and maximum capacity required.
 
 ## DynamoDB
+
+Is AWS's own DBMS that supports key-value and document data models. It also
+offers **DynamoDB Accelerator (DAX)** an in memory cache for reading from
+DynamoDB tables. You define DynamoDB performance in terms of **capacity units**.
+
+DynamoDB automatically scales according to your workload demands.
+
+DynamoDB stores data in **tables** in the form of **items**, which beyond the
+primary key, are unstructured data sets of key-value pairs (much like the JSON
+format). The only requirement is of a **primary key** on the table. The table
+does not have a fixed schema like in SQL databases.
+
+**Read Capacity Unit (RCU)**: One RCU means one strongly consistent read per
+second for items up to 4KB. Or two eventually consistent reads per second for
+items up to 4KB.
+
+**Write Capacity Unit (WCU)**: One WCU means one strongly consistent write per
+second for items up to 1KB.
