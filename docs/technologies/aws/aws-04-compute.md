@@ -26,3 +26,9 @@ easily see with, for example: curl http://169.254.169.254/latest/meta-data/insta
 | Shared             | Default, your instance shares the hardware with other AWS accounts.                       |
 | Dedicated Instance | Hardware is assigned only to your account. Instances on your account share that hardware. |
 | Dedicated Host     | You get separate hardware to run your instances.                                          |
+
+**Root Volume**: An EBS volume that is created with the instance and stores the
+OS and everything the instance needs to boot. You can persist the root volume
+even if you delete the EC2 instance, depending on how you setup the
+DeleteOnTermination parameter.
+

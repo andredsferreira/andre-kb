@@ -2,9 +2,6 @@
 
 *Application architectures are a result of unique business requirements.*
 
-Next we briefly describe important pillars for designing cloud native
-applications.
-
 ## Important Design Pillars
 
 ### Operational Excelence

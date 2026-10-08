@@ -117,7 +117,11 @@ redirected to the private IP of the ENI (the IGW takes care of all this).
 
 AWS Route 53 is a **global service**. And provides three main capabilities:
 domain registration; authoritative DNS zones (public and private zones); DNS
-health checking and automatic failover-
+health checking and automatic failover.
+
+You shouldn't use Route53 health checking if the record is pointing to an ALB or
+Cloudfront or API Gateway. These services already offer better health checking
+capabilities.
 
 **Public Hosted Zones**: Contain records (A, AAAA, MX, etc) for the Internet to
 use. Has a domain associated (you need to control the domain in order to work).
