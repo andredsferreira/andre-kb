@@ -181,6 +181,30 @@ in AZ-A and AZ-B. With cross-zone load balancing enabled for both LB-A can route
 to targets in AZ-B; and LB-B can route to targets in AZ-A. They can also route
 to their own AZ of course.
 
+## API Gateway
+
+API Gateway is a service used to manage APIs at scale. It's main capability is
+deciding where to route requests based on path (/payments or /orders for example
+to each respective service). It also provides features such as authentication,
+authorization, TLS termination, rate limiting, caching, throttling requests,
+etc.
+
+A common pattern is to have API Gateway in front of an ALB. The API gateway
+receives the requests, processes them and forwards them to the correct ALB. The
+ALB then receives and distributes (load balances) the traffic across instances.
+CloudFront can further sit in front of the API Gateway for faster edge delivery.
+
+Three **types of API** exist: HTTP API, REST API and Websocket API.
+
+Three endpoint types exist on API Gateway. These determine who can reach the API
+and from where.
+
+| Endpoint Type  | Description                                                                                                                                                           |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Edge Optimized | The API is public and is AWS managed through a CloudFront distribution (only works for REST API type).                                                                |
+| Regional       | The API is public and is directly accessed through internet or your own CloudFront distribution (The HTTP API, and Websocket types can only have this endpoint type). |
+| Private        | The API is private and is accessed within your VPC (or networks connected to it like an on premises).                                                                 |
+
 ## AWS Shield
 
 **AWS Shield**: It's an edge located service that provides protection against

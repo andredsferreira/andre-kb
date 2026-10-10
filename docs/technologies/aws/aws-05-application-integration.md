@@ -37,3 +37,15 @@ for processing again if needed.
 
 ## Amazon Event Bridge
 
+Like SNS it's a **pub-sub** managed service however it has greater capabilities
+for filtering and integrating with AWS Services. Very useful for reacting to EC2
+events. You mainly want to choose Event Bridge (over SNS) when reacting to
+specific AWS Services events.
+
+**Event Bridge Rule**: Allows you to customize events before they are delivered
+to a target.
+
+Event Bridge allows you to replay past events for analyzing. These are called
+**replay events**.
+
+## 
