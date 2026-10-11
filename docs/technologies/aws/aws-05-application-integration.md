@@ -47,5 +47,3 @@ to a target.
 
 Event Bridge allows you to replay past events for analyzing. These are called
 **replay events**.
-
-## 

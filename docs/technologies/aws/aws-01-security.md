@@ -3,7 +3,7 @@
 [Terraform examples](../../cloud-native/aws/aws-core-services/aws-iam/)
 
 **Principal**: An entity that can perform actions on AWS resources (who is
-making a request). The most common use case is specifying principals in an
+ma.ing a request). The most common use case is specifying principals in an
 assume role policy, i.e, who can assume that role.
 
 Principals in AWS:

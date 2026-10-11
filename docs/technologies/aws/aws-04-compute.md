@@ -32,3 +32,5 @@ OS and everything the instance needs to boot. You can persist the root volume
 even if you delete the EC2 instance, depending on how you setup the
 DeleteOnTermination parameter.
 
+## AWS Elastic Beanstalk
+
