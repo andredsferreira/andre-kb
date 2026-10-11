@@ -88,10 +88,12 @@ the same encryption and decryption mechanisms but with fewer calls to KMS.
 ## Elastic Block System (EBS)
 
 EBS volumes can only be bound to a single EC2 instance at a time (unless it's a
-multi-attach volume). Also only bound to a single AZ (but they are automatically
-replicated within the AZ).
+multi-attach volume). A single EC2 instance can have multiple different EBS
+volumes attached to it however.
 
-EBS volumes are AZ scoped, meaning they are bound to a single AZ (they are
+EBS volumes can be attached and dettached from a running EC2 instance.
+
+EBS volumes are AZ scoped, meaning they are **bound to a single AZ** (they are
 automatically replicated within the AZ though). If you want to migrate an EBS
 volume to a different AZ you must first create a snapshot and create a new EBS
 volume on the new AZ from the snapshot.
@@ -102,12 +104,29 @@ also need a cluster wide file system.
 You can't directly encrypt an unencrypted EBS volume or EBS volume snapshot, you
 must create a new one and ecrypt it.
 
-EBS snapshots are stored in S3 but you can't directly access the S3 buckets, you
-manage through the EBS service.
+EBS snapshots **are stored in S3** but you can't directly access the S3 buckets,
+you manage through the EBS service. EBS snapshots are **incremental**: the first  
+snapshot you create all the data is copied. On subsequent snapshots only the
+new/rewrited data is placed there.
 
-In a EC2 instance the root volume (containing the OS) is an EBS backed volume.
-By default the root volume is deleted if you terminate (delete) an EC2 instance
-(you can change this behaviour by altering DeleteOnTermination parameter).
+**Fast Snapshot Restore (FSR)**: An EBS feature that allows you to quickly
+access an EBS volume restored from a snapshot without suffering performance
+penalties. When an EBS volume is restored from a snapshot it initially reads
+from S3 (lazy loading the data), this can impact performance. EBS FSR fixes
+this. FSR is enabled on **specific snapshots of an AZ**. Its very useful when
+restoring many EC2 instances at once from a snapshot.
+
+**Amazon Data Lifecycle Manager (DLM)**: Manages the creation retention and
+deletion of EBS snapshots. You create policies to automatically manage the
+lifecycle of an EBS snapshot instead of having to do it manually.
+
+In a EC2 instance the **root volume** (containing the OS) is an EBS backed
+volume (except for instance store AMIs which are older). By default the root
+volume is deleted if you terminate (delete) an EC2 instance (you can change this
+behaviour by altering DeleteOnTermination parameter). You can create new EC2
+instances from saved root volumes.
+
+The st1 and sc2 volume types (HDD) can't be root volumes.
 
 **Instance Storage**: It's storage physically attached to an EC2 host. It
 provides the lowest latency possible but it's volatile (does not save if the EC2
@@ -130,85 +149,3 @@ FSx extends EFS providing different features for specific use cases.
 | FSx for OpenZFS | Development, analytics, and databases.            | NFSv3, NFSv4    | 12.5 GB/s      |
 | FSx for ONTAP   | Enterprise workloads and VMware.                  | NFS, SMB, iSCSI | 4 GB/s         |
 
-## Relational Database Service (RDS)
-
-**Multi AZ Deployments**: You have a standby database with the replicated data.
-RDS takes care of **automatic failover** (60 to 120 seconds) if the AZ of your
-database fails. You can also switch to **Single AZ Deployment** at any time.
-
-**Read Replicas**: You can have a main database and several read
-replicas deployed (PostgreSQL, MySQL, and MariaDB engines). This can work in
-conjunction with Multi AZ Deployments for even greater availability.
-
-**Automated Backups**: RDS performs daily automatic backups of your data (data
-retention up to 35 days although you can create Snapshots for longer retention).
-During this period Database IO may degrade unless you have a Multi AZ
-Deployment, in which case the backup is performed on the standby database.
-
-**Snapshots**: RDS supports full Database snapshots to S3. You can perform them
-manually whenever you want and you can create DBs from them whenever you want.
-
-**Instance classes**: standard, memory optimized, and burstable.
-
-RDS uses **EBS** for storage under the hood (except the Aurora engine which has
-it's own distributed storage system); and **EC2** for the DBMS (the compute
-layer / database instance). The EBS volumes can be SSD, provisioned IOPS SSD, or
-magnetic hard drives.
-
-For production databases you should leverage multi-az deployments and
-provisioned IOPS SSD as storage.
-
-After a RDS instance is created you can increase the compute size (requires a
-reboot, small downtime). You can also increase the storage but never decrease
-it. If you have a multi AZ deployment the downtime is even smaller because AWS
-failsover to the standby while the primary is updating.
-
-By default RDS publishes some free metrics to CloudWatch for you to monitor
-(CPUUtilization, FreeableMemory, FreeStorageSpace, DatabaseConnections,
-ReadIOPS, WriteIOPS, etc). You can enable **enhanced monitoring** for an extra
-cost.
-
-**DB Subnet Group**: Just a wrapper arround two (or more) VPC subnets that
-indicates where the DB instance(s) can be placed. Even if the RDS instance is a
-single AZ deployment, the DB subnets under the DB subnet group must be in
-different AZs.
-
-**RDS Custom**: Provides an hybrid environment for SQL Server and Oracle
-databases where you have access to the OS where the databases live. AWS manages
-the underlying infrastrcuture and network layers but you are responsible for
-patching the OS and database.
-
-### AWS Aurora
-
-**AWS Aurora**: DBMS that provides enhancements to RDS for MySQL or Postgres
-engines. It offers better performance (sub milisecond reads); better resiliency
-(six way replication across 3 AZs); better availability (30 second failover);
-better backups with no impact performance; automatic storage scalability (up to
-64TB in increments of 10GB).
-
-**Aurora Global Database**: Provides regional resiliance with read replicas
-across different regions. The replicas are warm standby that can get promoted
-during regional disasters (RPO usually under 1 second).
-
-**Aurora Serverless**: Automatic start up, shutdown and scale capacity according
-to app needs. You set a minimum and maximum capacity required.
-
-## DynamoDB
-
-Is AWS's own DBMS that supports key-value and document data models. It also
-offers **DynamoDB Accelerator (DAX)** an in memory cache for reading from
-DynamoDB tables. You define DynamoDB performance in terms of **capacity units**.
-
-DynamoDB automatically scales according to your workload demands.
-
-DynamoDB stores data in **tables** in the form of **items**, which beyond the
-primary key, are unstructured data sets of key-value pairs (much like the JSON
-format). The only requirement is of a **primary key** on the table. The table
-does not have a fixed schema like in SQL databases.
-
-**Read Capacity Unit (RCU)**: One RCU means one strongly consistent read per
-second for items up to 4KB. Or two eventually consistent reads per second for
-items up to 4KB.
-
-**Write Capacity Unit (WCU)**: One WCU means one strongly consistent write per
-second for items up to 1KB.
