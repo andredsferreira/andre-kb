@@ -4,11 +4,14 @@
 
 There is a maximum of 5 VPCs per region you can create.
 
-By default a VPC comes with a **default route table** that allows traffic
-between every node in the VPC (but SGs can still block this). If a route table
-has multiple rules the most specific one wins (the one with the longest prefix).
+When you create a VPC it comes with a default route table; default security
+group; and default NACL.
 
-Subnets can communicate with each other cross AZ: there is a cost associated
+**Default route table**: Allows traffic between every node in the VPC (but SGs
+can still block this). If a route table has multiple rules the most specific one
+wins (the one with the longest prefix).
+
+Subnets can communicate with each other cross AZ, there is a cost associated
 however.
 
 AWS reserves 5 IP addresses per subnet, for example considering the CIDR block
@@ -48,6 +51,9 @@ Peering VPCs cannot have overlapping CIDRs.
 Peering connections are initiated by a **requester VPC** and received by a
 **receiver VPC**. The receiver can accept or deny the request.
 
+**Transit Gateways**: Simplifies connections between VPCs, VPNs, on premises, or
+even other transit gateways. Very useful for complex routing scenarios.
+
 Since NAT gateways only are deployed to one AZ, for true resiliency you should
 deploy different NAT gateways on different AZs (this can become expensive
 though).
@@ -59,6 +65,12 @@ private subnet to either DynamoDB or S3. Very secure (free).
 AWS services, for example SSM (costs money). Interface endpoints deploy an ENI
 on the VPC which can have an SG attached. Interface endpoints use Private Link
 as the underlying mechanism.
+
+Even if you have an EC2 instance in a private subnet (with a NAT Gateway in the
+route table) and you have an S3 Gateway Endpoint. When you communicate with S3,
+AWS will automatically route your request to the Gateway endpoint and not
+through the NAT Gateway. You don't need to mess with the route table of the
+subnet your instance is placed in.
 
 **VPC Private Link**: Allows you to connect to a service (for example AWS KMS,
 or a third-party service from AWS Marketplace) without going trough the
@@ -134,6 +146,8 @@ comes by default).
 Resources; The main use case is to point them to resources that have rotating
 IPs (Internet Facing ELBs/ALBs, EC2 Instances, CloudFront Distributions, etc).
 
+### Route 53 Routing Policies
+
 **Routing Policy**: Configures how Route 53 responds to DNS queries.
 
 | Policy            | Description                                                                                                                   |
@@ -146,7 +160,7 @@ IPs (Internet Facing ELBs/ALBs, EC2 Instances, CloudFront Distributions, etc).
 
 ## VPN
 
-Different types of VPN exist: Site-to-Site; AWS Client VPN (managed OpenVPN).
+Different types of VPN exist: Site-to-Site and AWS Client VPN (managed OpenVPN).
 
 **Virtual Gateway (VGW)**: A resource on AWS (attached to a VPC) that represents
 the AWS VPN managed endpoint. Handles the traffic between the VPC and on
@@ -160,9 +174,6 @@ route propagation on the route tables of the VPC.
 
 **AWS Direct Connect**: Physical private (not encrypted) connection between AWS
 and your on premises data center/servers.
-
-**Transit Gateways**: Simplifies connections between VPCs, VPNs, on premises, or
-even other transit gateways. Very useful for complex routing scenarios.
 
 ## Elastic Load Balancing (ELB)
 

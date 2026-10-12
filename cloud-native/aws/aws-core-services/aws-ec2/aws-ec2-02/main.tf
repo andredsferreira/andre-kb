@@ -1,14 +1,34 @@
 ################################################################################
 # Example of an x86_64 EC2 instance, with the metadata service options and more
 # than one ENI attached (the primary ENI already is attached and counts).
-# Since we don't specify the security groups for both the primary interface
-# (which is created in the background and doesn't even appear here), and the
-# secondary interface, they both get attached to the default SG of the VPC (which
-# allows traffic between the instances in the VPC).
 ################################################################################
 
 provider "aws" {
   region = "us-east-1"
+}
+
+################################################################################
+# Variables
+################################################################################
+
+variable "subnet_id" {
+  description = "Subnet for both the primary and the secondary ENI (same AZ is required)."
+  type        = string
+  default     = "your-subnet-id"
+}
+
+################################################################################
+# Data sources
+################################################################################
+
+# Latest Amazon Linux 2023 x86_64 AMI
+data "aws_ssm_parameter" "al2023_ami" {
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+}
+
+# Used to derive the VPC for the security group
+data "aws_subnet" "selected" {
+  id = var.subnet_id
 }
 
 ################################################################################
@@ -18,7 +38,10 @@ provider "aws" {
 resource "aws_instance" "ec2_instance" {
   ami           = data.aws_ssm_parameter.al2023_ami.value
   instance_type = "t3.micro"
-  key_name      = ""
+
+  # No key pair: access is via SSM Session Manager.
+  subnet_id              = var.subnet_id
+  vpc_security_group_ids = [aws_security_group.app.id]
 
   iam_instance_profile = aws_iam_instance_profile.ssm_instance_profile.name
 
@@ -41,11 +64,47 @@ resource "aws_instance" "ec2_instance" {
 }
 
 ################################################################################
+# Security group (used by the primary and the secondary ENI)
+################################################################################
+
+resource "aws_security_group" "app" {
+  name        = "app-eni-sg"
+  description = "Security group for the app instance ENIs"
+  vpc_id      = data.aws_subnet.selected.vpc_id
+
+  tags = {
+    Name = "app-eni-sg"
+  }
+}
+
+# Outbound HTTPS: enough for SSM, package repos, etc.
+resource "aws_vpc_security_group_egress_rule" "https_out" {
+  security_group_id = aws_security_group.app.id
+  description       = "Allow outbound HTTPS"
+  ip_protocol       = "tcp"
+  from_port         = 443
+  to_port           = 443
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+# Example inbound rule (uncomment and adjust as needed):
+# resource "aws_vpc_security_group_ingress_rule" "app_in" {
+#   security_group_id = aws_security_group.app.id
+#   description       = "App traffic from internal network"
+#   ip_protocol       = "tcp"
+#   from_port         = 8080
+#   to_port           = 8080
+#   cidr_ipv4         = "10.0.0.0/16"
+# }
+
+################################################################################
 # ENI setup
 ################################################################################
 
 resource "aws_network_interface" "eni" {
-  subnet_id       = "your-subnet-id"
+  subnet_id       = var.subnet_id
+  security_groups = [aws_security_group.app.id]
+
   description = "Secondary ENI for app instance"
 
   tags = {
@@ -57,34 +116,4 @@ resource "aws_network_interface_attachment" "eni_attachment" {
   instance_id          = aws_instance.ec2_instance.id
   network_interface_id = aws_network_interface.eni.id
   device_index         = 1 # index 0 is the primary ENI
-}
-
-
-################################################################################
-# SSM setup
-################################################################################
-
-resource "aws_iam_role" "ssm_role" {
-  name = "ec2-ssm-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "ssm_role_pa" {
-  role       = aws_iam_role.ssm_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
-resource "aws_iam_instance_profile" "ssm_instance_profile" {
-  name = "ec2-ssm-instance-profile"
-  role = aws_iam_role.ssm_role.name
 }
