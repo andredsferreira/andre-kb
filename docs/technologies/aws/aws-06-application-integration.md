@@ -35,7 +35,7 @@ message is placed on the Dead Letter Queue.
 retries by the consumer are placed. They can be replaced in the normal SQS queue
 for processing again if needed.
 
-## Amazon Event Bridge
+## Amazon EventBridge
 
 Like SNS it's a **pub-sub** managed service however it has greater capabilities
 for filtering and integrating with AWS Services. Very useful for reacting to EC2

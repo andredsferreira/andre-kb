@@ -76,3 +76,7 @@ Lambda is cheap, good for starting projects and POCs: "A concrete example, a 128
 MB function that runs for 200ms and handles 5 million requests per month costs
 roughly 1.70€ in duration charges plus 0.80€ in request charges, under 3€ total.
 At low to moderate volumes, Lambda is inexpensive"
+
+You should store initialization code and importing libraries in module level
+code and not inside the function handler. Otherwise it will take more time to
+run the actual function.

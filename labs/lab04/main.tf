@@ -242,6 +242,10 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
   subnet_ids          = [aws_subnet.private.id]
   service_name        = "com.amazonaws.${data.aws_region.current.region}.ssm"
   private_dns_enabled = true
+
+  tags = {
+    Name = "vpc-01-interface-endpoint-ssm"
+  }
 }
 
 resource "aws_vpc_endpoint" "ssm_messages_endpoint" {
@@ -251,6 +255,10 @@ resource "aws_vpc_endpoint" "ssm_messages_endpoint" {
   subnet_ids          = [aws_subnet.private.id]
   service_name        = "com.amazonaws.${data.aws_region.current.region}.ssmmessages"
   private_dns_enabled = true
+
+  tags = {
+    Name = "vpc-01-interface-endpoint-ssmmessages"
+  }
 }
 
 resource "aws_vpc_endpoint" "ec2_messages_endpoint" {
@@ -260,14 +268,30 @@ resource "aws_vpc_endpoint" "ec2_messages_endpoint" {
   subnet_ids          = [aws_subnet.private.id]
   service_name        = "com.amazonaws.${data.aws_region.current.region}.ec2messages"
   private_dns_enabled = true
+
+  tags = {
+    Name = "vpc-01-interface-endpoint-ec2messages"
+  }
+}
+
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id            = aws_vpc.vpc.id
+  vpc_endpoint_type = "Gateway"
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
+  route_table_ids   = [aws_route_table.private_rt.id]
+
+  tags = {
+    Name = "vpc-01-gateway-endpoint-s3"
+  }
 }
 
 ################################################################################
 # IAM Resources
 ################################################################################
 
-resource "aws_iam_role" "ssm_role" {
-  name = "ec2-ssm-role"
+resource "aws_iam_role" "ec2_role" {
+  name        = "ec2-role"
+  description = "Main role for EC2 instances."
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -281,18 +305,24 @@ resource "aws_iam_role" "ssm_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ssm_role_pa" {
-  role       = aws_iam_role.ssm_role.name
+resource "aws_iam_role_policy_attachment" "ec2_role_pa_01" {
+  role       = aws_iam_role.ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_role_pa_02" {
+  role = aws_iam_role.ec2_role.name
+  # Only as a demo here, don't use this in production environments.
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 resource "aws_iam_instance_profile" "ssm_instance_profile" {
   name = "ec2-ssm-instance-profile"
-  role = aws_iam_role.ssm_role.name
+  role = aws_iam_role.ec2_role.name
 }
 
 ################################################################################
-# EC2 Instances
+# EC2 Instance
 ################################################################################
 
 resource "aws_instance" "ec2_instance" {
@@ -318,6 +348,87 @@ resource "aws_instance" "ec2_instance" {
   }
 
   tags = {
-    Name = "aml-x86-micro-01"
+    Name = "lab04-ec2-instance"
   }
+}
+
+################################################################################
+# S3 Bucket
+################################################################################
+
+# Account wide public access block for all S3 buckets.
+resource "aws_s3_account_public_access_block" "this" {
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket" "this" {
+  bucket = "lab04-bucket-01"
+
+  tags = {
+    Name = "lab04-s3-bucket"
+  }
+}
+
+# Bucket-level Block Public Access (default).
+resource "aws_s3_bucket_public_access_block" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# Disable ACLs bucket owner owns all objects (default).
+resource "aws_s3_bucket_ownership_controls" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# SSE-S3 resource (default).
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      # Uses the default SSE-S3.
+      sse_algorithm = "AES256"
+    }
+    bucket_key_enabled = true
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    id     = "cleanup"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+
+  depends_on = [aws_s3_bucket_versioning.this]
 }

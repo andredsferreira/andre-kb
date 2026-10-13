@@ -39,8 +39,8 @@ can also enable extra ones like S3 events and EKS audit logs.
 identifiy CVEs and unintended network exposure. It automatically scans EC2
 instances but works with ECR images and Lambda Functions.
 
-**Amazon Macie**: A service that inspects S3 buckets for possible sensistive
-data that may be exposed. For example PII, or credentials.
+**Amazon Macie**: A service that inspects **S3 buckets** for possible **sensistive
+data** that may be exposed. For example PII, or credentials.
 
 **AWS Config**: A service that records the configuration of your resources
 (mainly EC2, IAM, VPC, and S3 resources) in the account and changes made to

@@ -11,6 +11,11 @@ would serve a public front end app you should put it behind a CloudFront
 distrbution where CloudFront reads from the bucket using **Origin Access Control
 (OAC)**. The bucket should stay interly private.
 
+By default if you don't specify a bucket policy (Resource Policy) it will allow
+only principals (IAM Users, IAM Groups, Federated Users, etc) of that account
+access. The principals must have, however, an IAM Policy that allows them to
+access the bucket.
+
 **Read after write**: you see the object immediatelly after writes.
 
 When you upload a file with success you get a HTTP 200 response (It's a REST
