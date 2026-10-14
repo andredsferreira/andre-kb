@@ -158,6 +158,16 @@ IPs (Internet Facing ELBs/ALBs, EC2 Instances, CloudFront Distributions, etc).
 | Latency Based     | Based on latency of requests.                                                                                                 |
 | Geolocation Based | Based on the actual geographical location of the request.                                                                     |
 
+## CloudFront
+
+CloudFront is a CDN that caches and accelerates delivery of HTTP(S) content from
+an origin of your choosing. An origin is from where CloudFront is fetching the
+data to serve on it's edge servers, it commonly is an S3 bucket, an ALB or an
+EC2 instance serving web content.
+
+CloudFront provides **TLS termination**, DDoS protection, WAF Integration and access
+control. You can easily setup ACM certificates with CloudFront
+
 ## VPN
 
 Different types of VPN exist: Site-to-Site and AWS Client VPN (managed OpenVPN).
@@ -238,3 +248,4 @@ You can create rules for specific requests based on certain conditions.
 
 **AWS Firewall Manager**: Allows for the management of multiple WAF rules across
 different AWS accounts.
+
