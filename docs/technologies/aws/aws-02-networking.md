@@ -1,7 +1,5 @@
 ## Virtual Private Cloud (VPC)
 
-[Terraform examples](../../cloud-native/aws/aws-core-services/aws-vpc/)
-
 There is a maximum of 5 VPCs per region you can create.
 
 When you create a VPC it comes with a default route table; default security
@@ -163,37 +161,51 @@ IPs (Internet Facing ELBs/ALBs, EC2 Instances, CloudFront Distributions, etc).
 CloudFront is a CDN that caches and accelerates delivery of HTTP(S) content from
 an origin of your choosing. An origin is from where CloudFront is fetching the
 data to serve on it's edge servers, it commonly is an S3 bucket, an ALB or an
-EC2 instance serving web content.
+EC2 instance serving web content. CloudFront also provides **TLS termination**,
+DDoS protection, WAF Integration and access control. You can easily setup ACM
+certificates with CloudFront.
 
-CloudFront provides **TLS termination**, DDoS protection, WAF Integration and access
-control. You can easily setup ACM certificates with CloudFront
+**Distribution**: The main resource in CloudFront. It's where you content is
+served it has a public endpoint with a domain like randomid.cloudfront.net, you
+can attach SSL certificates and CNAMEs (alternate domain names the distribution
+is willing to answer for, this can live in Route53 or another DNS service).
 
-## VPN
-
-Different types of VPN exist: Site-to-Site and AWS Client VPN (managed OpenVPN).
-
-**Virtual Gateway (VGW)**: A resource on AWS (attached to a VPC) that represents
-the AWS VPN managed endpoint. Handles the traffic between the VPC and on
-premises network.
-
-**Customer Gateway (CGW)**: A resource on AWS (attached to a VPC) that
-represents the on premises VPN device (router; firewall; software appliance).
-
-IPSec VPN connections are done via **Site-to-Site VPN**. You must also enable
-route propagation on the route tables of the VPC.
-
-**AWS Direct Connect**: Physical private (not encrypted) connection between AWS
-and your on premises data center/servers.
+If you want to serve a website with HTTPS through CloudFront with a custom
+domain name of yours you need to setup a CNAME configuration in both CloudFront
+and your DNS Service (Route53 for example). You will also need a certificate
+registered in ACM and configured in CloudFront and validated in your DNS Service
+(again Route53 works good).
 
 ## Elastic Load Balancing (ELB)
 
-ELB scales automatically according to the volume traffic; ELB is scoped to a
-region (one or more AZs). For ALBs and NLBs you must have them in at least 2
-AZs.
+ELB scales automatically according to the volume traffic. ELB is scoped to a
+region (one or more AZs). There are two main types of ELBs: ALB, and NLB. For
+ALBs and NLBs you must have them in at least 2 AZs.
 
-ALBs are by far the most commonly used type of ELB. They should sit in front of
-any type of workload that requires redundancy (EC2 auto-scale groups; container
-workloads; etc).
+ELBs must have an SG attached to them (it's attached to their ENI).
+
+**Application Load Balancer (ALB)**: Used to distribute HTTP traffic. **DNS based
+only**, no static IP (private IP) or EIP (public IP).
+
+**Network Load Balancer (NLB)**: Used to distribute TCP and UDP traffic (and
+TLS). **No DNS**, only static IP (private, one per subnet) or EIP (public IP).
+
+**Internal**: For serving private traffic within the VPC, placed on private
+subnets. 
+
+**Internet-facing**: For serving traffic to the Internet, must be placed on a
+public subnet.
+
+**Target Groups**: The targets to which the load balancer will distribute
+traffic to. They can be EC2 instances, IP addresses, or Lambda Functions. An ELB
+will periodically send **health checks** to it's target group, distributing
+traffic only to healthy targets. For HTTP targets the health check is done via
+an endpoint call (my-service.example.com/healthz for example).
+
+When setting up an ELB, AWS auto assigns a dns name (for example
+internal-payments-alb-0123456789.us-east-1.elb.amazonaws.com) If you want to
+change it to something more user friendly you can create a DNS Private Zone and
+an Alias record pointing at that DNS.
 
 **Cross-zone load balancing**: If enabled allows an ALB in one AZ to route
 traffic to targets in a different AZ besides the one he lives in (enabled in
@@ -225,6 +237,23 @@ and from where.
 | Edge Optimized | The API is public and is AWS managed through a CloudFront distribution (only works for REST API type).                                                                |
 | Regional       | The API is public and is directly accessed through internet or your own CloudFront distribution (The HTTP API, and Websocket types can only have this endpoint type). |
 | Private        | The API is private and is accessed within your VPC (or networks connected to it like an on premises).                                                                 |
+
+## VPN
+
+Different types of VPN exist: Site-to-Site and AWS Client VPN (managed OpenVPN).
+
+**Virtual Gateway (VGW)**: A resource on AWS (attached to a VPC) that represents
+the AWS VPN managed endpoint. Handles the traffic between the VPC and on
+premises network.
+
+**Customer Gateway (CGW)**: A resource on AWS (attached to a VPC) that
+represents the on premises VPN device (router; firewall; software appliance).
+
+IPSec VPN connections are done via **Site-to-Site VPN**. You must also enable
+route propagation on the route tables of the VPC.
+
+**AWS Direct Connect**: Physical private (not encrypted) connection between AWS
+and your on premises data center/servers.
 
 ## AWS Shield
 

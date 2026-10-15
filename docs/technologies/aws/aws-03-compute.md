@@ -14,6 +14,9 @@
 AWS uses the APIPA address: 169.254.169.254 for EC2 instance metadata. You can
 easily see with, for example: curl http://169.254.169.254/latest/meta-data/instance-id
 
+### Instance Pricing
+
+
 | Instance Pricing  | Description                                                                         |
 | ----------------- | ----------------------------------------------------------------------------------- |
 | On Demand         | Default, pay by the hour.                                                           |
