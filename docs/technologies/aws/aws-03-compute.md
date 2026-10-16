@@ -16,7 +16,6 @@ easily see with, for example: curl http://169.254.169.254/latest/meta-data/insta
 
 ### Instance Pricing
 
-
 | Instance Pricing  | Description                                                                         |
 | ----------------- | ----------------------------------------------------------------------------------- |
 | On Demand         | Default, pay by the hour.                                                           |
@@ -34,6 +33,23 @@ easily see with, for example: curl http://169.254.169.254/latest/meta-data/insta
 OS and everything the instance needs to boot. You can persist the root volume
 even if you delete the EC2 instance, depending on how you setup the
 DeleteOnTermination parameter.
+
+**AMI (Amazon Machine Image)**: EC2 instances are launched from AMIs which
+contain infromation about the OS, disk layout, launch permissions and optional
+pre-installed software. You can think of them the same as a Dockerfile creates
+containers, with specified configuration, AMIs create EC2 instances.
+
+**Launch Templates**: Launch templates represent a template which configures an
+EC2 instance further than an AMI. A Launch template contains information about
+the AMI, Instance Type, SGs, etc. They are requried for ASGs. All of the fields
+on a launch template **are optional**, so you can only indicate what you want
+configured. **Versioning** is enabled on Launch Templates, meaning when you modify
+one you never touch the previous version, you automatically create a new
+version.
+
+### Auto Scaling Groups (ASG)
+
+
 
 ## AWS Lambda
 
