@@ -23,6 +23,8 @@ easily see with, for example: curl http://169.254.169.254/latest/meta-data/insta
 | Reserved Capacity | Reserve capacity for 1-3 years and save (being replaced by savings plans).          |
 | Savings Plans     | Similar to reserved capacity but more flexible, opt for this one.                   |
 
+### Tenancy
+
 | Tenancy            | Description                                                                               |
 | ------------------ | ----------------------------------------------------------------------------------------- |
 | Shared             | Default, your instance shares the hardware with other AWS accounts.                       |
@@ -49,7 +51,52 @@ version.
 
 ### Auto Scaling Groups (ASG)
 
+**Min Size**: The minimum threshold of an ASG. The number of instances will
+never drop below this.
 
+**Max Size**: The maximum threshold of an ASG. The number of instances will
+never go above this.
+
+**Desired Capacity**: The number of instances the ASG will start immediatly,
+when you launch it. It must be between min and max size inclusive.
+
+It is very common to have an ELB in front of your ASG. If you are building a
+service with an ASG this most likely means you will need to distribute traffic
+across multiple EC2 instances, that's where an ELB comes (depending on the type
+of service the ELB is an ALB or NLB). Also ELB provides application level
+health checking.
+
+You don't need an ELB in front if say you only have a fleet of EC2 instances
+that poll from a queue.
+
+ASGs need **launch templates** in order two autoscale the EC2 instances they
+manage. This is a requirement.
+
+ASGs monitor your EC2 instances replacing ones that are unealthy. There are two
+types of monitoring. **EC2 monitoring** is enabled by default and tracks hardware
+failures, network, etc. Then there is **ELB health checking**, which provides
+application level health checking.
+
+#### ASGs Scaling Policies
+
+**Target Tracking**: ASG will try to maintain a certain metric and value that
+you define for your EC2 instances, and it will scale accordingly. For example,
+maintain average CPU usage at 60%, or average request count at 3000.
+
+**Step Scaling**: Specifically define how you scale at different steps. For
+example, add an extra instance if average CPU exceeds 70%, add 3 more if it
+exceeds 90%.
+
+**Scheduled Scaling**: The ASG will scale on a schedule you define. For example,
+scale to 10 instances between 9am and 12 am; scale to 4 from 12 am to 6 pm; and
+scale to 2 from 6pm to 9am.
+
+You can combine **multiple scaling policies** in one ASG. Is there are conflicts
+they are resolved by assuming the policy that provides the biggest capacity.
+
+For starting out it's recommended that you define target tracking scaling policy
+on CPU average or request count. Then you can move to more complex scaling
+policies when you understand your app's traffic patterns.
 
 ## AWS Lambda
 
