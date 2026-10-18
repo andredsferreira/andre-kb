@@ -37,13 +37,30 @@ for processing again if needed.
 
 ## Amazon EventBridge
 
-Like SNS it's a **pub-sub** managed service however it has greater capabilities
-for filtering and integrating with AWS Services. Very useful for reacting to EC2
-events. You mainly want to choose Event Bridge (over SNS) when reacting to
-specific AWS Services events.
+EventBridge is a serverless event bus service that integrates tightly with AWS
+Services. **Sources** emit **events** to a **bus**. **Rules** then match
+(through the use of **event patterns**) and deliver the events to **targets**.
+Finally targets perform a specific action.
 
-**Event Bridge Rule**: Allows you to customize events before they are delivered
-to a target.
+EventBridge comes with a **default bus** that receives events from all AWS
+Services that work with EventBridge.
 
-Event Bridge allows you to replay past events for analyzing. These are called
-**replay events**.
+**Publishers (event sources)** in EventBridge are AWS Services (many of them can
+publish to EventBridge), SDK Clients (code), SaaS partners (Github, Datadog,
+etc), and the EventBridge Scheduler itself.
+
+More than one rule can match the same event. Each rule has a maximum of five
+targets. 
+
+EventBridge also has a DLQ for failed events deliveries. By default it retries
+the event delivery up to 24h.
+
+One of the main features of EventBridge is also the capability of event
+transformation (input transformation).
+
+
+
+
+
+
+

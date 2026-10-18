@@ -112,6 +112,9 @@ Lambda scales automatically, depending on requests. If a 100 or 1000 requests
 for a function execution come in, Lambda spins 100 or 1000 seperate environments
 in **parallel**.
 
+Lambda is a **regional service** meaning you don't pick AZs it's already fault
+tolerant.
+
 **Cold start**: Happens when a Lambda function executes for the first time: it
 needs to spin up an execution environment causing some latency (latency varies a
 lot depending on the runtime Java, Python, etc. But it's roughly between 100-500
