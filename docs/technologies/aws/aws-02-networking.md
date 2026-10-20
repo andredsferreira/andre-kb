@@ -77,7 +77,7 @@ TGWs).
 
 **VPC Flow Logs**: Register logs of network traffic in a VPC or Subnet or
 specific ENI. Enabling VPC Flow Logs themselves is **free** but you pay for the
-destination you are sending the,. The logs can be sent to CloudWatch, S3, or
+destination you are sending to. The logs can be sent to CloudWatch, S3, or
 streamed through Amazon Data Firehose, in these cases you pay different amounts,
 S3 being the cheapest. You can use **Amazon Athena** to perform queries and
 analitics on the logs. Once created you cannot modify a VPC Flow Log, you must
@@ -99,7 +99,7 @@ the NIC of an EC2 machine.
 Each EC2 instance you launch comes with a **primary ENI** (the eth0 interface)
 attached to it that was automatically created by AWS. When the EC2 instance
 terminates the eth0 ENI is also deleted (you can change this default behaviour
-by setting DeleteOnTermination to false). To the primary ENI itself also comes
+by setting DeleteOnTermination to false). The primary ENI itself also comes
 the default SG attached.
 
 A **created ENI** can be dettached and attached to other EC2 instances. Created ENIs
@@ -133,8 +133,9 @@ You shouldn't use Route53 health checking if the record is pointing to an ALB or
 Cloudfront or API Gateway. These services already offer better health checking
 capabilities.
 
-**Public Hosted Zones**: Contain records (A, AAAA, MX, etc) for the Internet to
-use. Has a domain associated (you need to control the domain in order to work).
+**Public Hosted Zones**: It's a Route53 resource that contains records (A, AAAA,
+MX, etc) for the Internet to use. Has a domain associated (you need to control
+the domain in order to work).
 
 **Private Hosted Zones**: Sames as public hosted zone but for private resources
 in a VPC (the VPC must have DNS hosting and resolution support enabled, which
@@ -167,14 +168,9 @@ certificates with CloudFront.
 
 **Distribution**: The main resource in CloudFront. It's where you content is
 served it has a public endpoint with a domain like randomid.cloudfront.net, you
-can attach SSL certificates and CNAMEs (alternate domain names the distribution
-is willing to answer for, this can live in Route53 or another DNS service).
-
-If you want to serve a website with HTTPS through CloudFront with a custom
-domain name of yours you need to setup a CNAME configuration in both CloudFront
-and your DNS Service (Route53 for example). You will also need a certificate
-registered in ACM and configured in CloudFront and validated in your DNS Service
-(again Route53 works good).
+can attach SSL certificates and CNAME records: alternate domain names the
+distribution is willing to answer for, this can live in Route53 or another DNS
+service.
 
 ## Elastic Load Balancing (ELB)
 

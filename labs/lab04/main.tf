@@ -160,7 +160,7 @@ resource "aws_route_table_association" "private_rta" {
 }
 
 ################################################################################
-# Security Groups
+# Security Groups (SGs)
 ################################################################################
 
 resource "aws_security_group" "private_instance_sg" {
