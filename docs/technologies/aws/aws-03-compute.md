@@ -52,7 +52,9 @@ version.
 ### Auto Scaling Groups (ASG)
 
 **Min Size**: The minimum threshold of an ASG. The number of instances will
-never drop below this.
+never drop below this (only exception is during replacements, unless
+MinHealthyPercentage is equal to 100%). ASG will always try to keep this number.
+Even if you delete/terminate instances bellow it, the ASG will recreate them.
 
 **Max Size**: The maximum threshold of an ASG. The number of instances will
 never go above this.
@@ -76,6 +78,12 @@ ASGs monitor your EC2 instances replacing ones that are unealthy. There are two
 types of monitoring. **EC2 monitoring** is enabled by default and tracks hardware
 failures, network, etc. Then there is **ELB health checking**, which provides
 application level health checking.
+
+To safely rollout a new AMI to your instances you can update the launch template
+with the new version of the AMI. Then point your ASG to the new launch template
+and do an instance refresh. You can decide how to do the instance refresh, its
+recommended to setup MinHealthyPercentage to a value you need, and
+InstanceWarmup, as well as maybe adding checkpoints.
 
 #### ASGs Scaling Policies
 
@@ -109,20 +117,21 @@ Lambda excels at short lived tasks (it has a maximum runtime of 15 minutes). At
 EKS. Lambda functions don't maintain state between executions.
 
 Lambda scales automatically, depending on requests. If a 100 or 1000 requests
-for a function execution come in, Lambda spins 100 or 1000 seperate environments
+for a function execution come in, Lambda spins 100 or 1000 separate environments
 in **parallel**.
 
 Lambda is a **regional service** meaning you don't pick AZs it's already fault
 tolerant.
 
-**Cold start**: Happens when a Lambda function executes for the first time: it
-needs to spin up an execution environment causing some latency (latency varies a
-lot depending on the runtime Java, Python, etc. But it's roughly between 100-500
-ms). The subsequent executions don't suffer from this, they start from a **warm
-environment**. After a while of not executing the environment is shutted down
-again and if the Lambda is called it starts from a cold start again.
+**Cold start**: Happens when a Lambda function executes for the first time (in a
+while): it needs to spin up an execution environment causing some latency
+(latency varies a lot depending on the runtime Java, Python, etc. But it's
+roughly between 100-500 ms). The subsequent executions don't suffer from this,
+they start from a **warm environment**. After a while of not executing the
+environment is shutted down again and if the Lambda is called it starts from a
+cold start again.
 
-**Provisioned Concurrency**: Provisioned concurrency let's you pre initializes a
+**Provisioned Concurrency**: Provisioned concurrency let's you pre initialize a
 static number of execution environments for Lambda functions so that they don't
 suffer from cold starts. You can also autoscale the number of concurrency
 environments but this is something that is not available on the Web Console only

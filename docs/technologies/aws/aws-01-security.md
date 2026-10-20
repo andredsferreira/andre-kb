@@ -3,7 +3,7 @@
 [Terraform examples](../../cloud-native/aws/aws-core-services/aws-iam/)
 
 **Principal**: An entity that can perform actions on AWS resources (who is
-making a request). The most common use case is specifying principals in an
+mak$ing a request). The most common use case is specifying principals in an
 assume role policy, i.e, who can assume that role.
 
 Principals in AWS:
@@ -28,7 +28,19 @@ is, the user assumes a completly new identity under the IAM Role.
 In order for an IAM User to be able to even assume a role he must have a policy
 with the permission sts:AssumeRole for that specific role.
 
-## Extra Security Features
+## AWS Certificate Manager (ACM)
+
+**Serving HTTPS**: This is what you need to serve HTTPS traffic. You need a
+domain name you own registered with a registrar (Route53 can do this for you).
+Then you must request a certificate on ACM specifying your domain name, and
+validate it (CNAME validation that ACM gives) on your DNS service provider
+(again Route53 can work here, if you use it you must have a hosted zone and
+validate the certificate there). Finally you point the domain name on your DNS
+service provider to where you want to route, most commonly an ALB or CloudFront
+Distribution (if you use Route53 as the DNS service provider, just create an
+alias record on the hosted zone pointing at the ALB or CloudFront Distribution)
+
+## Other Security Services
 
 **Amazon Guard Duty**: A service that helps with **threat detection** by
 scanning data sources on your account. Uses ML under the hood. The main sources

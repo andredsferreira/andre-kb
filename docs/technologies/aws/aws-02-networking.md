@@ -180,8 +180,9 @@ ALBs and NLBs you must have them in at least 2 AZs.
 
 ELBs must have an SG attached to them (it's attached to their ENI).
 
-**Application Load Balancer (ALB)**: Used to distribute HTTP traffic. **DNS based
-only**, no static IP (private IP) or EIP (public IP).
+**Application Load Balancer (ALB)**: Used to distribute HTTP traffic. **DNS
+based only**, no static IP (private IP) or EIP (public IP). For production
+environments always deploy an ALB in two AZs at least.
 
 **Network Load Balancer (NLB)**: Used to distribute TCP and UDP traffic (and
 TLS). **No DNS**, only static IP (private, one per subnet) or EIP (public IP).
@@ -206,8 +207,8 @@ an Alias record pointing at that DNS.
 **Cross-zone load balancing**: If enabled allows an ALB in one AZ to route
 traffic to targets in a different AZ besides the one he lives in (enabled in
 ALBs by default). Example: LB-A and LB-B live in two different AZs. With targets
-in AZ-A and AZ-B. With cross-zone load balancing enabled for both LB-A can route
-to targets in AZ-B; and LB-B can route to targets in AZ-A. They can also route
+in AZ-A and AZ-B. With cross-zone load balancing enabled for both, LB-A can route
+to targets in AZ-B, and LB-B can route to targets in AZ-A. They can also route
 to their own AZ of course.
 
 ## API Gateway
@@ -223,7 +224,8 @@ receives the requests, processes them and forwards them to the correct ALB. The
 ALB then receives and distributes (load balances) the traffic across instances.
 CloudFront can further sit in front of the API Gateway for faster edge delivery.
 
-Three **types of API** exist: HTTP API, REST API and Websocket API.
+Three **types of API** exist: HTTP API, REST API (can be all endpoint types),
+and Websocket API.
 
 Three endpoint types exist on API Gateway. These determine who can reach the API
 and from where.
