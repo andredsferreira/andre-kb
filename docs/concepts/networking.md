@@ -21,4 +21,3 @@ that host needs to know which process will consume it, for this purpose a port
 in order to identify it. The two protocols at this layer are TCP and UDP.
 
 ### How communication between two hosts happens on the Internet
-

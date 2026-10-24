@@ -22,6 +22,18 @@ user_management() {
   groups username
 }
 
+sftp -b - alice@server <<'EOF'
+cd /srv/uploads
+put app.war
+EOF
+
+sftp() {
+
+  ssh -P 10282 -i ~/.ssh/id_rsa_debiantrixie01 -b - root@vsgate-ssh.dei.isep.ipp.pt 
+
+
+}
+
 rsync() {
 
   rsync -avhz -e "ssh -p 10022 -i /path/identity/file" /local/path user@remote:/remote/path
