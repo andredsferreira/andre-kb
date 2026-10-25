@@ -131,7 +131,8 @@ use. If it is they send a DHCPDECLINE response and return to the INIT state.
 This double checking is not required by the DHCP protocol, but it should be done
 when possible.
 
-NOTE: When sending DHCPREQUEST messages the client puts the offered IP in the requested ip address option 
+NOTE: When sending DHCPREQUEST messages the client puts the offered IP in the
+requested ip address option.
 
 NOTE: Since DHCP is an application layer protocol using UDP, it also uses IP.
 But some DHCP messages are sent even when the client does not have an IP address
@@ -239,7 +240,3 @@ DHCP server configuration parameters:
   distinct address pools.
 - T1 and T2 timers.
 - Wether or not DHCP relays are used.
-
-
-
-
