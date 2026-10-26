@@ -1,0 +1,62 @@
+  lab02:
+    image: ${DOCKER_HUB_USERNAME}/andre-kb:lab02-${IMAGE_TAG:-latest}
+    container_name: lab02-app
+    restart: unless-stopped
+    depends_on:
+      roach-db-init:
+        condition: service_completed_successfully
+    networks: [lab02-net]
+    expose:
+      - "8080"
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro      # only the public CA cert
+    environment:
+      CRDB_HOST: roach-db
+      CRDB_PORT: 26257
+      CRDB_USER: ${CRDB_USER}
+      CRDB_PASSWORD: ${CRDB_PASSWORD}
+      CRDB_DATABASE: ${CRDB_DATABASE}
+      CRDB_SSLMODE: verify-full
+      PGSSLROOTCERT: /certs/ca.crt
+
+  roach-db:
+    image: cockroachdb/cockroach:v25.4.x
+    container_name: roach-db
+    restart: unless-stopped
+    networks: [lab02-net]
+    volumes:
+      - roach-db:/cockroach/cockroach-data
+      - ./certs:/certs:ro
+    command: start-single-node --certs-dir=/certs
+    healthcheck:
+      test: ["CMD", "cockroach", "sql", "--certs-dir=/certs", "--host=localhost:26257", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # DB Console (HTTPS, needs a SQL user login). Uncomment to reach it via SSH tunnel:
+    # ports:
+    #   - "127.0.0.1:8080:8080"
+
+  roach-db-init:
+    image: cockroachdb/cockroach:v25.4.18
+    networks: [lab02-net]
+    depends_on:
+      roach-db:
+        condition: service_healthy
+    volumes:
+      - ./certs:/certs:ro
+      - ./init.sql:/init.sql:ro
+    environment:
+      CRDB_USER: ${CRDB_USER}
+      CRDB_PASSWORD: ${CRDB_PASSWORD}
+      CRDB_DATABASE: ${CRDB_DATABASE}
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -e
+        SQL="cockroach sql --certs-dir=/certs --host=roach-db:26257"
+        $$SQL --execute "CREATE DATABASE IF NOT EXISTS \"$$CRDB_DATABASE\";"
+        $$SQL --execute "CREATE USER IF NOT EXISTS \"$$CRDB_USER\"; ALTER USER \"$$CRDB_USER\" WITH PASSWORD '$$CRDB_PASSWORD';"
+        $$SQL --database "$$CRDB_DATABASE" -f /init.sql
+        $$SQL --database "$$CRDB_DATABASE" --execute "GRANT ALL ON DATABASE \"$$CRDB_DATABASE\" TO \"$$CRDB_USER\"; GRANT ALL ON ALL TABLES IN SCHEMA public TO \"$$CRDB_USER\";"
+    restart: "no"
