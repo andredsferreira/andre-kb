@@ -31,7 +31,6 @@ sftp() {
 
   ssh -P 10282 -i ~/.ssh/id_rsa_debiantrixie01 -b - root@vsgate-ssh.dei.isep.ipp.pt 
 
-
 }
 
 rsync() {
