@@ -33,7 +33,7 @@ with the permission sts:AssumeRole for that specific role.
 ## AWS Key Management Service (KMS)
 
 It stores keys in Hardware Security Modules (HSMs). And it uses **envelope
-encryption** to encrypt the keys.
+encryption** to encrypt the keys. KMS Keys are a regional resource.
 
 Each key has a **policy** attached to it that describes which actions IAM Users
 or IAM Roles can perform with KMS: encrypt, decrypt, delete the key, etc.
@@ -42,18 +42,18 @@ In cryptography terms, it supports symmetric and asymmetric keys. Most workloads
 use symmetric keys, asymmetric keys are more expensive per API call and do not
 support rotation.
 
-Three types of keys inside KMS exist:
+### Types of KMS Keys 
 
-- **AWS Owned Keys**: Used internally by the services, you don't even see them.
+**AWS Owned Keys**: Used internally by the services, you don't even see them
+(for example in S3-SSE, the default enabled on all S3 buckets).
 
-- **AWS Managed Keys**: Managed by AWS, you can only view them and their
-  policies. They are created the first time you use a service with KMS (for
-  example DynamoDB) and don't indicate a specific key you own (Customer Managed
-  Key).
+**AWS Managed Keys**: Managed by AWS, you can only view them and their policies.
+They are created the first time you use a service with KMS (for example
+DynamoDB) and don't indicate a specific key you own (Customer Managed Key).
 
-- **AWS Customer Managed Keys**: Managed by you, cost 1€ per month, you specify
-  the type and write the policy (this keys are useful for allowing cross account
-  encryption and decryption).
+**AWS Customer Managed Keys**: Managed by you, cost 1€ per month, you specify
+the type and write the policy (this keys are useful for allowing cross account
+encryption and decryption).
 
 ### KMS Envelope Encryption How it Works
 
@@ -629,13 +629,15 @@ storage class in objects.
 ### S3 Encryption
 
 New S3 buckets (for newer accounts) have encryption at rest enabled by default.
+All encryption in S3 uses KMS under the hood even the SSE-S3 (it uses AWS owned
+keys).
 
-| Encryption Type        | Description                                                                                                                                                                                |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Amazon SSE-S3          | Server side encryption at rest for S3 buckets (uses S3 managed keys); default setting in new buckets; no extra costs or performance costs.                                                 |
-| Amazon SSE-KMS         | Same as SS3-S3 but using AWS KMS keys (keys must be in the same region). Additional charges for every call to KMS for encrypting and decrypting. User needs permissions for using the key. |
-| Amazon SSE-C           | You provide the keys and need to setup appropriate headers on a HTTPS request. No charges.                                                                                                 |
-| Client-side Encryption | You encrypt and decrypt before sending to S3.                                                                                                                                              |
+| Encryption Type        | Description                                                                                                                                                                                                                                              |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Amazon SSE-S3          | Server side encryption at rest for S3 buckets (uses S3 managed keys); default setting in new buckets; no extra costs or performance costs.                                                                                                               |
+| Amazon SSE-KMS         | Same as SS3-S3 but using AWS KMS keys (the KMS keys are either AWS managed or customer managed, also keys must be in the same region). Additional charges for every call to KMS for encrypting and decrypting. User needs permissions for using the key. |
+| Amazon SSE-C           | You provide the keys and need to setup appropriate headers on a HTTPS request. No charges.                                                                                                                                                               |
+| Client-side Encryption | You encrypt and decrypt before sending to S3.                                                                                                                                                                                                            |
 
 **AWS S3 Bucket Keys**: Should always be enabled  when using SSE-KMS. It allows
 the same encryption and decryption mechanisms but with fewer calls to KMS.
@@ -656,8 +658,9 @@ volume on the new AZ from the snapshot.
 Multi-attached volumes are limited to the same AZ and 16 max instances, they
 also need a cluster wide file system.
 
-You can't directly encrypt an unencrypted EBS volume or EBS volume snapshot, you
-must create a new one and ecrypt it.
+EBS volumes don't come encrypted by default (you can enable this account wide).
+Also, you can't directly encrypt an unencrypted EBS volume or EBS volume
+snapshot, you must create a new one and ecrypt it.
 
 EBS snapshots **are stored in S3** but you can't directly access the S3 buckets,
 you manage through the EBS service. EBS snapshots are **incremental**: the first  
@@ -730,6 +733,11 @@ RDS uses **EBS** for storage under the hood (except the Aurora engine which has
 it's own distributed storage system); and **EC2** for the DBMS (the compute
 layer / database instance). The EBS volumes can be SSD, provisioned IOPS SSD, or
 magnetic hard drives.
+
+When creating an RDS database you must specify if you want to enable encryption
+at rest. If a current DB does not have encryption enabled you can't enable it,
+you need to create a new snapshot with encryption and restore a new DB instance
+from it.
 
 For production databases you should leverage multi-az deployments and
 provisioned IOPS SSD as storage.
