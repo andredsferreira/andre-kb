@@ -1,3 +1,7 @@
+# AWS Overview
+
+
+
 # AWS Security
 
 ## IAM
@@ -632,15 +636,18 @@ New S3 buckets (for newer accounts) have encryption at rest enabled by default.
 All encryption in S3 uses KMS under the hood even the SSE-S3 (it uses AWS owned
 keys).
 
-| Encryption Type        | Description                                                                                                                                                                                                                                              |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Amazon SSE-S3          | Server side encryption at rest for S3 buckets (uses S3 managed keys); default setting in new buckets; no extra costs or performance costs.                                                                                                               |
-| Amazon SSE-KMS         | Same as SS3-S3 but using AWS KMS keys (the KMS keys are either AWS managed or customer managed, also keys must be in the same region). Additional charges for every call to KMS for encrypting and decrypting. User needs permissions for using the key. |
-| Amazon SSE-C           | You provide the keys and need to setup appropriate headers on a HTTPS request. No charges.                                                                                                                                                               |
-| Client-side Encryption | You encrypt and decrypt before sending to S3.                                                                                                                                                                                                            |
+| Encryption Type        | Description                                                                                                                                                                                                                                              | Main Use Case                                                                                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Amazon SSE-S3          | Server side encryption at rest for S3 buckets (uses S3 managed keys); default setting in new buckets; no extra costs or performance costs.                                                                                                               | Low sensitive data where you don't want to manage keys.                                                                                                |
+| Amazon SSE-KMS         | Same as SS3-S3 but using AWS KMS keys (the KMS keys are either AWS managed or customer managed, also keys must be in the same region). Additional charges for every call to KMS for encrypting and decrypting. User needs permissions for using the key. | Sensitive data needing auditing for who encrypts or decrypts.                                                                                          |
+| Amazon SSE-C           | You provide the keys and need to setup appropriate headers on a HTTPS request. No charges.                                                                                                                                                               | Sensitive data needing auditing and fine-grained control to who encrypts and decrypts. Should be the default in financial data, PII, health data, etc. |
+| Client-side Encryption | You encrypt and decrypt before sending to S3.                                                                                                                                                                                                            |                                                                                                                                                        |
 
 **AWS S3 Bucket Keys**: Should always be enabled  when using SSE-KMS. It allows
 the same encryption and decryption mechanisms but with fewer calls to KMS.
+
+In your bucket policy you should enforce HTTPS only by specifying an action to
+deny HTTP traffic.
 
 ## Elastic Block System (EBS)
 
@@ -658,9 +665,9 @@ volume on the new AZ from the snapshot.
 Multi-attached volumes are limited to the same AZ and 16 max instances, they
 also need a cluster wide file system.
 
-EBS volumes don't come encrypted by default (you can enable this account wide).
-Also, you can't directly encrypt an unencrypted EBS volume or EBS volume
-snapshot, you must create a new one and ecrypt it.
+EBS volumes don't come encrypted by default (you can enable this account wide,
+and its recommended). Also, you can't directly encrypt an unencrypted EBS volume
+or EBS volume snapshot, you must create a new one and ecrypt it.
 
 EBS snapshots **are stored in S3** but you can't directly access the S3 buckets,
 you manage through the EBS service. EBS snapshots are **incremental**: the first  
@@ -822,15 +829,19 @@ SQS react to that message.
 
 ## Amazon Simple Queue Service (SQS)
 
-When a consumer receives a message (by calling **ReceiveMessage**) SQS does not
-immedietly remove that message from the queue, it places a **visibility timeout** on
-that message (30 sec by default), aka, that message is invisible to other
-consumers. If the consumer successfully processed the message it should call the
-**DeleteMessage** endpoint so that the message can be deleted from the queue. If the
-consumer failed to process the message in the time span of the visibility
-timeout, SQS will restore the message's visiblity. Another consumer (maybe the
-same) can then try to process it, if the **maxReceiveCount** is reached then the
-message is placed on the Dead Letter Queue.
+A consumer receives a message by calling ReceiveMessage. The SQS service does
+not remove the message from the queue it places a **visibility timeout**
+(default 30s) which hides the message from the queue. After the consumer is done
+with processing the message it should call DeleteMessage so the message is
+actually removed from the queue. If the visibility timeout expires before the
+consumer called DeleteMessage, the message will become available again in the
+queue and other consumers may take it. For this reason consumers should be
+idempotent.
+
+If the queue has a **redrive policy** enabled (which links the source queue with
+a DLQ), the parameter **maxReceiveCount** inside it tells us the max retries of
+consuming that message before its placed in the DLQ (each time a consumer calls
+ReceiveMessage on that message).
 
 **Dead Letter Queue (DLQ)**: A queue where message that have reached the maximum
 retries by the consumer are placed. They can be replaced in the normal SQS queue
