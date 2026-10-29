@@ -821,11 +821,34 @@ publishers asynchronously and sending notifications to clients.
 **Subscriber**: Subscribe to SNS topics. They receive messages from the topics.
 Can be multiple of them on one topic. Much like publishers they can be HTTP
 endpoints or an AWS Service, or notification service like Email or SMS.
+Subscribers can be in a different account than the Topic (SNS can be used
+cross-account).
 
 You can have several examples with SNS but a common one is having an API service
 publish a message on an SNS topic when an order is processed for example. Then
 clients like Email Notification Services (delivered through an AWS Lambda) or
 SQS react to that message.
+
+**Message Attributes**: Optional key-value metadata you can attach to a message
+at publish time (the publishers specify them), can be used for simple filtering.
+
+### How SNS Works
+
+1. A publisher calls the Publish API with a target Topic.
+
+2. SNS briefly holds the message on the Topic and identifies all subscribers of
+   it.
+
+3. SNS sends the message to each subscriber in parallel according to their
+   protocols.
+
+### The SNS SQS pattern
+
+SNS does not store messages, this means that if you directly use a service to
+subscribe to a Topic, and that service is down, the message is gone. A common
+way to buffer this is to place SQS queues in between. The SQS queues subscribe
+to the topic and even if the service is down the queue will hold the message.
+When the service is back up it can consume from the queue.
 
 ## Amazon Simple Queue Service (SQS)
 
@@ -849,6 +872,23 @@ ReceiveMessage on that message).
 **Dead Letter Queue (DLQ)**: A queue where message that have reached the maximum
 retries by the consumer are placed. They can be replaced in the normal SQS queue
 for processing again if needed.
+
+### SQS Queue Types
+
+**Standard Queues**: Best effort delivery (duplicates are possible); Very high
+troughput; Ordering not guaranteed.
+
+**FIFO Queues**: At least once delivery; Less throughput; Ordering guaranteed.
+
+### SQS Polling Mechanisms
+
+**Long Polling**: In long polling when SQS receives a ReceiveMessage from a
+consumer it will query all its servers queues before returning an answer. The
+connection is usually kept open for 20 seconds. Most workloads should use this.
+
+**Short Polling**: In short polling when SQS receives a ReceiveMessage from a
+consumer it will only query a subset (randomly) and immediatly return an answer.
+This can lead to a lot of API calls to SQS and empty repsonses.
 
 ## Amazon EventBridge
 
