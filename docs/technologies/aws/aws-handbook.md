@@ -816,7 +816,8 @@ pushes messages from publishers to subscribers.
 sends messages to endpoints called topics.
 
 **Topic**: An endpoint on SNS that is responsible for receiving requests from
-publishers asynchronously and sending notifications to clients.
+publishers asynchronously and sending notifications to clients. SNS Supports
+FIFO topics.
 
 **Subscriber**: Subscribe to SNS topics. They receive messages from the topics.
 Can be multiple of them on one topic. Much like publishers they can be HTTP
@@ -845,10 +846,35 @@ at publish time (the publishers specify them), can be used for simple filtering.
 ### The SNS SQS pattern
 
 SNS does not store messages, this means that if you directly use a service to
-subscribe to a Topic, and that service is down, the message is gone. A common
-way to buffer this is to place SQS queues in between. The SQS queues subscribe
-to the topic and even if the service is down the queue will hold the message.
-When the service is back up it can consume from the queue.
+subscribe to a Topic, and that service is down, the message is gone (depends on
+retry policy and if you have a DLQ for SNS). A common way to buffer this is to
+place SQS queues in between. The SQS queues subscribe to the topic and even if
+the service is down the queue will hold the message. When the service is back up
+it can consume from the queue.
+
+### SNS Reliability and Retries
+
+SNS retires failed attempts of subscribing messages.
+
+| Subscribing Endpoint     | Description                                                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| AWS Lambda, SQS, Kinesis | You don't control the retry policy. SNS immediatly retries 3 times and then retries with exponential backoff. |
+| HTTP(S)                  | You can configure the retry policy per topic. By default SNS retries 3 times.                                 |
+| Email, SMS               | There is no policy. Retries are very limited.                                                                 |
+
+You should always attach a DLQ (SNS queue) to SNS topics carrying important
+data.
+
+### SNS Logging
+
+SNS comes with logging disabled by default. You can turn on **delivery status
+logging** which records wether a message was successfully delivered to a target
+or not. This feature works in conjuction with CloudWatch. SNS will need an IAM
+Role with permissions to write there. Log groups are in the format:
+sns/region/account-id/topic-name (with a Failure suffix for failed deliveries).
+
+Delivery status logging is recorded per topic and per protocol (Lambda, SQS,
+HTTPS, etc).
 
 ## Amazon Simple Queue Service (SQS)
 
