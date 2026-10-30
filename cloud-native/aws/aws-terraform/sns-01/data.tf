@@ -4,6 +4,8 @@ data "aws_iam_policy_document" "sns_topic_policy" {
   policy_id = "__default_policy_ID"
 
   statement {
+    sid = "__default_statement_ID"
+
     actions = [
       "SNS:Subscribe",
       "SNS:SetTopicAttributes",
@@ -19,17 +21,14 @@ data "aws_iam_policy_document" "sns_topic_policy" {
     condition {
       test     = "StringEquals"
       variable = "AWS:SourceOwner"
-
-      values = [
-        data.aws_caller_identity.current,
-      ]
+      values   = [data.aws_caller_identity.current.account_id]
     }
 
     effect = "Allow"
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current}:root"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
 
     resources = [

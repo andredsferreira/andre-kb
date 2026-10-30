@@ -819,6 +819,9 @@ sends messages to endpoints called topics.
 publishers asynchronously and sending notifications to clients. SNS Supports
 FIFO topics.
 
+**FIFO Topic**: Less throughput but guarantees order. Only works on SQS FIFO,
+AWS Lambda and Firehose subscribers.
+
 **Subscriber**: Subscribe to SNS topics. They receive messages from the topics.
 Can be multiple of them on one topic. Much like publishers they can be HTTP
 endpoints or an AWS Service, or notification service like Email or SMS.
@@ -830,8 +833,15 @@ publish a message on an SNS topic when an order is processed for example. Then
 clients like Email Notification Services (delivered through an AWS Lambda) or
 SQS react to that message.
 
+### Filtering in SNS
+
 **Message Attributes**: Optional key-value metadata you can attach to a message
 at publish time (the publishers specify them), can be used for simple filtering.
+This is the default.
+
+**Message Body Filtering**: In the FilterPolicyScope you specify you want to
+filter the message based on body contents (MessageBody). Nested values aren't
+supported only top level JSON values.
 
 ### How SNS Works
 
@@ -840,8 +850,11 @@ at publish time (the publishers specify them), can be used for simple filtering.
 2. SNS briefly holds the message on the Topic and identifies all subscribers of
    it.
 
-3. SNS sends the message to each subscriber in parallel according to their
-   protocols.
+3. SNS sends the message (wrapped in JSON with some extra metadata) to each
+   subscriber in parallel according to their protocols.
+
+4. If the message failed it retries according to the retry policy (this depends
+   on the protocol of the subscriber).
 
 ### The SNS SQS pattern
 
@@ -856,14 +869,15 @@ it can consume from the queue.
 
 SNS retires failed attempts of subscribing messages.
 
-| Subscribing Endpoint     | Description                                                                                                   |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| AWS Lambda, SQS, Kinesis | You don't control the retry policy. SNS immediatly retries 3 times and then retries with exponential backoff. |
-| HTTP(S)                  | You can configure the retry policy per topic. By default SNS retries 3 times.                                 |
-| Email, SMS               | There is no policy. Retries are very limited.                                                                 |
+| Subscribing Endpoint     | Description                                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| AWS Lambda, SQS, Kinesis | You don't control the retry policy (delivery_policy in tf). SNS immediatly retries 3 times and then retries with exponential backoff. |
+| HTTP(S)                  | You can configure the retry policy per topic. By default SNS retries 3 times.                                                         |
+| Email, SMS               | There is no policy. Retries are very limited.                                                                                         |
 
 You should always attach a DLQ (SNS queue) to SNS topics carrying important
-data.
+data. You configure the DLQ in subscriptions though not in the topic itself.
+This allows each subscriber to handle failure differently.
 
 ### SNS Logging
 
@@ -939,7 +953,7 @@ the event delivery up to 24h.
 One of the main features of EventBridge is also the capability of event
 transformation (input transformation).
 
-# AWS Analytics
+# AWS Data and Analytics
 
 | Service                                   | Use Case                      | Description                                                                                                                                                                                                   |
 | ----------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
