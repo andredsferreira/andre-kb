@@ -462,7 +462,7 @@ health checking.
 You don't need an ELB in front if say you only have a fleet of EC2 instances
 that poll from a queue.
 
-ASGs need **launch templates** in order two autoscale the EC2 instances they
+ASGs need **launch templates** in order to autoscale the EC2 instances they
 manage. This is a requirement.
 
 ASGs monitor your EC2 instances replacing ones that are unealthy. There are two
