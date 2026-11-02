@@ -9,7 +9,7 @@
 [Terraform examples](../../cloud-native/aws/aws-core-services/aws-iam/)
 
 **Principal**: An entity that can perform actions on AWS resources (who is
-mak$ing a request). The most common use case is specifying principals in an
+making a request). The most common use case is specifying principals in an
 assume role policy, i.e, who can assume that role.
 
 Principals in AWS:
@@ -178,8 +178,7 @@ as the underlying mechanism.
 Even if you have an EC2 instance in a private subnet (with a NAT Gateway in the
 route table) and you have an S3 Gateway Endpoint. When you communicate with S3,
 AWS will automatically route your request to the Gateway endpoint and not
-through the NAT Gateway. You don't need to mess with the route table of the
-subnet your instance is placed in.
+through the NAT Gateway.
 
 **VPC Private Link**: Allows you to connect to a service (for example AWS KMS,
 or a third-party service from AWS Marketplace) without going trough the
@@ -277,7 +276,7 @@ EC2 instance serving web content. CloudFront also provides **TLS termination**,
 DDoS protection, WAF Integration and access control. You can easily setup ACM
 certificates with CloudFront.
 
-**Distribution**: The main resource in CloudFront. It's where you content is
+**Distribution**: The main resource in CloudFront. It's where your content is
 served it has a public endpoint with a domain like randomid.cloudfront.net, you
 can attach SSL certificates and CNAME records: alternate domain names the
 distribution is willing to answer for, this can live in Route53 or another DNS
@@ -535,6 +534,9 @@ Role that Lambda assumes at runtime and specifies which services the function
 can interact with. If you want your function to interact with S3 or DynamoDB for
 example, you should specify that in the role's policy.
 
+**Resource Policy**: Its an IAM Policy attached to the Lambda function and
+describes what actions are allowed on that Lambda and by which principals.
+
 Lambda comes automatically configured with CloudWatch. This can be a surprise in
 the bill. Lambda sends logs to cloudwatch for every stderr and stdlog output of
 your function. You cannot disable this, however you can revoke the permissions
@@ -585,7 +587,7 @@ unnstable network connections) by parts.
 suspend it. Once versioning is on you really never delete an object but place a
 **deletion marker** that hides the object. To restore the object you simply
 delete the marker (if you toggle the "show versions" on the console and select
-an object and delete it there, it will actually **permanently delete ** the
+an object and delete it there, it will actually **permanently delete** the
 object).
 
 **Amazon S3 Lifecycle Rules** are rules applied to buckets that automatically manage
@@ -600,6 +602,9 @@ be enabled in both buckets; existing objects don't get replicated automatically
 (only updated and created ones). Deletion of version or delete markers are not
 replicated; replication can be enabled cross region and even cross accounts (an
 IAM Role is needed).
+
+**S3 Requester Pays**: Used for sharing large amounts of data, where the
+requester pays for data transfer and requesting fees, not the bucket owner.
 
 S3 Select and S3 Glacier Select should be only used for simple queries on single
 objects **content** not on large amounts of objects/data.
@@ -811,6 +816,10 @@ second for items up to 1KB.
 SNS is a fully managed **pub-sub** message service. It has no storage, just
 pushes messages from publishers to subscribers.
 
+SNS topics have an IAM Policy. By default it allows every principal in the same
+account to subscribe, that is, to register a service as a subscriber in the
+topic (this is the act of subscribing).
+
 **Publisher**: Your own application code (through the SDK) or AWS Service
 (CloudWatch alarms, S3 Event Notifications, AWS Lambda, or EventBridge) that
 sends messages to endpoints called topics.
@@ -822,11 +831,10 @@ FIFO topics.
 **FIFO Topic**: Less throughput but guarantees order. Only works on SQS FIFO,
 AWS Lambda and Firehose subscribers.
 
-**Subscriber**: Subscribe to SNS topics. They receive messages from the topics.
-Can be multiple of them on one topic. Much like publishers they can be HTTP
-endpoints or an AWS Service, or notification service like Email or SMS.
-Subscribers can be in a different account than the Topic (SNS can be used
-cross-account).
+**Subscriber**: They receive messages from the topics. Can be multiple of them
+on one topic. Much like publishers they can be HTTP endpoints or an AWS Service,
+or notification service like Email or SMS. Subscribers can be in a different
+account than the Topic (SNS can be used cross-account).
 
 You can have several examples with SNS but a common one is having an API service
 publish a message on an SNS topic when an order is processed for example. Then

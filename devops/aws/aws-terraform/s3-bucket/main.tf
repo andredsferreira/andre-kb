@@ -2,6 +2,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 resource "aws_s3_bucket" "bucket" {
+  # -an suffix is needed for account-regional namespaces.
   bucket           = "andrekbs3bucket-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.region}-an"
   bucket_namespace = "account-regional"
 
