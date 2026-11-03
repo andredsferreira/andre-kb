@@ -963,6 +963,7 @@ transformation (input transformation).
 
 # AWS Data and Analytics
 
+
 | Service                                   | Use Case                      | Description                                                                                                                                                                                                   |
 | ----------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AWS Glue                                  | Analytics, ETL, and data lake | This service is a fully managed data integration service with the main features being ETL jobs, a data catalog, and crawlers.                                                                                 |
