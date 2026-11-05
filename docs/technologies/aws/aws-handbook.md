@@ -963,6 +963,15 @@ transformation (input transformation).
 
 # AWS Data and Analytics
 
+**AWS Storage Gateway**: It's a virtual or physical device that allows on
+premises apps to access cloud storage (S3 File Gateway, FsX File Gateway
+(Windows), Volume Gateway (iSCSI block volumes), Tape Gateway (physical tape
+storage)), through NFS or SMB interfaces (you don't need to change how your
+applications work in order for them to have cloud storage).
+
+**AWS DataSync**: Allows bulk migration of a lot of data from on premises to
+AWS.
+
 
 | Service                                   | Use Case                      | Description                                                                                                                                                                                                   |
 | ----------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -972,3 +981,25 @@ transformation (input transformation).
 | Kinesis Data Streams (part of Kinesis)    | Data streaming                | A real time data streaming services where consumers read data off queues in a pull model. The queue is split into shards (which you manage) each with fixed throughput. Data is retained and can be replayed. |
 | Data Firehose (formerly Kinesis Firehose) | Data delivery                 | A managed data delivery service that delivers data from producers to consumers in near real-time. Data is usually sent in batches. Data is not retained. You don't manage shards its fully serverless.        |
 | AWS Quicksight                            | Business Intelligence         | A managed BI service that provides dashboards and data visualization for BI.                                                                                                                                  |
+
+## AWS Glue
+
+Glue is mainly a serverless ETL service (Apache Spark under the hood), also
+providing a Data Catalog. It's used for large datasets (GB to TB),
+and when you don't need real time processing. It excels at running scheduled ETL
+jobs on datasets.
+
+**Data Catalog**: Similar to a data lake, it holds metadata about your data.
+Most importantly it describes the schema/structure of your data and where it
+lives.
+
+By default Glue Jobs read all data from the sources, if you want to read new
+data only you should use **bookmarks**. It is how Glue handles incremental
+processing, you register a bookmark by calling job.commit() at the end of your
+job code.
+
+One of the two main cases for Glue are: CSV or JSON data lands on S3 you read it
+and convert it to parquet storing it again there on in another data store; pull
+records from RDS or DynamoDB, run a job to transform it, and load them in
+Redshift.
+
