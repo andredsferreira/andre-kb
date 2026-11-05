@@ -88,6 +88,12 @@ service provider to where you want to route, most commonly an ALB or CloudFront
 Distribution (if you use Route53 as the DNS service provider, just create an
 alias record on the hosted zone pointing at the ALB or CloudFront Distribution)
 
+You can import an external certificate from another CA into ACM, but you are the
+one responsible for the renewal process.
+
+CloudFront requires certificates to be present in the us-east-1 region. This is
+the only supported region period.
+
 ## Other Security Services
 
 **Amazon Guard Duty**: A service that helps with **threat detection** by
@@ -696,6 +702,10 @@ volume is deleted if you terminate (delete) an EC2 instance (you can change this
 behaviour by altering DeleteOnTermination parameter). You can create new EC2
 instances from saved root volumes.
 
+**Instance Storage**: Ephemeral storage that is physically attached to the same
+host your EC2 instances live on. It provides the highest amount of I/O at the
+cost of being ephemeral. It can support TB of storage (the bigger instances).
+
 The st1 and sc2 volume types (HDD) can't be root volumes.
 
 **Instance Storage**: It's storage physically attached to an EC2 host. It
@@ -992,6 +1002,11 @@ jobs on datasets.
 **Data Catalog**: Similar to a data lake, it holds metadata about your data.
 Most importantly it describes the schema/structure of your data and where it
 lives.
+
+**Glue Job**: The ETL work unit of Glue (the default is a Spark job). It's an
+PySpark script basically. Everytime Glue runs a Job it spins up a Spark cluster
+and then tears it down (this takes time). Like Lambdas Glue jobs also have
+execution roles as an IAM mechanism.
 
 By default Glue Jobs read all data from the sources, if you want to read new
 data only you should use **bookmarks**. It is how Glue handles incremental
