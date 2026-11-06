@@ -57,4 +57,3 @@ resource "aws_kms_alias" "s3" {
   name          = "alias/andrebucketkey"
   target_key_id = aws_kms_key.s3.key_id
 }
-
