@@ -1,0 +1,9 @@
+# .dockerignore
+.git
+tmp/
+*.md
+.air.toml
+k8s/
+skaffold.yaml
+.vscode
+.idea
