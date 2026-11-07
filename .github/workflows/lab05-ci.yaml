@@ -23,6 +23,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
@@ -42,9 +45,10 @@ jobs:
         with:
           context: labs/lab05
           file: labs/lab05/Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/lab05:latest
-            ${{ secrets.DOCKER_HUB_PASSWORD }}/lab05:${{ steps.shortsha.outputs.SHA }}
+            ${{ steps.image.outputs.NAME }}:latest
+            ${{ steps.image.outputs.NAME }}:${{ steps.shortsha.outputs.SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

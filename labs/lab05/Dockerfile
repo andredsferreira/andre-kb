@@ -1,7 +1,10 @@
 # syntax=docker/dockerfile:1
 ARG GO_VERSION=1.26-alpine
 
-FROM golang:${GO_VERSION} AS build
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
+
+# provided automatically by buildx for each target platform
+ARG TARGETARCH
 
 WORKDIR /app
 # copy these seperatly to benefit from layer caching
@@ -10,10 +13,11 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     go mod download
 COPY . .
 # CGO_ENABLED is set to 0 so we build statically without needing OS
-# dependencies (runs directly on kernel)
+# dependencies (runs directly on kernel). GOARCH cross-compiles for the
+# target platform while the compiler itself runs natively.
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 GOOS=linux go build -o lab02 .
+    CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build -o lab02 .
 
 FROM build AS test
 
