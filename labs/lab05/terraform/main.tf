@@ -119,7 +119,7 @@ resource "aws_instance" "instance" {
   instance_type = "t4g.micro"
   subnet_id     = aws_subnet.subnet_a.id
 
-  iam_instance_profile = aws_iam_instance_profile.ssm_instance_profile.name
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
   security_groups = [aws_security_group.instance_sg.id]
 
@@ -157,12 +157,12 @@ resource "aws_instance" "instance" {
 }
 
 resource "aws_security_group" "instance_sg" {
-  name        = "ec2-ssm-instance-sg"
+  name        = "lab05-ec2-instance-sg"
   vpc_id      = aws_vpc.vpc.id
   description = "Security group for an SSM-managed EC2 instance"
 
   tags = {
-    Name = "ec2-ssm-instance-sg"
+    Name = "lab05-ec2-instance-sg"
   }
 }
 
@@ -185,7 +185,7 @@ resource "aws_vpc_security_group_egress_rule" "instance_to_db" {
 ## EC2 IAM
 
 resource "aws_iam_role" "instance_role" {
-  name = "ec2-ssm-role"
+  name = "lab05-ec2-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -214,8 +214,18 @@ resource "aws_iam_role_policy_attachment" "instance_role_pa_02" {
   policy_arn = aws_iam_policy.read_db_secret.arn
 }
 
-resource "aws_iam_instance_profile" "ssm_instance_profile" {
-  name = "ec2-ssm-instance-profile"
+resource "aws_iam_policy" "read_docker_pull_secret" {
+  name   = "read-docker-pull-secret"
+  policy = data.aws_iam_policy_document.read_pull_secret.json
+}
+
+resource "aws_iam_role_policy_attachment" "instance_role_pa_03" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = aws_iam_policy.read_docker_pull_secret.arn
+}
+
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "lab05-ec2-instance-profile"
   role = aws_iam_role.instance_role.name
 }
 
@@ -233,6 +243,7 @@ resource "aws_db_instance" "db" {
   storage_type            = "gp3"
   backup_retention_period = 0
 
+  identifier                  = "lab05-db-instance"
   db_name                     = "lab05"
   username                    = "lab05"
   manage_master_user_password = true
