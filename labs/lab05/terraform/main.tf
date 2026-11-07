@@ -12,43 +12,102 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-resource "aws_subnet" "subnet_a" {
+resource "aws_subnet" "public" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.0.0.0/24"
   availability_zone = "eu-west-2a"
+
+  tags = {
+    Name = "lab05-vpc-public-subnet"
+  }
+}
+
+resource "aws_subnet" "subnet_a" {
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "eu-west-2a"
+
+  tags = {
+    Name = "lab05-vpc-private-a"
+  }
 }
 
 resource "aws_subnet" "subnet_b" {
   vpc_id            = aws_vpc.vpc.id
-  cidr_block        = "10.0.1.0/24"
+  cidr_block        = "10.0.2.0/24"
   availability_zone = "eu-west-2b"
+
+  tags = {
+    Name = "lab05-vpc-private-b"
+  }
 }
 
-resource "aws_security_group" "endpoint_sg" {
-  name   = "ssm-endpoint-sg"
+## IGW
+
+resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "lab05-igw"
+  }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "endpoint_from_instance" {
-  security_group_id            = aws_security_group.endpoint_sg.id
-  referenced_security_group_id = aws_security_group.instance_sg.id
-  ip_protocol                  = "tcp"
-  from_port                    = 443
-  to_port                      = 443
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+
+  tags = {
+    Name = "lab05-public-rt"
+  }
 }
 
-locals {
-  ssm_services = ["ssm", "ssmmessages", "ec2messages"]
+resource "aws_route_table_association" "public_rta" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_vpc_endpoint" "ssm" {
-  for_each            = toset(local.ssm_services)
-  vpc_id              = aws_vpc.vpc.id
-  service_name        = "com.amazonaws.${data.aws_region.current.region}.${each.key}"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = [aws_subnet.subnet_a.id]
-  security_group_ids  = [aws_security_group.endpoint_sg.id]
-  private_dns_enabled = true
+resource "aws_eip" "elastic_ip_for_ngw" {
+  domain = "vpc"
+
+  tags = {
+    Name = "elastic-ip-for-nat-gateway-vpc-01"
+  }
+}
+
+## NAT GW
+
+resource "aws_nat_gateway" "ngw" {
+  allocation_id = aws_eip.elastic_ip_for_ngw.id
+  subnet_id     = aws_subnet.public.id
+
+  depends_on = [aws_internet_gateway.igw]
+
+  tags = {
+    Name = "lab05-nat-gateway"
+  }
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.ngw.id
+  }
+
+  tags = {
+    Name = "vpc-01-private-rt"
+  }
+}
+
+resource "aws_route_table_association" "private_rta" {
+  subnet_id      = aws_subnet.subnet_a.id
+  route_table_id = aws_route_table.private_rt.id
 }
 
 ################################################################################
@@ -107,7 +166,7 @@ resource "aws_security_group" "instance_sg" {
   }
 }
 
-resource "aws_vpc_security_group_egress_rule" "instance_to_ssm" {
+resource "aws_vpc_security_group_egress_rule" "instance_https" {
   security_group_id = aws_security_group.instance_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "tcp"

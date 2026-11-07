@@ -1,0 +1,50 @@
+name: lab05-ci
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "labs/lab05/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "labs/lab05/**"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: labs/lab05
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Extract short SHA
+        id: shortsha
+        run: echo "SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: labs/lab05
+          file: labs/lab05/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/lab05:latest
+            ${{ secrets.DOCKER_HUB_PASSWORD }}/lab05:${{ steps.shortsha.outputs.SHA }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
