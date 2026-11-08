@@ -1,7 +1,3 @@
-# AWS Overview
-
-
-
 # AWS Security
 
 ## IAM
@@ -93,6 +89,11 @@ one responsible for the renewal process.
 
 CloudFront requires certificates to be present in the us-east-1 region. This is
 the only supported region period.
+
+## Amazon Cognito
+
+A managed customer identity and access managed service (CIAM). It handles
+sign-in, sign-up, and token responsibilities for your application.
 
 ## Other Security Services
 
@@ -971,6 +972,19 @@ the event delivery up to 24h.
 One of the main features of EventBridge is also the capability of event
 transformation (input transformation).
 
+## Amazon MQ
+
+It's a managed message broker service for RabbitMQ or Apache ActiveMQ brokers.
+It's mainly used to facilitate the *migration of existing applications* that
+already use RabbitMQ or Apache ActiveMQ to AWS.
+
+The deployment models for **ActiveMQ** are single instance, active/standby for extra
+availability (default for production environments), or a network of brokers for
+scalability.
+
+The deployment models for **RabbitMQ** are single instance or cluster deployment for
+high availability.
+
 # AWS Data and Analytics
 
 **AWS Storage Gateway**: It's a virtual or physical device that allows on
@@ -1018,3 +1032,16 @@ and convert it to parquet storing it again there on in another data store; pull
 records from RDS or DynamoDB, run a job to transform it, and load them in
 Redshift.
 
+## AWS Managed Streaming for Apache Kafka (MSK)
+
+Fully managed Apache Kafka service. Used for when you want Kafka without
+managing the underlying broker cluster infrastructure. It's a regional service
+and a cluster of brokers is spread across 2-3 AZs. For multi region DR you run a
+second cluster and replicate between them with MSK Replicator.
+
+AWS MSK also provides managed Kafka Connect with MSK Connect. This manages the
+pushing and pulling of data between sources and destinations on Kafka.
+
+Two deployment models MSK Provisioned where you choose the broker instance types
+(Standard or Express for higher throughput) count, and storage type. MSK
+Serverless, fully serverless you don't choose anything.
