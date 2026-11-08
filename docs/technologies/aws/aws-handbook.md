@@ -97,6 +97,12 @@ sign-in, sign-up, and token responsibilities for your application.
 
 ## Other Security Services
 
+**Amazon Trusted Advisor**: An automated best practices checker. It runs checks
+against your account's configuration of resources. The checks are performed
+against performance, cost optimization, security, approching quotas, fault
+tolerance and operational excelence. It also provides remediation and actions to
+take if something is not following best practices.
+
 **Amazon Guard Duty**: A service that helps with **threat detection** by
 scanning data sources on your account. Uses ML under the hood. The main sources
 that come by default are CloudTrail Logs, VPC Flow Logs, and DNS Query Logs. You
@@ -565,7 +571,10 @@ run the actual function.
 
 S3 is a global service but the resources it creates are **regional**. Objects
 within S3 are accessed via REST API (unlike traditional filesystems it doesn't
-need to be mounted and shared).
+need to be mounted and shared). When you upload a file successfully you get HTTP
+200.
+
+**Read after write**: you see the object immediatelly after writes.
 
 Bucket names must be globally unique.
 
@@ -579,13 +588,11 @@ only principals (IAM Users, IAM Groups, Federated Users, etc) of that account
 access. The principals must have, however, an IAM Policy that allows them to
 access the bucket.
 
-**Read after write**: you see the object immediatelly after writes.
-
-When you upload a file with success you get a HTTP 200 response (It's a REST
-API).
-
 S3 does not have real folders it has prefixes. Example of a s3 object:
 s3//bucket-name/prefix_a/prefix_b/my_image.png
+
+S3 does not log access to the bucket by default, you must enable it. You should
+use **Cloud Trail data events**. Or if cost matters use **server access logs**.
 
 **S3 Multipart Upload**: Uploads large objects (recommended over 5GB or
 unnstable network connections) by parts.
