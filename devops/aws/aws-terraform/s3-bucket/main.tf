@@ -33,6 +33,45 @@ resource "aws_s3_bucket_ownership_controls" "this" {
 }
 
 ################################################################################
+# Versioning
+################################################################################
+
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.bucket.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# Lifecycle rules to transition older versions to cheaper storage classes.
+
+resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  depends_on = [aws_s3_bucket_versioning.this]
+
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    id     = "noncurrent-to-glacier-then-deep-archive"
+    status = "Enabled"
+
+    filter {}
+
+    # Glacier Flexible Retrieval
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "GLACIER"
+    }
+
+    # Glacier Deep Archive
+    noncurrent_version_transition {
+      noncurrent_days = 120
+      storage_class   = "DEEP_ARCHIVE"
+    }
+  }
+}
+
+################################################################################
 # Encryption: S3-KMS 
 ################################################################################
 
