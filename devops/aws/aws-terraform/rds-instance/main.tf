@@ -7,13 +7,17 @@ resource "aws_db_instance" "db" {
   engine_version = "16"
   instance_class = "db.t4g.micro"
 
-  allocated_storage       = 20 #GB
-  storage_encrypted       = true
-  storage_type            = "gp3"
+  allocated_storage = 20 #GB
+  storage_encrypted = true
+  storage_type      = "gp3"
+  # Automated backups, between 0 and 35. Setting to 0 means disabled.
   backup_retention_period = 0
 
-  db_name                     = "andrepostgres"
-  username                    = "andre"
+  # Name of the instance (andrepostgres.xxxxx.eu-west-2.rds.amazonaws.com).
+  identifier = "andrepostgres"
+  db_name    = "andrepostgres"
+  username   = "andre"
+  # Store the password in secrets manager.
   manage_master_user_password = true
 
   db_subnet_group_name   = aws_db_subnet_group.subnet_group.name
@@ -28,6 +32,22 @@ resource "aws_db_instance" "db" {
   # Unprotects from deletion.
   deletion_protection = false
 }
+
+# To force TLS you should uncomment this. In order for your instances to connect
+# to the DB they must have the global certificate bundle installed: 
+# curl -o /etc/ssl/certs/rds-global-bundle.pem \
+# https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+
+# resource "aws_db_parameter_group" "db" {
+#   name   = "andrepostgres-pg16"
+#   family = "postgres16"
+
+#   parameter {
+#     name         = "rds.force_ssl"
+#     value        = "1"
+#     apply_method = "pending-reboot"
+#   }
+# }
 
 resource "aws_db_subnet_group" "subnet_group" {
   name       = "rds-instance-subnet-group"

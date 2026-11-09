@@ -744,6 +744,7 @@ FSx extends EFS providing different features for specific use cases.
 **Multi AZ Deployments**: You have a standby database with the replicated data.
 RDS takes care of **automatic failover** (60 to 120 seconds) if the AZ of your
 database fails. You can also switch to **Single AZ Deployment** at any time.
+This is the default for production databases.
 
 **Read Replicas**: You can have a main database and several read
 replicas deployed (PostgreSQL, MySQL, and MariaDB engines). This can work in
@@ -770,16 +771,25 @@ upgrades such as schema changes or major engine version upgrades.
 
 RDS uses **EBS** for storage under the hood (except the Aurora engine which has
 it's own distributed storage system); and **EC2** for the DBMS (the compute
-layer / database instance). The EBS volumes can be SSD, provisioned IOPS SSD, or
-magnetic hard drives.
+layer / database instance). The EBS volumes can be SSD, provisioned IOPS SSD
+(recommended for production), or magnetic hard drives.
 
-When creating an RDS database you must specify if you want to enable encryption
-at rest. If a current DB does not have encryption enabled you can't enable it,
-you need to create a new snapshot with encryption and restore a new DB instance
-from it.
+**Encryption**: When creating an RDS database you must specify if you want to
+enable encryption at rest. If a current DB does not have encryption enabled you
+can't enable it, you need to create a new snapshot with encryption and restore a
+new DB instance from it.
 
-For production databases you should leverage multi-az deployments and
-provisioned IOPS SSD as storage.
+You should enforce TLS on production databases. To do it you set a parameter
+group on the db instance that forces TLS, and on the client's side you install
+the RDS global certificate bundle and run a command similar to this (see the
+terraform rds-instance example as well): 
+
+```bash
+psql "host=mydb.xxxx.eu-west-2.rds.amazonaws.com \ 
+sslmode=verify-full \
+sslrootcert=/etc/ssl/certs/rds-global-bundle.pem \ 
+user=dbadmin dbname=myappdb"
+```
 
 After a RDS instance is created you can increase the compute size (requires a
 reboot, small downtime). You can also increase the storage but never decrease
@@ -799,6 +809,12 @@ location you should export the logs elsewhere (CloudWatch for example).
 indicates where the DB instance(s) can be placed. Even if the RDS instance is a
 single AZ deployment, the DB subnets under the DB subnet group must be in
 different AZs.
+
+**RDS Proxy**: Sits between your application and the DB instance and proxies
+connections. Very useful if you have a lot of Lambdas accessing the DB, instead
+of each Lambda opening a connection they connect to the proxy which pools all
+the individual connections (Lambda creates a short lived connection per
+function), therefore, DB instance is not exhausted with max connections.
 
 **RDS Custom**: Provides an hybrid environment for SQL Server and Oracle
 databases where you have access to the OS where the databases live. AWS manages
@@ -1015,7 +1031,6 @@ applications work in order for them to have cloud storage).
 
 **AWS DataSync**: Allows bulk migration of a lot of data from on premises to
 AWS.
-
 
 | Service                                   | Use Case                      | Description                                                                                                                                                                                                   |
 | ----------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
