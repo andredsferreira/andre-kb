@@ -29,7 +29,6 @@ data "aws_ssm_parameter" "al2023_ami" {
 resource "aws_instance" "ec2_instance" {
   ami           = data.aws_ssm_parameter.al2023_ami.value
   instance_type = "t4g.micro"
-  key_name      = ""
   subnet_id     = aws_subnet.this.id
 
   # Links the instance profile to allow users to connect to the instance using
@@ -41,6 +40,7 @@ resource "aws_instance" "ec2_instance" {
   metadata_options {
     http_endpoint = "enabled"
     http_tokens   = "required"
+    # Toggle to two if the app is running inside a container.
     http_put_response_hop_limit = 2
   }
 
