@@ -217,7 +217,8 @@ then routed to your targets.
 **Elastic Networking Interface (ENI)**: Is what gives an EC2 instance it's
 network identity in a VPC. The **private IP** of an instance is always
 associated with the attached ENI (never the instance directly). Think of it as
-the NIC of an EC2 machine.
+the NIC of an EC2 machine. Therefore ENIs are AZ scoped (placed on a subnet like
+their instance).
 
 Each EC2 instance you launch comes with a **primary ENI** (the eth0 interface)
 attached to it that was automatically created by AWS. When the EC2 instance
@@ -708,9 +709,11 @@ volume is deleted if you terminate (delete) an EC2 instance (you can change this
 behaviour by altering DeleteOnTermination parameter). You can create new EC2
 instances from saved root volumes.
 
-**Instance Storage**: Ephemeral storage that is physically attached to the same
-host your EC2 instances live on. It provides the highest amount of I/O at the
-cost of being ephemeral. It can support TB of storage (the bigger instances).
+**Instance Storage**: Ephemeral storage (**survives reboots**) that is physically
+attached to the same host your EC2 instances live on. It provides the highest
+amount of I/O at the cost of being ephemeral. It can support TB of storage (the
+bigger instances). The instances with instance store usually have a "d" suffix
+on the class part of the name (m5d, c5d, m6id, etc).
 
 The st1 and sc2 volume types (HDD) can't be root volumes.
 
