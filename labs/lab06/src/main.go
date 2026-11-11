@@ -20,8 +20,8 @@
 // Build:
 //
 //	go mod init rds-writer && go mod tidy
-//	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o bootstrap main.go
-//	zip function.zip bootstrap     # runtime: provided.al2023, arch: arm64
+//	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o lab06 main.go
+//	zip lab06-lambda.zip lab06     # runtime: provided.al2023, arch: arm64
 package main
 
 import (

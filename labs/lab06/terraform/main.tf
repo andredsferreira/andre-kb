@@ -22,11 +22,6 @@ resource "aws_iam_role_policy_attachment" "lambda_role_pa_02" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
-resource "aws_lambda_resource_policy" "lambda_resource_policy" {
-  resource_arn = aws_lambda_function.example.arn
-  policy       = data.aws_iam_policy_document.example.json
-}
-
 ################################################################################
 # VPC Resources
 ################################################################################
@@ -63,10 +58,10 @@ resource "aws_subnet" "subnet_b" {
 
 resource "aws_vpc_endpoint" "secretsmanager_endpoint" {
   vpc_id              = aws_vpc.vpc.id
-  service_name        = "com.amazonaws.${data.aws_region.current}.secretsmanager"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.secretsmanager"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
-  security_group_ids  = [aws_security_group.secretsmanager_endpoint_sg[0].id]
+  security_group_ids  = [aws_security_group.secretsmanager_endpoint_sg.id]
   private_dns_enabled = true
 
   tags = {
@@ -186,49 +181,56 @@ resource "aws_db_subnet_group" "subnet_group" {
 # Lambda
 ################################################################################
 
-resource "aws_cloudwatch_log_group" "lambda" {
-  name              = "/aws/lambda/${local.function_name}"
-  retention_in_days = var.log_retention_days
-}
-
-data "archive_file" "lambda" {
-  type             = "zip"
-  source_file      = var.bootstrap_path
-  output_path      = "${path.module}/build/function.zip"
-  output_file_mode = "0755" # bootstrap must be executable
-}
-
 resource "aws_lambda_function" "lambda" {
-  function_name = local.function_name
-  role          = aws_iam_role.lambda.arn
+  function_name = "lab05-lambda"
+  role          = aws_iam_role.lambda_role.arn
 
   runtime       = "provided.al2023"
   architectures = ["arm64"]
   handler       = "bootstrap"
 
-  filename         = data.archive_file.lambda.output_path
-  source_code_hash = data.archive_file.lambda.output_base64sha256
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
   timeout     = 15
   memory_size = 256
 
   vpc_config {
-    subnet_ids         = var.private_subnet_ids
-    security_group_ids = [aws_security_group.lambda.id]
+    subnet_ids         = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
+    security_group_ids = [aws_security_group.lambda_sg.id]
   }
 
   environment {
     variables = {
-      DB_SECRET_ARN = aws_db_instance.this.master_user_secret[0].secret_arn
-      DB_HOST       = aws_db_instance.this.address
-      DB_NAME       = var.db_name
+      DB_SECRET_ARN = aws_db_instance.db.master_user_secret[0].secret_arn
+      DB_HOST       = aws_db_instance.db.address
+      DB_NAME       = aws_db_instance.db.db_name
       DB_SSLMODE    = "require"
     }
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.vpc_access,
-    aws_iam_role_policy.read_db_secret,
-    aws_cloudwatch_log_group.lambda,
+    aws_iam_role_policy_attachment.lambda_role_pa_02,
+    aws_iam_policy.lambda_role_policy,
+    aws_cloudwatch_log_group.lambda_log_group,
   ]
+}
+
+# resource "aws_lambda_permission" "allow_apigateway" {
+#   statement_id  = "AllowInvokeFromSpecificApi"
+#   action        = "lambda:InvokeFunction"
+#   function_name = aws_lambda_function.lambda.name
+#   principal     = "apigateway.amazonaws.com"
+
+#   source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/prod/POST/orders"
+# }
+
+################################################################################
+# Cloudwatch (for the Lambda function)
+################################################################################
+
+resource "aws_cloudwatch_log_group" "lambda_log_group" {
+  name                        = "/aws/lambda/lab05-lambda"
+  deletion_protection_enabled = false
+  retention_in_days           = 7
 }

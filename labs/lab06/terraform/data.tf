@@ -28,38 +28,9 @@ data "aws_iam_policy_document" "lambda_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_resource_policy" {
-  statement {
-    sid    = "AllowInvokeFromAPIGateway"
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = []
-    }
-
-    actions   = ["lambda:InvokeFunction"]
-    resources = [aws_lambda_function.lambda.arn]
-  }
-}
-
-data "aws_iam_policy_document" "example" {
-  statement {
-    sid    = "AllowInvokeFromS3"
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["s3.amazonaws.com"]
-    }
-
-    actions   = ["lambda:InvokeFunction"]
-    resources = [aws_lambda_function.example.arn]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceAccount"
-      values   = [data.aws_caller_identity.current.account_id]
-    }
-  }
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file  = "${path.module}/../src/main.go"
+  output_path = "${path.module}/../lab06-lambda.zip"
+  output_file_mode = "0755"
 }
