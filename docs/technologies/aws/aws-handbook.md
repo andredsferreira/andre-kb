@@ -441,7 +441,11 @@ DeleteOnTermination parameter.
 **AMI (Amazon Machine Image)**: EC2 instances are launched from AMIs which
 contain infromation about the OS, disk layout, launch permissions and optional
 pre-installed software. You can think of them the same as a Dockerfile creates
-containers, with specified configuration, AMIs create EC2 instances.
+containers, with specified configuration, AMIs create EC2 instances. When you
+create a custom AMI AWS takes EBS snapshots from the current instance. You pay
+for the snapshots and they live in your account because that's what the AMI is
+based on (a cheaper alternative might be running user data scripts on the EC2
+instance to install custom software).
 
 **Launch Templates**: Launch templates represent a template which configures an
 EC2 instance further than an AMI. A Launch template contains information about
@@ -701,7 +705,8 @@ restoring many EC2 instances at once from a snapshot.
 
 **Amazon Data Lifecycle Manager (DLM)**: Manages the creation retention and
 deletion of EBS snapshots. You create policies to automatically manage the
-lifecycle of an EBS snapshot instead of having to do it manually.
+lifecycle of an EBS snapshot instead of having to do it manually. Use this tool
+when you are scaling and dealing with a lot of snapshots and AMIs.
 
 In a EC2 instance the **root volume** (containing the OS) is an EBS backed
 volume (except for instance store AMIs which are older). By default the root
@@ -721,6 +726,11 @@ The st1 and sc2 volume types (HDD) can't be root volumes.
 provides the lowest latency possible but it's volatile (does not save if the EC2
 is stopped or deleted). Only instances belonging to the family with the "d"
 suffix have instance storage (for example m5d, r5d).
+
+You can increase the size of a volume while it's attached to a running instance,
+but then you must also modify the filesystem inside the machine to correspond to
+the extra space (resize2fs for ext4 or xfs_growfs for xfs).
+
 
 ## Elastic File System (EFS)
 
