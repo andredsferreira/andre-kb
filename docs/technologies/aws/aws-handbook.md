@@ -568,6 +568,16 @@ You should store initialization code and importing libraries in module level
 code and not inside the function handler. Otherwise it will take more time to
 run the actual function.
 
+**VPC Lambda Placement**: Lambdas can be placed on a VPC (by default there are
+on the AWS public network). You need to specify three things a vpc id, subnet id
+(must be private, and its recommended two subnets in different AZs), and an SG.
+Common use cases are to access RDS databases in private subnets. If the function
+is acessing public services keep it outside the VPC (default). When its placed
+in a VPC the Lambda looses its default Internet connectivity and all the network
+requests are handled by the route table in the subnet. So, if you want Internet
+access you must have a default route to a NAT Gateway (which itself routes to
+IGW).
+
 # AWS Storage
 
 ## Simple Storage Service (S3)
