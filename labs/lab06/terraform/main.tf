@@ -22,6 +22,21 @@ resource "aws_iam_role_policy_attachment" "lambda_role_pa_02" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
+resource "aws_iam_role" "ec2_role" {
+  name               = "lab06-ec2-role"
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role_pol.json
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_role_pa" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "lab06-ec2-instance-profile"
+  role = aws_iam_role.ec2_role.name
+}
+
 ################################################################################
 # VPC Resources
 ################################################################################
@@ -33,6 +48,16 @@ resource "aws_vpc" "vpc" {
 
   tags = {
     Name = "lab06-vpc"
+  }
+}
+
+resource "aws_subnet" "public" {
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "10.0.0.0/24"
+  availability_zone = "eu-west-2a"
+
+  tags = {
+    Name = "lab06-vpc-public"
   }
 }
 
@@ -54,6 +79,70 @@ resource "aws_subnet" "subnet_b" {
   tags = {
     Name = "lab06-vpc-private-b"
   }
+}
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "lab06-igw"
+  }
+}
+
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+
+  tags = {
+    Name = "lab06-public-rt"
+  }
+}
+
+resource "aws_route_table_association" "public_rta" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_eip" "elastic_ip_for_ngw" {
+  domain = "vpc"
+
+  tags = {
+    Name = "lab06-nat-gateway-eip"
+  }
+}
+
+resource "aws_nat_gateway" "ngw" {
+  allocation_id = aws_eip.elastic_ip_for_ngw.id
+  subnet_id     = aws_subnet.public.id
+
+  depends_on = [aws_internet_gateway.igw]
+
+  tags = {
+    Name = "lab06-nat-gateway"
+  }
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.ngw.id
+  }
+
+  tags = {
+    Name = "lab06-private-rt"
+  }
+}
+
+resource "aws_route_table_association" "private_rta" {
+  subnet_id      = aws_subnet.subnet_a.id
+  route_table_id = aws_route_table.private_rt.id
 }
 
 resource "aws_vpc_endpoint" "secretsmanager_endpoint" {
@@ -142,6 +231,43 @@ resource "aws_vpc_security_group_ingress_rule" "db_sg_ir" {
   }
 }
 
+resource "aws_security_group" "ec2_sg" {
+  name        = "lab06-ec2-instance-sg"
+  description = "Allow outbound to PostgreSQL instance and SSM"
+  vpc_id      = aws_vpc.vpc.id
+
+  tags = {
+    Name = "lab06-ec2-instance-sg"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "ec2_sg_eg_01" {
+  security_group_id = aws_security_group.ec2_sg.id
+
+  referenced_security_group_id = aws_security_group.db_sg.id
+  from_port                    = 5432
+  to_port                      = 5432
+  ip_protocol                  = "tcp"
+
+  tags = {
+    Name = "lab06-ec2-sg-eg-01"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "ec2_sg_eg_02" {
+  security_group_id = aws_security_group.ec2_sg.id
+
+  # Tighten this in Prod.
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 443
+  to_port     = 443
+  ip_protocol = "tcp"
+
+  tags = {
+    Name = "lab06-ec2-sg-eg-02"
+  }
+}
+
 
 ################################################################################
 # RDS Instance
@@ -178,11 +304,49 @@ resource "aws_db_subnet_group" "subnet_group" {
 }
 
 ################################################################################
+# EC2 Instance (mainly for DB access)
+################################################################################
+
+resource "aws_instance" "ec2_instance" {
+  ami           = data.aws_ssm_parameter.al2023_ami.value
+  instance_type = "t4g.micro"
+  subnet_id     = aws_subnet.subnet_a.id
+
+  security_groups = [aws_security_group.ec2_sg.id]
+
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+
+  user_data = <<-EOF
+  #!/bin/bash
+  set -euxo pipefail
+
+  dnf install -y postgresql16
+  EOF
+
+  root_block_device {
+    volume_size           = 8
+    volume_type           = "gp3"
+    delete_on_termination = true
+  }
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+  }
+
+  tags = {
+    Name = "lab06-ec2-instance"
+  }
+
+}
+
+################################################################################
 # Lambda
 ################################################################################
 
 resource "aws_lambda_function" "lambda" {
-  function_name = "lab05-lambda"
+  function_name = "lab06-lambda"
   role          = aws_iam_role.lambda_role.arn
 
   runtime       = "provided.al2023"
