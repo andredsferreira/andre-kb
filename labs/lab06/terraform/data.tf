@@ -34,8 +34,8 @@ data "aws_iam_policy_document" "lambda_role_policy" {
 
 data "archive_file" "lambda_zip" {
   type             = "zip"
-  source_file      = "${path.module}/../src/main.go"
-  output_path      = "${path.module}/../lab06-lambda.zip"
+  source_file      = "${path.module}/../src/bootstrap"
+  output_path      = "${path.module}/../src/function.zip"
   output_file_mode = "0755"
 }
 

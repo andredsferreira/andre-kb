@@ -218,7 +218,7 @@ resource "aws_security_group" "db_sg" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "db_sg_ir" {
+resource "aws_vpc_security_group_ingress_rule" "db_sg_ir_01" {
   security_group_id = aws_security_group.db_sg.id
 
   referenced_security_group_id = aws_security_group.lambda_sg.id
@@ -227,13 +227,26 @@ resource "aws_vpc_security_group_ingress_rule" "db_sg_ir" {
   to_port                      = 5432
 
   tags = {
-    Name = "lab06-db-sg-ir"
+    Name = "lab06-db-sg-ir-01"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "db_sg_ir_02" {
+  security_group_id = aws_security_group.db_sg.id
+
+  referenced_security_group_id = aws_security_group.ec2_sg.id
+  from_port                    = 5432
+  ip_protocol                  = "tcp"
+  to_port                      = 5432
+
+  tags = {
+    Name = "lab06-db-sg-ir-02"
   }
 }
 
 resource "aws_security_group" "ec2_sg" {
   name        = "lab06-ec2-instance-sg"
-  description = "Allow outbound to PostgreSQL instance and SSM"
+  description = "Allow outbound to PostgreSQL instance and HTTPS"
   vpc_id      = aws_vpc.vpc.id
 
   tags = {
