@@ -862,13 +862,26 @@ to app needs. You set a minimum and maximum capacity required.
 Is AWS's own DBMS that supports key-value and document data models. It also
 offers **DynamoDB Accelerator (DAX)** an in memory cache for reading from
 DynamoDB tables. You define DynamoDB performance in terms of **capacity units**.
-
 DynamoDB automatically scales according to your workload demands.
 
 DynamoDB stores data in **tables** in the form of **items**, which beyond the
-primary key, are unstructured data sets of key-value pairs (much like the JSON
+primary key, are unstructured data sets of **key-value** pairs (much like the JSON
 format). The only requirement is of a **primary key** on the table. The table
 does not have a fixed schema like in SQL databases.
+
+**DynamoDB Global Tables**: Allows for global replications across regions with
+active-active model. This means users can read and write from another region,
+each replica allows that (not just reads).
+
+### Capacity Modes
+
+**On-demand**: Manages everything for you scaling automatically (can scale to 0)
+and you are billed per request. Best for starting apps (can be costly if your
+app already has high throughput and is scaled well).
+
+**Provisioned**: You define RCUs and WCUs. DynamoDB autoscales according to
+these definitions you set. Best for steady traffic or when you know the traffic
+patterns of your app.
 
 **Read Capacity Unit (RCU)**: One RCU means one strongly consistent read per
 second for items up to 4KB. Or two eventually consistent reads per second for
@@ -876,6 +889,10 @@ items up to 4KB.
 
 **Write Capacity Unit (WCU)**: One WCU means one strongly consistent write per
 second for items up to 1KB.
+
+DynamoDB excels when you know your application's access paterns. If you don't
+its better to start with RDS and migrate to DynamoDB later, which is not very
+complex.
 
 # AWS Application Integration
 
