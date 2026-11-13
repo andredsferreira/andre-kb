@@ -36,7 +36,9 @@ It stores keys in Hardware Security Modules (HSMs). And it uses **envelope
 encryption** to encrypt the keys. KMS Keys are a regional resource.
 
 Each key has a **policy** attached to it that describes which actions IAM Users
-or IAM Roles can perform with KMS: encrypt, decrypt, delete the key, etc.
+or IAM Roles can perform with KMS: encrypt, decrypt, delete the key, etc. In
+order to be used it must specify the root account as principal and allow all kms
+actions on all resources.
 
 In cryptography terms, it supports symmetric and asymmetric keys. Most workloads
 use symmetric keys, asymmetric keys are more expensive per API call and do not
@@ -54,6 +56,13 @@ DynamoDB) and don't indicate a specific key you own (Customer Managed Key).
 **AWS Customer Managed Keys**: Managed by you, cost 1€ per month, you specify
 the type and write the policy (this keys are useful for allowing cross account
 encryption and decryption).
+
+### Where key material comes from
+
+By default all key material comes from KMS although you can import your own key
+material into a CMK. But in that case you are the one responsible for rotating
+it if needed. You can also import key from AWS CloudHSM store or an external
+keystore.
 
 ### KMS Envelope Encryption How it Works
 
