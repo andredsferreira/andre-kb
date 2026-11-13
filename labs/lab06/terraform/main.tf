@@ -172,6 +172,30 @@ resource "aws_security_group" "lambda_sg" {
   }
 }
 
+resource "aws_vpc_security_group_egress_rule" "lambda_to_secretsmanager" {
+  security_group_id            = aws_security_group.lambda_sg.id
+  referenced_security_group_id = aws_security_group.secretsmanager_endpoint_sg.id
+  from_port                    = 443
+  to_port                      = 443
+  ip_protocol                  = "tcp"
+
+  tags = {
+    Name = "lab06-lambda-to-secretsmanager"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "lambda_to_db" {
+  security_group_id            = aws_security_group.lambda_sg.id
+  referenced_security_group_id = aws_security_group.db_sg.id
+  from_port                    = 5432
+  to_port                      = 5432
+  ip_protocol                  = "tcp"
+
+  tags = {
+    Name = "lab06-lambda-to-db"
+  }
+}
+
 resource "aws_security_group" "secretsmanager_endpoint_sg" {
   name        = "lab06-secretsmanager-endpoint-sg"
   description = "Allows access to Secrets Manager so Lambda can fetch the DB password"
@@ -192,19 +216,6 @@ resource "aws_vpc_security_group_ingress_rule" "secretsmanager_endpoint_sg_ir" {
 
   tags = {
     Name = "lab06-secretsmanager_endpoint-sg-ir"
-  }
-}
-
-resource "aws_vpc_security_group_egress_rule" "secretsmanager_endpoint_sg_er" {
-  security_group_id = aws_security_group.secretsmanager_endpoint_sg.id
-
-  cidr_ipv4   = aws_vpc.vpc.cidr_block
-  ip_protocol = "tcp"
-  from_port   = 443
-  to_port     = 443
-
-  tags = {
-    Name = "lab06-secretsmanager_endpoint-sg-er"
   }
 }
 
@@ -325,7 +336,7 @@ resource "aws_instance" "ec2_instance" {
   instance_type = "t4g.micro"
   subnet_id     = aws_subnet.subnet_a.id
 
-  security_groups = [aws_security_group.ec2_sg.id]
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
