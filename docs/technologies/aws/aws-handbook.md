@@ -305,6 +305,13 @@ can attach SSL certificates and CNAME records: alternate domain names the
 distribution is willing to answer for, this can live in Route53 or another DNS
 service.
 
+**Origin**: Can be "native" ones like S3 and Lambda functions, where you should
+set OAC as the security mechanism without ever exposing the S3. Can also be a
+VPC origin like an ELB or EC2 instance, here the main security mechanism is the
+VPC Origin control. Your VPC origins should be private since CloudFront already
+serves as the front door, also consider tighten SGs to only allow traffic from
+the CloudFront distribution.
+
 ## Elastic Load Balancing (ELB)
 
 ELB scales automatically according to the volume traffic. ELB is scoped to a
@@ -343,6 +350,11 @@ ALBs by default). Example: LB-A and LB-B live in two different AZs. With targets
 in AZ-A and AZ-B. With cross-zone load balancing enabled for both, LB-A can route
 to targets in AZ-B, and LB-B can route to targets in AZ-A. They can also route
 to their own AZ of course.
+
+If you place a CloudFront distribution in front of your ELB (mainly ALB). Then
+the ELB should be private (you don't need it to be public since the Cloudfront
+is already forwarding the traffic). Also set the appropriate SG rules to only
+allow traffic from the Cloudfront distribution.
 
 ## API Gateway
 
@@ -526,6 +538,9 @@ policies when you understand your app's traffic patterns.
 AWS Lambda is serverless code that runs **short lived tasks** in **event
 driven** architectures. Lambda functions can trigger from events like: HTTP
 request; S3 events; SNS Topics; SQS Queues; EventBridge Events; etc.
+
+Lambda functions are private by default (scoped to your AWS account). They only
+become public (with an HTTP endpoint) if you enable **function URLs**.
 
 Lambda excels at short lived tasks (it has a maximum runtime of 15 minutes). At
 **sustained throughputs** it's better to use other compute options like EC2 or
@@ -873,6 +888,10 @@ offers **DynamoDB Accelerator (DAX)** an in memory cache for reading from
 DynamoDB tables. You define DynamoDB performance in terms of **capacity units**.
 DynamoDB automatically scales according to your workload demands.
 
+DynamoDB excels when you know your application's access paterns. If you don't
+its better to start with RDS and migrate to DynamoDB later, which is not very
+complex.
+
 DynamoDB stores data in **tables** in the form of **items**, which beyond the
 primary key, are unstructured data sets of **key-value** pairs (much like the JSON
 format). The only requirement is of a **primary key** on the table. The table
@@ -898,10 +917,6 @@ items up to 4KB.
 
 **Write Capacity Unit (WCU)**: One WCU means one strongly consistent write per
 second for items up to 1KB.
-
-DynamoDB excels when you know your application's access paterns. If you don't
-its better to start with RDS and migrate to DynamoDB later, which is not very
-complex.
 
 # AWS Application Integration
 
