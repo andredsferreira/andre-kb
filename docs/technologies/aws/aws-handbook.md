@@ -312,6 +312,17 @@ VPC Origin control. Your VPC origins should be private since CloudFront already
 serves as the front door, also consider tighten SGs to only allow traffic from
 the CloudFront distribution.
 
+**Cache Key**: It's essentially the identifier Cloudfront uses for cached
+responses. The cache key is basically the URL you are hitting plus other options
+like headers and cookies. When a request arrives at the distribution CloudFront
+searches it's cache for a matching key, if it matches then its a cache hit.
+
+## Typical Cloudfront pattern
+
+Serve an S3 frontend app using the managed cache policy CachingOptimized. Set
+this up on the default_cache_behaviour. Serve an API through the
+ordered_cache_behaviour block with the managed policy CachingDisabled.
+
 ## Elastic Load Balancing (ELB)
 
 ELB scales automatically according to the volume traffic. ELB is scoped to a

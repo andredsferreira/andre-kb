@@ -5,7 +5,6 @@ resource "aws_vpc" "this" {
   }
 }
 
-
 resource "aws_route53_zone" "private_hosted_zone" {
   name = "wwww.example.com"
   vpc {
