@@ -15,13 +15,13 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "sub_priv_01" {
   cidr_block        = "10.0.1.0/24"
   vpc_id            = aws_vpc.vpc.id
-  availability_zone = "${data.aws_region.current}a"
+  availability_zone = "${data.aws_region.current.region}a"
 }
 
 resource "aws_subnet" "sub_priv_02" {
   cidr_block        = "10.0.2.0/24"
   vpc_id            = aws_vpc.vpc.id
-  availability_zone = "${data.aws_region.current}b"
+  availability_zone = "${data.aws_region.current.region}b"
 }
 
 ################################################################################
