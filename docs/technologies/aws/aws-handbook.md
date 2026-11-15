@@ -915,6 +915,9 @@ primary key, are unstructured data sets of **key-value** pairs (much like the JS
 format). The only requirement is of a **primary key** on the table. The table
 does not have a fixed schema like in SQL databases.
 
+DynamoDB is good at storing hierarchical data, in a structured relationship. It
+supports maps and lists as nested attributes.
+
 **DynamoDB Global Tables**: Allows for global replications across regions with
 active-active model. This means users can read and write from another region,
 each replica allows that (not just reads).
