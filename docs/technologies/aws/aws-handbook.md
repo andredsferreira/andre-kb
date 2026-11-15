@@ -779,9 +779,16 @@ the extra space (resize2fs for ext4 or xfs_growfs for xfs).
 
 ## Elastic File System (EFS)
 
-It's a managed NFS. Perfect for sharing application data, or data accessed by
-teams in general. Supports thousands of concurrent connections from EC2, AWS
-Lambda functions, and containers.
+It's a managed NFS (full read write concurrency). Perfect for sharing
+application data, or data accessed by teams in general. Supports thousands of
+concurrent connections from EC2, AWS Lambda functions, and containers (ECS or
+EKS).
+
+**Mount Target**: It's how an EFS filesystem gets exposed in your VPC in order
+for clients to be able to access it. Under the hood it's an ENI that EFS creates
+in a paticular subnet and where your clients can connect.
+
+## AWS FsX
 
 FSx extends EFS providing different features for specific use cases.
 

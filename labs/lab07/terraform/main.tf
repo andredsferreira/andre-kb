@@ -82,5 +82,6 @@ resource "aws_s3_object" "index_object" {
   key          = "index.html"
   content      = "<h1>This is lab07 distributed via Cloudfront</h1>"
   content_type = "text/html"
-  etag         = md5("<h1>Lab07 from Cloudfront</h1>")
+  # Must match content:
+  etag = md5("<h1>This is lab07 distributed via Cloudfront</h1>")
 }
