@@ -8,7 +8,7 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 resource "aws_iam_policy" "lambda_role_policy" {
-  name   = "lab05-lambda-role-policy"
+  name   = "lab06-lambda-role-policy"
   policy = data.aws_iam_policy_document.lambda_role_policy.json
 }
 
@@ -404,6 +404,7 @@ resource "aws_lambda_function" "lambda" {
   ]
 }
 
+# Resource policy to allow api gateways
 # resource "aws_lambda_permission" "allow_apigateway" {
 #   statement_id  = "AllowInvokeFromSpecificApi"
 #   action        = "lambda:InvokeFunction"
@@ -418,7 +419,7 @@ resource "aws_lambda_function" "lambda" {
 ################################################################################
 
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name                        = "/aws/lambda/lab05-lambda"
+  name                        = "/aws/lambda/lab06-lambda"
   deletion_protection_enabled = false
   retention_in_days           = 7
 }

@@ -68,3 +68,31 @@ data "aws_iam_policy_document" "bucket_policy" {
 data "aws_cloudfront_cache_policy" "caching_optimized" {
   name = "Managed-CachingOptimized"
 }
+
+data "aws_cloudfront_cache_policy" "caching_disabled" {
+  name = "Managed-CachingDisabled"
+}
+
+# This is needed so cloudfront doesn't forward the Host header to API Gateway.
+# If this were the case API Gateway would drop the request.
+data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
+  name = "Managed-AllViewerExceptHostHeader"
+}
+
+data "aws_iam_policy_document" "lambda_assume_role_pol" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+data "archive_file" "lambda_zip" {
+  type             = "zip"
+  source_file      = "${path.module}/../src/bootstrap"
+  output_path      = "${path.module}/../src/function.zip"
+  output_file_mode = "0755"
+}

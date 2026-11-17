@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>lab07</title>
+</head>
+
+<body>
+  <h1>lab07</h1>
+  <button id="btn">Call API</button>
+  <pre id="out"></pre>
+
+  <script>
+    document.getElementById("btn").addEventListener("click", async () => {
+      const out = document.getElementById("out");
+      out.textContent = "Loading...";
+      try {
+        const res = await fetch("/api/lab07/hello");
+        const data = await res.json();
+        out.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        out.textContent = "Error: " + err;
+      }
+    });
+  </script>
+</body>
+
+</html>
