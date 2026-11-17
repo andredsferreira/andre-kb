@@ -565,7 +565,7 @@ application level health checking.
 
 To safely rollout a new AMI to your instances you can update the launch template
 with the new version of the AMI. Then point your ASG to the new launch template
-and do an instance refresh. You can decide how to do the instance refresh, its
+and do an **instance refresh**. You can decide how to do the instance refresh, its
 recommended to setup MinHealthyPercentage to a value you need, and
 InstanceWarmup, as well as maybe adding checkpoints.
 
