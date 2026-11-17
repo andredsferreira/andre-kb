@@ -1205,11 +1205,43 @@ Redshift.
 
 ## Kinesis
 
-Kinesis is used for **data ingesting** at scale; providing a durable
-**replayable record pipeline**; and **routing** to the right consumer or
-destination. Main uses cases are large amounts of event data from clickstreams
-and IoT devices, and real time dashboards.
+Kinesis is used for **data ingesting** at scale and providing a durable
+**replayable record pipeline**, in an **ordered** way. Main uses cases are large
+amounts of event data from clickstreams and IoT devices, and real time
+dashboards.
 
+Supports almost any consumer but you must setup and write them. You don't need
+to manage the infrastrcuture though.
+
+You mainly use Kinesis when you need multiple consumers on the data; The events
+should be ordered; You want a durable pipeline where consumers can read many
+teams if they need to; And you need high troughput ingestion and almost real
+time.
+
+### Modes
+
+**Provisioned Mode**: You specify the number of shards upfront and pay per hour
+regardless of utilization.
+
+**On-demand Mode**: Kinesis automatically scales the shards based on GB read and
+written.
+
+### Kinesis Streams
+
+Each kinesis stream is divided into **shards**. Each shard has a fixed read and
+write throughput. When you write records into a Stream it will land on a shard
+(based on hashing the **partition key**). Records with the same hashing key will
+land on the same shard and preserve ordering. When writing records you provide a
+partition key (a string). Much like DynamoDB's partition keys, record's partiton
+keys should have high cardinality.
+
+**Read**: 2Mb/s per shard.
+
+**Write**: 1Mb/s or 1000 records per second (whichever is lowest).
+
+You can **split** one shard to add capacity (bascially you add an extra shard). Or
+**merge** shards into one to cut capacity and reduce costs (basically you remove a
+shard).
 
 ## AWS Managed Streaming for Apache Kafka (MSK)
 

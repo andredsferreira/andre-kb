@@ -12,9 +12,9 @@ resource "aws_iam_role_policy_attachment" "basic_execution" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name              = "/aws/lambda/lambda-01"
+  name                        = "/aws/lambda/lambda-01"
   deletion_protection_enabled = false
-  retention_in_days = 7
+  retention_in_days           = 7
 }
 
 resource "aws_lambda_function" "hello" {
@@ -41,3 +41,18 @@ resource "aws_lambda_function" "hello" {
     aws_iam_role_policy_attachment.basic_execution,
   ]
 }
+
+# Event source mappings are what allow your Lambda to poll data from certain
+# services without you having to write the poll code. The main services used are
+# Kinesis, DynamoDB and SQS. Event source mappings are used across all services
+# that need consumers to poll data, in this case the consumer is Lambda.
+
+# resource "aws_lambda_event_source_mapping" "example" {
+#   event_source_arn  = aws_dynamodb_table.example.stream_arn
+#   function_name     = aws_lambda_function.example.arn
+#   starting_position = "LATEST"
+
+#   tags = {
+#     Name = "dynamodb-stream-mapping"
+#   }
+# }
