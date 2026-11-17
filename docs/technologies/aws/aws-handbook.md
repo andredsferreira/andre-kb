@@ -989,6 +989,14 @@ items up to 4KB.
 **Write Capacity Unit (WCU)**: One WCU means one strongly consistent write per
 second for items up to 1KB.
 
+## AWS Storage Gateway
+
+**AWS Storage Gateway**: It's a virtual or physical device that allows on
+premises apps to access cloud storage (S3 File Gateway, FsX File Gateway
+(Windows), Volume Gateway (iSCSI block volumes), Tape Gateway (physical tape
+storage)), through NFS or SMB interfaces (you don't need to change how your
+applications work in order for them to have cloud storage).
+
 # AWS Application Integration
 
 ## Amazon Simple Notification Service (SNS)
@@ -1057,11 +1065,11 @@ it can consume from the queue.
 
 SNS retires failed attempts of subscribing messages.
 
-| Subscribing Endpoint     | Description                                                                                                                           |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| AWS Lambda, SQS, Kinesis | You don't control the retry policy (delivery_policy in tf). SNS immediatly retries 3 times and then retries with exponential backoff. |
-| HTTP(S)                  | You can configure the retry policy per topic. By default SNS retries 3 times.                                                         |
-| Email, SMS               | There is no policy. Retries are very limited.                                                                                         |
+| Subscribing Endpoint      | Description                                                                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| AWS Lambda, SQS, Firehose | You don't control the retry policy (delivery_policy in tf). SNS immediatly retries 3 times and then retries with exponential backoff. |
+| HTTP(S)                   | You can configure the retry policy per topic. By default SNS retries 3 times.                                                         |
+| Email, SMS                | There is no policy. Retries are very limited.                                                                                         |
 
 You should always attach a DLQ (SNS queue) to SNS topics carrying important
 data. You configure the DLQ in subscriptions though not in the topic itself.
@@ -1156,11 +1164,6 @@ high availability.
 
 # AWS Data and Analytics
 
-**AWS Storage Gateway**: It's a virtual or physical device that allows on
-premises apps to access cloud storage (S3 File Gateway, FsX File Gateway
-(Windows), Volume Gateway (iSCSI block volumes), Tape Gateway (physical tape
-storage)), through NFS or SMB interfaces (you don't need to change how your
-applications work in order for them to have cloud storage).
 
 **AWS DataSync**: Allows bulk migration of a lot of data from on premises to
 AWS.
@@ -1200,6 +1203,14 @@ and convert it to parquet storing it again there on in another data store; pull
 records from RDS or DynamoDB, run a job to transform it, and load them in
 Redshift.
 
+## Kinesis
+
+Kinesis is used for **data ingesting** at scale; providing a durable
+**replayable record pipeline**; and **routing** to the right consumer or
+destination. Main uses cases are large amounts of event data from clickstreams
+and IoT devices, and real time dashboards.
+
+
 ## AWS Managed Streaming for Apache Kafka (MSK)
 
 Fully managed Apache Kafka service. Used for when you want Kafka without
@@ -1213,3 +1224,21 @@ pushing and pulling of data between sources and destinations on Kafka.
 Two deployment models MSK Provisioned where you choose the broker instance types
 (Standard or Express for higher throughput) count, and storage type. MSK
 Serverless, fully serverless you don't choose anything.
+
+# Migration And Transfer
+
+## DataSync
+
+Provides low latency bulk data transfer from on premises storage to AWS storage.
+Or between AWS storage services.
+
+## AWS Transfer Family
+
+Provides managed SFTP, FTPS, FTP and AS2 endpoints that integrate with AWS S3 or
+EFS for on premises applications that use those protocols.
+
+## AWS Snow Family
+
+
+## Database Migration Service
+
