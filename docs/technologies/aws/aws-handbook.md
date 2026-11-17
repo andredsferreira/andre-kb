@@ -563,9 +563,15 @@ types of monitoring. **EC2 monitoring** is enabled by default and tracks hardwar
 failures, network, etc. Then there is **ELB health checking**, which provides
 application level health checking.
 
-To safely rollout a new AMI to your instances you can update the launch template
-with the new version of the AMI. Then point your ASG to the new launch template
-and do an **instance refresh**. You can decide how to do the instance refresh, its
+#### Instance Refresh
+
+When you update your ASG's launch template your instances don't pick it up
+automatically. You need to perform an **instance refresh** which triggers a
+gradual replacement (rollout) of the instances from the new launch template.
+
+To rollout a new AMI to your instances you can update the launch template with
+the new version of the AMI. Then point your ASG to the new launch template and
+do an **instance refresh**. You can decide how to do the instance refresh, its
 recommended to setup MinHealthyPercentage to a value you need, and
 InstanceWarmup, as well as maybe adding checkpoints.
 
@@ -589,6 +595,22 @@ they are resolved by assuming the policy that provides the biggest capacity.
 For starting out it's recommended that you define target tracking scaling policy
 on CPU average or request count. Then you can move to more complex scaling
 policies when you understand your app's traffic patterns.
+
+#### ASG Lifecycle Hooks
+
+They are scripts/Lambdas (custom logic) that you write perfrom right before ASG
+launches a new instance or before it terminates it. Common uses include at
+launch registering with a service discovery system. Or at the terminating phase
+draining active connections.
+
+**Launch Hooks**: These run before an instance is setted up as ready in the ASG.
+While the launch hook is active the instance is in a Pending:Wait state.
+
+**Terminate Hooks**: These run right before an instance is terminated in an ASG.
+While the terminate hook is active the instance is in Terminating:Wait state.
+
+In order for the instances to move out of the Pending:Wait state or
+Terminating:Wait your hook must call the AWS API to terminate the hook.
 
 ## AWS Lambda
 
