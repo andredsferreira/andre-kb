@@ -235,15 +235,16 @@ resource "aws_launch_template" "launch_template" {
 ################################################################################
 
 resource "aws_autoscaling_group" "asg" {
-  name                = "aws-terraform-asg"
-  min_size            = 2
-  max_size            = 6
-  desired_capacity    = 2
-  vpc_zone_identifier = [aws_subnet.private_a.id, aws_subnet.private_b.id]
+  name                    = "aws-terraform-asg"
+  min_size                = 2
+  max_size                = 6
+  desired_capacity        = 2
+  default_cooldown        = 300 # default
+  default_instance_warmup = 300 # defaut
+  vpc_zone_identifier     = [aws_subnet.private_a.id, aws_subnet.private_b.id]
 
   # Launch a replacement Spot instance proactively on rebalance recommendations
   capacity_rebalance = true
-
   launch_template {
     id      = aws_launch_template.launch_template.id
     version = "$Latest"
@@ -299,6 +300,10 @@ resource "aws_autoscaling_policy" "cpu_target" {
   name                   = "cpu-target-tracking"
   autoscaling_group_name = aws_autoscaling_group.asg.name
   policy_type            = "TargetTrackingScaling"
+  # How long ASG should wait before a new instance should count towards the
+  # metrics for the scaling policy. Adjust this parameter according to your
+  # application startup time.
+  estimated_instance_warmup = 240
 
   target_tracking_configuration {
     predefined_metric_specification {

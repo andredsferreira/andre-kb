@@ -362,7 +362,7 @@ responses. The cache key is basically the URL you are hitting plus other options
 like headers and cookies. When a request arrives at the distribution CloudFront
 searches it's cache for a matching key, if it matches then its a cache hit.
 
-## Typical Cloudfront pattern
+### Typical Cloudfront pattern
 
 Serve an S3 frontend app using the managed cache policy CachingOptimized. Set
 this up on the default_cache_behaviour. Serve an API through the
@@ -408,10 +408,62 @@ in AZ-A and AZ-B. With cross-zone load balancing enabled for both, LB-A can rout
 to targets in AZ-B, and LB-B can route to targets in AZ-A. They can also route
 to their own AZ of course.
 
-If you place a CloudFront distribution in front of your ELB (mainly ALB). Then
-the ELB should be private (you don't need it to be public since the Cloudfront
-is already forwarding the traffic). Also set the appropriate SG rules to only
-allow traffic from the Cloudfront distribution.
+If you place a CloudFront distribution in front of your ELB (mainly ALB). You
+should set the appropriate SG rules to only allow traffic from the Cloudfront
+distribution (you set up to only allow from CloudFront managed prefix list). For
+Production you should also set up a certificate in the CloudFront distribution.
+
+For having the ALB directly exposed to the Internet (without Cloudfront)
+
+### ALB In Detail
+
+When a request hits an ALB the ALB will forward that request to the target group
+based on the listener's rules.
+
+**Listener**: The main configuration that tells the ALB what traffic to listen
+for, specifying the protocol and port. ALBs support up to 50 listeners but most
+of the time you will use two (one for HTTP and another for HTTPS).
+
+**Listener Rule**: The core logic that tells the listener how to forward a
+particular request that hits the ALB. There are four types: **forward** is the
+most commonly used rule and forwards traffic to a particular **target
+group**;**fixed repsonse** returns a fixed status code with an optional body,
+useful for maintenance pages or ALB health checks; **redirect** returns 301 or
+302 used for redirecting HTTP to HTTPS; **authentication** for integration with
+Cognito or other authentication services.
+
+**Target Group**: The targets of the traffic that hits the ALB. It's where ALB
+forwards traffic to according to forward rules. There are four types:
+**instance** ec2 instance ids; **lambda** for lambda functions; **ip** used for
+containers or particular IPs that may live outside of AWS; **alb** another alb
+in complex routing scenarios.
+
+#### ALB Health Checking
+
+**Health Checks**: ALB performs health checks at the target group (all targets
+in the target group are targeted for health checks) to identify healthy or
+unhealthy instances.
+
+**Configuration of health checks**:
+
+**Path**: The specific path where to send the health check (a dedicated path
+like /health is recomended in production environments, never use /).
+
+**Interval**: The interval at which to send the health checks (default is 5min).
+
+**Timeout**: How long the ALB should wait for the health request response before
+it times out (default is 5sec)
+
+**Healthy Threshold**: The threshold needed for the ALB to mark the target as
+healthy (by default it marks as healthy if it receives 5 consecutive healthy
+responses).
+
+**Unhealthy Threshold**: The threshold needed for the ALB to mark the target as
+unhealthy (by default it marks as unhealthy if it receives 2 consecutive
+unhealthy responses).
+
+**Status Code**: The response the ALB should receive to mark it as healthy (most
+of the times is 200).
 
 ## API Gateway
 
