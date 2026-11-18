@@ -16,17 +16,23 @@ resource "aws_lb" "alb" {
   #   prefix  = "test-lb"
   #   enabled = true
   # }
-
 }
 
 resource "aws_lb_target_group" "alb_target_group" {
-  name     = "aws-elb-alb-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.vpc.id
+  name        = "aws-elb-alb-tg"
+  vpc_id      = aws_vpc.vpc.id
+  protocol    = "HTTP"
+  port        = 8080
+  target_type = "instance"
 
   health_check {
-    path = "/"
+    enabled             = true
+    path                = "/"
+    interval            = 30
+    timeout             = 5
+    matcher             = 200 # expected response
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
   }
 }
 
@@ -56,12 +62,14 @@ resource "aws_lb_listener" "http" {
 #     target_group_arn = aws_lb_target_group.static.arn
 #   }
 
+#   # Path based routing.
 #   condition {
 #     path_pattern {
 #       values = ["/static/*"]
 #     }
 #   }
 
+#   # Host based routing.
 #   condition {
 #     host_header {
 #       values = ["example.com"]
@@ -92,6 +100,11 @@ resource "aws_lb_listener" "http" {
 #   }
 # }
 
+# Attaching an ACM certificate to the ALB
+# resource "aws_lb_listener_certificate" "example" {
+#   listener_arn    = aws_lb_listener.front_end.arn
+#   certificate_arn = aws_acm_certificate.example.arn
+# }
 
 ################################################################################
 # Security Group

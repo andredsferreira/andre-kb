@@ -452,7 +452,7 @@ like /health is recomended in production environments, never use /).
 **Interval**: The interval at which to send the health checks (default is 5min).
 
 **Timeout**: How long the ALB should wait for the health request response before
-it times out (default is 5sec)
+it times out (default is 5 seconds).
 
 **Healthy Threshold**: The threshold needed for the ALB to mark the target as
 healthy (by default it marks as healthy if it receives 5 consecutive healthy
@@ -1070,6 +1070,39 @@ premises apps to access cloud storage (S3 File Gateway, FsX File Gateway
 (Windows), Volume Gateway (iSCSI block volumes), Tape Gateway (physical tape
 storage)), through NFS or SMB interfaces (you don't need to change how your
 applications work in order for them to have cloud storage).
+
+## AWS Backup
+
+**AWS Backup**: Manages backups across many AWS services in a central place.
+Examples include S3, EBS volumes, EFS, FsX, RDS, DynamoDB, etc.
+
+**Backup Vault**: The place where backups (recovery points) are stored. They use
+a KMS key to encrypt the recovery points. It's a regional resource. Vaults have
+a resource based policy for control.
+
+**Backup Plan**: Associated with a vault and configures the target (by arn or
+tags, tags is recommended), and when backups take place (cron). They specify the
+lifecycle of backups (when to transition them to cold storage for example), and
+when to copy to another region if its the case. If it's supported they also
+toggle PITR for backups. Backup plans run with a service role that needs
+permissions to interact with the services (default service role is not enough).
+
+Supports **continuous backups** through PITR for the following services: S3,
+RDS, and SAP Hana on EC2. PITRs are retained for a period of 35 days.
+
+Supports **application backup** for Windows VSS Applications on EC2.
+
+### Backups Lifecycle
+
+AWS Backup can transition backups to cold storage but there are two important
+constraints. Backups must remain in cold storage for at least 90 days before
+they can be retreived. There is also a data transfer cost associated to
+retreiving and the retreival is not immediate.
+
+### Cross-account and Cross-region Backups
+
+AWS Backup can automatically copy recovery points (backups) to other vaults in a
+different account or region. This is fundamental for DR and constrained SLAs.
 
 # AWS Application Integration
 

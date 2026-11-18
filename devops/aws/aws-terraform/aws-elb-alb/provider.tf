@@ -5,7 +5,7 @@ provider "aws" {
     tags = {
       ManagedBy  = "Terraform"
       Repository = "github.com/andredsferreira/andre-kb"
-      Folder     = "cloud-native/aws/aws-terraform/aws-elb"
+      Folder     = "cloud-native/aws/aws-terraform/aws-elb-alb"
       Author     = "Andre"
     }
   }
