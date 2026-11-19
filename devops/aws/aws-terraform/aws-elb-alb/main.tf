@@ -18,6 +18,7 @@ resource "aws_lb" "alb" {
   # }
 }
 
+# You can have more than one target group
 resource "aws_lb_target_group" "alb_target_group" {
   name        = "aws-elb-alb-tg"
   vpc_id      = aws_vpc.vpc.id
