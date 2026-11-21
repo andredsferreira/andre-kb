@@ -733,6 +733,28 @@ requests are handled by the route table in the subnet. So, if you want Internet
 access you must have a default route to a NAT Gateway (which itself routes to
 IGW).
 
+## AWS Batch
+
+Fully managed batching service. It can run jobs in parallel and scales almost
+infinitely. Batch can retry jobs up to a certain limit. Batch main purpose is to
+run Jobs to completion, it's perfect for ETL Jobs, Monte-Carlo simulations,
+nightly jobs to build reports, ML preprocessing, or large parallel computing (a
+workload that can be split into small independent tasks which can be
+parallelized).
+
+**Job Definition**: The template for defining jobs. You define the **compute
+environment** (ECS with EC2 or Fargate, or EKS), the container image for the
+job, the **IAM Job Role**, CPU requirements, schedule, logging, retries, etc.
+Job definitions also let you declare dependencies, i.e, Job B will only run
+after Job A completes with success.
+
+**Job Queue**: Where you schedule Jobs to. AWS Batch runs jobs from the queue
+when there is enough capacity.
+
+**Compute Environment**: The compute behind your Job. It can be ECS with EC2 or
+Fargate behind. Or it can be EKS which will schedule Pods in your EKS cluster.
+AWS Batch will scale out to run the Jobs and scale in to 0 when completed.
+
 # AWS Storage
 
 ## Simple Storage Service (S3)
