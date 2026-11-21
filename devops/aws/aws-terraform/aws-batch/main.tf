@@ -65,7 +65,7 @@ resource "aws_iam_role_policy_attachment" "execution" {
 resource "aws_security_group" "batch" {
   name        = "batch-fargate-test"
   description = "Egress only for Batch Fargate test"
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = aws_vpc.vpc.id
 
   egress {
     from_port   = 0
@@ -86,7 +86,7 @@ resource "aws_batch_compute_environment" "fargate" {
   compute_resources {
     type               = "FARGATE"
     max_vcpus          = 4
-    subnets            = [aws_subnet.subnet_a, aws_subnet.subnet_b]
+    subnets            = [aws_subnet.subnet_a.id]
     security_group_ids = [aws_security_group.batch.id]
   }
 }
@@ -136,6 +136,6 @@ resource "aws_batch_job_definition" "hello" {
 }
 
 resource "aws_cloudwatch_log_group" "batch" {
-  name              = "/aws/batch/aws--terraform-batch"
+  name              = "/aws/batch/aws-terraform-batch"
   retention_in_days = 1
 }
