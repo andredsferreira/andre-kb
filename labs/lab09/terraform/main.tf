@@ -55,7 +55,7 @@ resource "aws_sns_topic_subscription" "sns_sub_sqs_inventory" {
 resource "aws_sqs_queue" "sqs_billing" {
   name                      = "lab08-sqs-billing"
   fifo_queue                = false
-  message_retention_seconds = 30
+  message_retention_seconds = 345600 # 4 days, default
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn
@@ -66,7 +66,7 @@ resource "aws_sqs_queue" "sqs_billing" {
 resource "aws_sqs_queue" "sqs_inventory" {
   name                      = "lab08-sqs-inventory"
   fifo_queue                = false
-  message_retention_seconds = 30
+  message_retention_seconds = 345600
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn
@@ -84,11 +84,11 @@ resource "aws_sqs_queue" "dlq" {
 ################################################################################
 
 resource "aws_cloudwatch_log_group" "sns_success" {
-  name              = "sns/${data.aws_region.current.name}/${data.aws_caller_identity.current.account_id}/${aws_sns_topic.events.name}"
+  name              = "sns/${data.aws_region.current.region}/${data.aws_caller_identity.current.account_id}/${aws_sns_topic.sns.name}"
   retention_in_days = 7
 }
 
 resource "aws_cloudwatch_log_group" "sns_failure" {
-  name              = "sns/${data.aws_region.current.name}/${data.aws_caller_identity.current.account_id}/${aws_sns_topic.events.name}/Failure"
+  name              = "sns/${data.aws_region.current.region}/${data.aws_caller_identity.current.account_id}/${aws_sns_topic.sns.name}/Failure"
   retention_in_days = 7
 }

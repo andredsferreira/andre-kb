@@ -44,16 +44,16 @@ data "aws_iam_policy_document" "sqs_queues_policy" {
   }
 }
 
-data "archive_file" "billing_lambda_zip" {
-  type             = "zip"
-  source_file      = "${path.module}/../src/billing-lambda/bootstrap"
-  output_path      = "${path.module}/../src/billing-lambda/billing-lambda.zip"
-  output_file_mode = "0755"
-}
+# data "archive_file" "billing_lambda_zip" {
+#   type             = "zip"
+#   source_file      = "${path.module}/../src/billing-lambda/bootstrap"
+#   output_path      = "${path.module}/../src/billing-lambda/billing-lambda.zip"
+#   output_file_mode = "0755"
+# }
 
-data "archive_file" "inventory_lambda_zip" {
-  type             = "zip"
-  source_file      = "${path.module}/../src/inventory-lambda/bootstrap"
-  output_path      = "${path.module}/../src/inventory-lambda/inventory-lambda.zip"
-  output_file_mode = "0755"
-}
+# data "archive_file" "inventory_lambda_zip" {
+#   type             = "zip"
+#   source_file      = "${path.module}/../src/inventory-lambda/bootstrap"
+#   output_path      = "${path.module}/../src/inventory-lambda/inventory-lambda.zip"
+#   output_file_mode = "0755"
+# }

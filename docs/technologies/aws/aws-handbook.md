@@ -1229,7 +1229,7 @@ idempotent.
 SQS queues can be encrypted with KMS AWS Managed Keys or Customer Managed Keys.
 Every queue also has a Policy for access control.
 
-If the queue has a **redrive policy** enabled (which links the source queue with
+If the queue has a **redrive<> policy** enabled (which links the source queue with
 a DLQ), the parameter **maxReceiveCount** inside it tells us the max retries of
 consuming that message before its placed in the DLQ (each time a consumer calls
 ReceiveMessage on that message).
