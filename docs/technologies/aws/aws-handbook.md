@@ -131,9 +131,9 @@ define (for example defining that every resource must have an environment tag).
 
 ## AWS CloudTrail
 
-**Event History**: By default CloudTrail keeps management events on your account
-for **90 days**. For more detailed logging, durable storage and alerts you must
-create a **trail** which records them.
+**Event History**: By default CloudTrail **keeps management** events on your
+account for **90 days**. For more detailed logging, durable storage and alerts
+you must create a **trail** which records them.
 
 **Trails**: Trails are configured to record all events and store them in S3 for
 durability. Optionally they can also send the log events to CloudWatch. This is

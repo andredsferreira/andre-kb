@@ -24,11 +24,31 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "sqs_queues_policy" {
+data "aws_iam_policy_document" "billing_queue_policy" {
   statement {
     effect    = "Allow"
     actions   = ["sqs:SendMessage"]
-    resources = [aws_sqs_queue.sqs_billing.arn, aws_sqs_queue.sqs_inventory.arn]
+    resources = [aws_sqs_queue.sqs_billing.arn]
+
+    principals {
+      type        = "Service"
+      identifiers = ["sns.amazonaws.com"]
+    }
+
+    # Only this topic may send, which prevents a confused-deputy issue.
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [aws_sns_topic.sns.arn]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "inventory_queue_policy" {
+  statement {
+    effect    = "Allow"
+    actions   = ["sqs:SendMessage"]
+    resources = [aws_sqs_queue.sqs_inventory.arn]
 
     principals {
       type        = "Service"

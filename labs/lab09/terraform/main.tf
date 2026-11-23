@@ -3,7 +3,7 @@
 ################################################################################
 
 resource "aws_iam_role" "sns_role" {
-  name               = "lab08-sns-role"
+  name               = "lab09-sns-role"
   assume_role_policy = data.aws_iam_policy_document.sns_assume_role_policy.json
 }
 
@@ -13,7 +13,7 @@ resource "aws_iam_role_policy_attachment" "sns_role_pa" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name               = "lab08-lambda-role"
+  name               = "lab09-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
@@ -53,7 +53,7 @@ resource "aws_sns_topic_subscription" "sns_sub_sqs_inventory" {
 ################################################################################
 
 resource "aws_sqs_queue" "sqs_billing" {
-  name                      = "lab08-sqs-billing"
+  name                      = "lab09-sqs-billing"
   fifo_queue                = false
   message_retention_seconds = 345600 # 4 days, default
 
@@ -63,8 +63,13 @@ resource "aws_sqs_queue" "sqs_billing" {
   })
 }
 
+resource "aws_sqs_queue_policy" "billing_queue_policy" {
+  queue_url = aws_sqs_queue.sqs_billing.url
+  policy    = data.aws_iam_policy_document.billing_queue_policy.json
+}
+
 resource "aws_sqs_queue" "sqs_inventory" {
-  name                      = "lab08-sqs-inventory"
+  name                      = "lab09-sqs-inventory"
   fifo_queue                = false
   message_retention_seconds = 345600
 
@@ -74,8 +79,13 @@ resource "aws_sqs_queue" "sqs_inventory" {
   })
 }
 
+resource "aws_sqs_queue_policy" "inventory_queue_policy" {
+  queue_url = aws_sqs_queue.sqs_inventory.url
+  policy    = data.aws_iam_policy_document.inventory_queue_policy.json
+}
+
 resource "aws_sqs_queue" "dlq" {
-  name                      = "lab08-sqs-dlq"
+  name                      = "lab09-sqs-dlq"
   message_retention_seconds = 1209600 # max - 14 days
 }
 
