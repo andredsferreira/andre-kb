@@ -359,7 +359,7 @@ resource "aws_lb_listener" "alb_listener_https" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  certificate_arn   = aws_acm_certificate.certificate.arn
+  certificate_arn   = aws_acm_certificate_validation.this.certificate_arn
 
   default_action {
     type             = "forward"
@@ -439,6 +439,10 @@ resource "aws_launch_template" "launch_template" {
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = {
+    Name = "lab08-launch-template"
+  }
 }
 
 ################################################################################
@@ -457,7 +461,7 @@ resource "aws_autoscaling_group" "asg" {
   target_group_arns = [aws_lb_target_group.alb_target_group.arn]
 
   capacity_rebalance = true
-  
+
   # Mixed instances to ensure a fallback instance in case ASG can't allocate
   # only t4g.micro
   mixed_instances_policy {
