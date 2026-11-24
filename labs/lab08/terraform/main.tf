@@ -248,6 +248,56 @@ resource "aws_route_table_association" "private_b_rta" {
 }
 
 ################################################################################
+# ACM certificate and Cloudflare validation
+################################################################################
+
+resource "aws_acm_certificate" "certificate" {
+  domain_name       = "lab08.andresf.dev"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    Name = "lab08-certificate"
+  }
+}
+
+resource "aws_acm_certificate_validation" "this" {
+  certificate_arn = aws_acm_certificate.certificate.arn
+
+  depends_on = [cloudflare_dns_record.acm_validation]
+}
+
+resource "cloudflare_dns_record" "acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.certificate.domain_validation_options :
+    dvo.domain_name => {
+      name    = trimsuffix(dvo.resource_record_name, ".")
+      type    = dvo.resource_record_type
+      content = trimsuffix(dvo.resource_record_value, ".")
+    }
+  }
+
+  zone_id = data.cloudflare_zone.this.zone_id
+  name    = each.value.name
+  type    = each.value.type
+  content = each.value.content
+  ttl     = 60
+  proxied = false # aka DNS only on Cloudflare
+}
+
+resource "cloudflare_dns_record" "this" {
+  zone_id = data.cloudflare_zone.this.zone_id
+  name    = "lab08.andresf.dev"
+  type    = "CNAME"
+  content = aws_lb.alb.dns_name
+  ttl     = 60
+  proxied = false # aka dont use Cloudflare proxy
+}
+
+################################################################################
 # ALB
 ################################################################################
 
@@ -291,14 +341,32 @@ resource "aws_lb_listener" "alb_listener_http" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.alb_target_group.arn
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 
   tags = {
     Name = "lab08-alb-listener-http"
   }
 }
+
+resource "aws_lb_listener" "alb_listener_https" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = aws_acm_certificate.certificate.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.alb_target_group.arn
+  }
+}
+
 
 ################################################################################
 # Launch Template
@@ -389,25 +457,30 @@ resource "aws_autoscaling_group" "asg" {
   target_group_arns = [aws_lb_target_group.alb_target_group.arn]
 
   capacity_rebalance = true
-  launch_template {
-    id      = aws_launch_template.launch_template.id
-    version = "$Latest"
+  
+  # Mixed instances to ensure a fallback instance in case ASG can't allocate
+  # only t4g.micro
+  mixed_instances_policy {
+    instances_distribution {
+      on_demand_base_capacity                  = 0
+      on_demand_percentage_above_base_capacity = 100
+      on_demand_allocation_strategy            = "prioritized"
+    }
+
+    launch_template {
+      launch_template_specification {
+        launch_template_id = aws_launch_template.launch_template.id
+        version            = "$Latest"
+      }
+
+      override {
+        instance_type = "t4g.micro"
+      }
+      override {
+        instance_type = "t4g.small"
+      }
+    }
   }
-
-  # mixed_instances_policy {
-  #   instances_distribution {
-  #     on_demand_base_capacity                  = 2
-  #     on_demand_percentage_above_base_capacity = 20
-  #     spot_allocation_strategy                 = "price-capacity-optimized"
-  #   }
-
-  #     # Several similar-sized types give Spot more pools to pick from
-  #     override { instance_type = "m5.large" }
-  #     override { instance_type = "m5a.large" }
-  #     override { instance_type = "m6i.large" }
-  #     override { instance_type = "m4.large" }
-  #   }
-  # }
 
   health_check_type         = "ELB"
   health_check_grace_period = 300
@@ -430,7 +503,7 @@ resource "aws_autoscaling_group" "asg" {
   }
 }
 
-# The scaling policy resource is unchanged
+# The scaling policy resource is unchanged.
 resource "aws_autoscaling_policy" "cpu_target" {
   name                   = "cpu-target-tracking"
   autoscaling_group_name = aws_autoscaling_group.asg.name

@@ -107,6 +107,16 @@ resource "aws_lb_listener" "http" {
 #   certificate_arn = aws_acm_certificate.example.arn
 # }
 
+# If you want to manually attach instances to the target group instead of using
+# an ASG you do it this way.
+#
+# resource "aws_lb_target_group_attachment" "web" {
+#   count            = length(aws_instance.web)
+#   target_group_arn = aws_lb_target_group.alb_target_group.arn
+#   target_id        = aws_instance.web[count.index].id
+#   port             = 8080
+# }
+
 ################################################################################
 # Security Group
 ################################################################################
