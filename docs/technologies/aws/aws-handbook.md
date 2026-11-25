@@ -876,7 +876,7 @@ also need a cluster wide file system.
 
 EBS volumes don't come encrypted by default (you can enable this account wide,
 and its recommended). Also, you can't directly encrypt an unencrypted EBS volume
-or EBS volume snapshot, you must create a new one and ecrypt it.
+or EBS volume snapshot, you must create a new one and encrypt it.
 
 EBS snapshots **are stored in S3** but you can't directly access the S3 buckets,
 you manage through the EBS service. EBS snapshots are **incremental**: the first  
@@ -909,15 +909,9 @@ on the class part of the name (m5d, c5d, m6id, etc).
 
 The st1 and sc2 volume types (HDD) can't be root volumes.
 
-**Instance Storage**: It's storage physically attached to an EC2 host. It
-provides the lowest latency possible but it's volatile (does not save if the EC2
-is stopped or deleted). Only instances belonging to the family with the "d"
-suffix have instance storage (for example m5d, r5d).
-
 You can increase the size of a volume while it's attached to a running instance,
 but then you must also modify the filesystem inside the machine to correspond to
 the extra space (resize2fs for ext4 or xfs_growfs for xfs).
-
 
 ## Elastic File System (EFS)
 
@@ -946,10 +940,14 @@ FSx extends EFS providing different features for specific use cases.
 
 ## Relational Database Service (RDS)
 
-**Multi AZ Deployments**: You have a standby database with the replicated data.
-RDS takes care of **automatic failover** (60 to 120 seconds) if the AZ of your
-database fails. You can also switch to **Single AZ Deployment** at any time.
-This is the default for production databases.
+**Multi AZ Instance Deployments**: You have a standby database with the
+replicated data. RDS takes care of **automatic failover** (60 to 120 seconds) if
+the AZ of your database fails. You can also switch to **Single AZ Deployment**
+at any time. This is the default for production databases.
+
+**Multi AZ Cluster Deployments**: This is a newer type of Multi AZ deployment
+where you have one writer and two readable standbys in three AZs. Failover is 35
+seconds or less. Only available for MySQL and PostgreSQL deployments.
 
 **Read Replicas**: You can have a main database and several read
 replicas deployed (PostgreSQL, MySQL, and MariaDB engines). This can work in
