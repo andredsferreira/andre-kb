@@ -673,6 +673,9 @@ request; S3 events; SNS Topics; SQS Queues; EventBridge Events; etc.
 Lambda functions are private by default (scoped to your AWS account). They only
 become public (with an HTTP endpoint) if you enable **function URLs**.
 
+Lambda's storage is ephemral but you can configure it up to 10GB. The same
+applies to the function's memory, it can be configured up to 10GB.
+
 Lambda excels at short lived tasks (it has a maximum runtime of 15 minutes). At
 **sustained throughputs** it's better to use other compute options like EC2 or
 EKS. Lambda functions don't maintain state between executions.
